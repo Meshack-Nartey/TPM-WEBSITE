@@ -78,6 +78,56 @@ section {
 }
 
 /* ===================================
+   About Us Header Blocks
+   =================================== */
+.about-blocks {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+    gap: 28px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.about-block {
+    padding: 24px;
+    border-radius: 16px;
+    width: 100%;
+}
+
+.about-block h3 {
+    font-size: 1.2rem;
+    color: var(--primary-blue);
+    margin-bottom: 12px;
+}
+
+.about-block p {
+    max-width: 100%;
+}
+
+.about-block h4 {
+    font-size: 1rem;
+    color: var(--gold);
+    margin: 8px 0 12px;
+}
+
+.about-block ul {
+    padding-left: 18px;
+    margin-top: 8px;
+}
+
+.about-block p + p,
+.about-block p + ul,
+.about-block ul + p {
+    margin-top: 10px;
+}
+
+@media (max-width: 900px) {
+    .about-blocks {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===================================
    Header & Navigation
    =================================== */
 .header {
