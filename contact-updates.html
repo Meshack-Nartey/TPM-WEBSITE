@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact & Updates - Transformation Project Ministries</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header with Navigation -->
+    <header class="header">
+        <nav class="navbar glass">
+            <div class="nav-container">
+                <div class="logo-section">
+                    <div class="logo-placeholder">
+                        <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="25" cy="25" r="24" stroke="#D4AF37" stroke-width="2" fill="none"/>
+                            <path d="M25 10 L25 40 M15 25 L35 25" stroke="#D4AF37" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="church-name">
+                        <h1>Transformation Project</h1>
+                        <p>Ministries</p>
+                    </div>
+                </div>
+                
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item dropdown">
+                        <a href="about.html" class="nav-link">ABOUT</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="about.html#our-story">Our Story</a></li>
+                            <li><a href="about.html#vision-mission">Vision & Mission</a></li>
+                            <li><a href="about.html#leadership">Leadership Team</a></li>
+                            <li><a href="about.html#beliefs">What We Believe</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="media.html" class="nav-link">MEDIA</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="media.html#sermons">Sermons</a></li>
+                            <li><a href="media.html#live-stream">Live Stream</a></li>
+                            <li><a href="media.html#gallery">Photo Gallery</a></li>
+                            <li><a href="media.html#testimonies">Testimonies</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="contact-updates.html" class="nav-link active">CONTACT & UPDATES</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#contact">Contact Us</a></li>
+                            <li><a href="#location">Location & Hours</a></li>
+                            <li><a href="#newsletter">Newsletter</a></li>
+                            <li><a href="#events">Upcoming Events</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="join-us.html" class="nav-link">JOIN US</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="join-us.html#sunday-service">Sunday Service</a></li>
+                            <li><a href="join-us.html#ministries">Ministries</a></li>
+                            <li><a href="join-us.html#small-groups">Small Groups</a></li>
+                            <li><a href="join-us.html#get-involved">Get Involved</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="partner-with-us.html" class="nav-link">PARTNER WITH US</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="partner-with-us.html#giving">Online Giving</a></li>
+                            <li><a href="partner-with-us.html#volunteer">Volunteer</a></li>
+                            <li><a href="partner-with-us.html#missions">Mission Partners</a></li>
+                            <li><a href="partner-with-us.html#sponsorship">Sponsorship</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="page-header-overlay"></div>
+        <div class="page-header-content">
+            <h1>CONTACT & UPDATES</h1>
+            <p>Get in Touch and Stay Connected</p>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="content-section" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Contact Us</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-form glass">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-card glass">
+                        <h3>📧 Email</h3>
+                        <p>info@tpministries.org</p>
+                    </div>
+                    <div class="contact-card glass">
+                        <h3>📞 Phone</h3>
+                        <p>+1 (555) 123-4567</p>
+                    </div>
+                    <div class="contact-card glass">
+                        <h3>📍 Address</h3>
+                        <p>123 Faith Street<br>City, State 12345</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location & Hours Section -->
+    <section class="content-section alt-bg" id="location">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Location & Hours</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="location-grid">
+                <div class="map-container glass">
+                    <div class="map-placeholder">
+                        <p>🗺️ Map</p>
+                        <p>123 Faith Street, City, State</p>
+                    </div>
+                </div>
+                <div class="hours-container">
+                    <div class="hours-card glass">
+                        <h3>Service Times</h3>
+                        <ul>
+                            <li><strong>Sunday Worship:</strong> 9:00 AM & 11:00 AM</li>
+                            <li><strong>Bible Study:</strong> Wednesday 7:00 PM</li>
+                            <li><strong>Prayer Meeting:</strong> Friday 6:00 PM</li>
+                        </ul>
+                    </div>
+                    <div class="hours-card glass">
+                        <h3>Office Hours</h3>
+                        <ul>
+                            <li><strong>Monday - Friday:</strong> 9:00 AM - 5:00 PM</li>
+                            <li><strong>Saturday:</strong> 10:00 AM - 2:00 PM</li>
+                            <li><strong>Sunday:</strong> Closed (Service Days)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="content-section" id="newsletter">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Subscribe to Our Newsletter</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="newsletter-container glass">
+                <p>Stay updated with our latest news, events, and spiritual resources</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Enter your email address" required>
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming Events Section -->
+    <section class="content-section alt-bg" id="events">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Upcoming Events</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="events-grid">
+                <div class="event-card glass">
+                    <div class="event-date">
+                        <span class="date-day">15</span>
+                        <span class="date-month">FEB</span>
+                    </div>
+                    <div class="event-info">
+                        <h3>Youth Conference 2026</h3>
+                        <p class="event-time">🕒 6:00 PM - 9:00 PM</p>
+                        <p class="event-desc">Join us for an inspiring evening of worship and teaching</p>
+                        <a href="#" class="btn btn-small">Learn More</a>
+                    </div>
+                </div>
+                <div class="event-card glass">
+                    <div class="event-date">
+                        <span class="date-day">22</span>
+                        <span class="date-month">FEB</span>
+                    </div>
+                    <div class="event-info">
+                        <h3>Community Outreach</h3>
+                        <p class="event-time">🕒 10:00 AM - 2:00 PM</p>
+                        <p class="event-desc">Serving our community with love and compassion</p>
+                        <a href="#" class="btn btn-small">Learn More</a>
+                    </div>
+                </div>
+                <div class="event-card glass">
+                    <div class="event-date">
+                        <span class="date-day">01</span>
+                        <span class="date-month">MAR</span>
+                    </div>
+                    <div class="event-info">
+                        <h3>Women's Retreat</h3>
+                        <p class="event-time">🕒 Friday - Sunday</p>
+                        <p class="event-desc">A weekend of refreshing, renewal, and fellowship</p>
+                        <a href="#" class="btn btn-small">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Transformation Project Ministries</h3>
+                    <p>Transforming lives through the power of God's love</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="media.html">Sermons</a></li>
+                        <li><a href="join-us.html">Join Us</a></li>
+                        <li><a href="contact-updates.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect With Us</h4>
+                    <ul>
+                        <li>📧 info@tpministries.org</li>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>📍 123 Faith Street, City, State</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Transformation Project Ministries. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partner With Us - Transformation Project Ministries</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header with Navigation -->
+    <header class="header">
+        <nav class="navbar glass">
+            <div class="nav-container">
+                <div class="logo-section">
+                    <div class="logo-placeholder">
+                        <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="25" cy="25" r="24" stroke="#D4AF37" stroke-width="2" fill="none"/>
+                            <path d="M25 10 L25 40 M15 25 L35 25" stroke="#D4AF37" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="church-name">
+                        <h1>Transformation Project</h1>
+                        <p>Ministries</p>
+                    </div>
+                </div>
+                
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item dropdown">
+                        <a href="about.html" class="nav-link">ABOUT</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="about.html#our-story">Our Story</a></li>
+                            <li><a href="about.html#vision-mission">Vision & Mission</a></li>
+                            <li><a href="about.html#leadership">Leadership Team</a></li>
+                            <li><a href="about.html#beliefs">What We Believe</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="media.html" class="nav-link">MEDIA</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="media.html#sermons">Sermons</a></li>
+                            <li><a href="media.html#live-stream">Live Stream</a></li>
+                            <li><a href="media.html#gallery">Photo Gallery</a></li>
+                            <li><a href="media.html#testimonies">Testimonies</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="contact-updates.html" class="nav-link">CONTACT & UPDATES</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="contact-updates.html#contact">Contact Us</a></li>
+                            <li><a href="contact-updates.html#location">Location & Hours</a></li>
+                            <li><a href="contact-updates.html#newsletter">Newsletter</a></li>
+                            <li><a href="contact-updates.html#events">Upcoming Events</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="join-us.html" class="nav-link">JOIN US</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="join-us.html#sunday-service">Sunday Service</a></li>
+                            <li><a href="join-us.html#ministries">Ministries</a></li>
+                            <li><a href="join-us.html#small-groups">Small Groups</a></li>
+                            <li><a href="join-us.html#get-involved">Get Involved</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="partner-with-us.html" class="nav-link active">PARTNER WITH US</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#giving">Online Giving</a></li>
+                            <li><a href="#volunteer">Volunteer</a></li>
+                            <li><a href="#missions">Mission Partners</a></li>
+                            <li><a href="#sponsorship">Sponsorship</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="page-header-overlay"></div>
+        <div class="page-header-content">
+            <h1>PARTNER WITH US</h1>
+            <p>Make a Difference Through Giving and Serving</p>
+        </div>
+    </section>
+
+    <!-- Online Giving Section -->
+    <section class="content-section" id="giving">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Online Giving</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="giving-container">
+                <div class="giving-info">
+                    <h3>Your Generosity Makes a Difference</h3>
+                    <p>
+                        Your financial partnership enables us to fulfill our mission of transforming lives through 
+                        the Gospel. Every gift helps us reach more people, strengthen our community, and expand 
+                        our impact locally and globally.
+                    </p>
+                    <div class="giving-ways glass">
+                        <h4>Ways to Give</h4>
+                        <ul>
+                            <li>💳 Online (Credit/Debit Card)</li>
+                            <li>🏦 Bank Transfer</li>
+                            <li>📱 Mobile Giving</li>
+                            <li>📮 Mail a Check</li>
+                            <li>⛪ In-Person (Sunday Service)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="giving-form glass">
+                    <h3>Give Online</h3>
+                    <form>
+                        <div class="form-group">
+                            <label for="amount">Amount</label>
+                            <input type="number" id="amount" name="amount" placeholder="$0.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="frequency">Frequency</label>
+                            <select id="frequency" name="frequency" required>
+                                <option value="one-time">One Time</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fund">Designate to</label>
+                            <select id="fund" name="fund" required>
+                                <option value="general">General Fund</option>
+                                <option value="missions">Missions</option>
+                                <option value="building">Building Fund</option>
+                                <option value="benevolence">Benevolence</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Continue to Payment</button>
+                    </form>
+                    <p class="secure-notice">🔒 Your information is secure and encrypted</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Volunteer Section -->
+    <section class="content-section alt-bg" id="volunteer">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Volunteer Opportunities</h2>
+                <div class="title-underline"></div>
+            </div>
+            <p class="section-intro">
+                Use your time and talents to serve others and make an eternal impact. 
+                Every role is important in building God's Kingdom.
+            </p>
+            <div class="volunteer-grid">
+                <div class="volunteer-card glass">
+                    <h3>Worship Team</h3>
+                    <p>Singers, musicians, and tech crew needed for our worship services</p>
+                    <a href="#" class="btn btn-small">Apply Now</a>
+                </div>
+                <div class="volunteer-card glass">
+                    <h3>Children's Ministry</h3>
+                    <p>Teachers, assistants, and check-in volunteers to serve our kids</p>
+                    <a href="#" class="btn btn-small">Apply Now</a>
+                </div>
+                <div class="volunteer-card glass">
+                    <h3>Hospitality Team</h3>
+                    <p>Greeters, ushers, and coffee bar volunteers to welcome guests</p>
+                    <a href="#" class="btn btn-small">Apply Now</a>
+                </div>
+                <div class="volunteer-card glass">
+                    <h3>Media Team</h3>
+                    <p>Camera operators, editors, and social media coordinators</p>
+                    <a href="#" class="btn btn-small">Apply Now</a>
+                </div>
+                <div class="volunteer-card glass">
+                    <h3>Prayer Team</h3>
+                    <p>Intercessors to pray for our church and community needs</p>
+                    <a href="#" class="btn btn-small">Apply Now</a>
+                </div>
+                <div class="volunteer-card glass">
+                    <h3>Outreach Team</h3>
+                    <p>Volunteers for community service projects and events</p>
+                    <a href="#" class="btn btn-small">Apply Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Partners Section -->
+    <section class="content-section" id="missions">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Mission Partners</h2>
+                <div class="title-underline"></div>
+            </div>
+            <p class="section-intro">
+                We partner with missionaries and organizations around the world to spread the Gospel 
+                and meet practical needs in communities.
+            </p>
+            <div class="missions-grid">
+                <div class="mission-card glass">
+                    <div class="mission-location">🌍 Africa</div>
+                    <h3>Building Hope International</h3>
+                    <p>Supporting orphanages and education programs in Kenya and Uganda</p>
+                    <a href="#" class="card-link">Learn More →</a>
+                </div>
+                <div class="mission-card glass">
+                    <div class="mission-location">🌏 Asia</div>
+                    <h3>Light of Truth Ministry</h3>
+                    <p>Church planting and discipleship training in Southeast Asia</p>
+                    <a href="#" class="card-link">Learn More →</a>
+                </div>
+                <div class="mission-card glass">
+                    <div class="mission-location">🌎 Latin America</div>
+                    <h3>Compassion Network</h3>
+                    <p>Medical missions and community development in Central America</p>
+                    <a href="#" class="card-link">Learn More →</a>
+                </div>
+            </div>
+            <div class="missions-cta">
+                <h3>Go on a Mission Trip</h3>
+                <p>Experience firsthand the impact of missions by joining one of our annual trips</p>
+                <a href="#" class="btn btn-primary">View Upcoming Trips</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sponsorship Section -->
+    <section class="content-section alt-bg" id="sponsorship">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Sponsorship Opportunities</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="sponsorship-grid">
+                <div class="sponsorship-card glass">
+                    <h3>Child Sponsorship</h3>
+                    <p>Sponsor a child's education, healthcare, and spiritual development for $50/month</p>
+                    <a href="#" class="btn btn-secondary">Sponsor a Child</a>
+                </div>
+                <div class="sponsorship-card glass">
+                    <h3>Missionary Support</h3>
+                    <p>Provide monthly financial support to missionaries serving in the field</p>
+                    <a href="#" class="btn btn-secondary">Support a Missionary</a>
+                </div>
+                <div class="sponsorship-card glass">
+                    <h3>Event Sponsorship</h3>
+                    <p>Help make our community events and outreaches possible through sponsorship</p>
+                    <a href="#" class="btn btn-secondary">Become a Sponsor</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Transformation Project Ministries</h3>
+                    <p>Transforming lives through the power of God's love</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="media.html">Sermons</a></li>
+                        <li><a href="join-us.html">Join Us</a></li>
+                        <li><a href="contact-updates.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect With Us</h4>
+                    <ul>
+                        <li>📧 info@tpministries.org</li>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>📍 123 Faith Street, City, State</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Transformation Project Ministries. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

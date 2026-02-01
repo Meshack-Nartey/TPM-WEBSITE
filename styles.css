@@ -1,0 +1,1690 @@
+/* ===================================
+   CSS Variables & Reset
+   =================================== */
+:root {
+    /* Color Palette - Blue, White, Gold */
+    --primary-blue: #1e3a8a;
+    --light-blue: #3b82f6;
+    --sky-blue: #93c5fd;
+    --pale-blue: #dbeafe;
+    --gold: #D4AF37;
+    --dark-gold: #B8941F;
+    --white: #ffffff;
+    --off-white: #f8fafc;
+    --text-dark: #1e293b;
+    --text-gray: #64748b;
+    
+    /* Glassmorphism Variables */
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    
+    /* Typography */
+    --font-primary: 'Montserrat', sans-serif;
+    --font-display: 'Playfair Display', serif;
+    
+    /* Spacing */
+    --container-width: 1200px;
+    --section-padding: 80px 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-primary);
+    color: var(--text-dark);
+    background-color: var(--off-white);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ===================================
+   Glassmorphism Effect
+   =================================== */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    transition: all 0.3s ease;
+}
+
+.glass:hover {
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
+    transform: translateY(-5px);
+}
+
+/* ===================================
+   Container & Layout
+   =================================== */
+.container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+section {
+    padding: var(--section-padding);
+}
+
+/* ===================================
+   Header & Navigation
+   =================================== */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.navbar {
+    padding: 15px 0;
+}
+
+.nav-container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-placeholder {
+    width: 50px;
+    height: 50px;
+}
+
+.church-name h1 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--primary-blue);
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.church-name p {
+    font-size: 0.9rem;
+    color: var(--gold);
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Hamburger Menu */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.hamburger span {
+    width: 25px;
+    height: 3px;
+    background: var(--primary-blue);
+    margin: 3px 0;
+    transition: 0.3s;
+    border-radius: 3px;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
+
+/* Navigation Menu */
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 5px;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    display: block;
+    padding: 12px 20px;
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background: var(--glass-bg);
+    color: var(--gold);
+    backdrop-filter: blur(12px);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 220px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    list-style: none;
+    padding: 10px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-menu li {
+    padding: 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 12px 25px;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+    background: var(--pale-blue);
+    color: var(--primary-blue);
+    padding-left: 30px;
+}
+
+/* ===================================
+   Hero Section with Slider
+   =================================== */
+.hero-section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hero-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+.slide-bg {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Hero Slide Backgrounds - Using gradients as placeholders */
+.slide-1 {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+}
+
+.slide-2 {
+    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+}
+
+.slide-3 {
+    background: linear-gradient(135deg, #2563eb 0%, #93c5fd 100%);
+}
+
+.slide-4 {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+}
+
+.slide-5 {
+    background: linear-gradient(135deg, #1e3a8a 0%, #60a5fa 100%);
+}
+
+/* Light Blue Overlay */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(30, 58, 138, 0.6) 100%);
+}
+
+/* Hero Content */
+.hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 60px 40px;
+    border-radius: 20px;
+    max-width: 900px;
+    margin: 0 20px;
+}
+
+.hero-title {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 20px;
+    line-height: 1.2;
+    text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    color: var(--white);
+    margin-bottom: 35px;
+    font-weight: 400;
+    text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Slider Controls */
+.slider-controls {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 10;
+}
+
+.slider-btn {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.slider-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+}
+
+.slider-dots {
+    display: flex;
+    gap: 10px;
+}
+
+.slider-dots .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px solid white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.slider-dots .dot.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    transform: scale(1.2);
+}
+
+/* ===================================
+   Buttons
+   =================================== */
+.btn {
+    display: inline-block;
+    padding: 14px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--gold);
+    color: var(--white);
+    border-color: var(--gold);
+}
+
+.btn-primary:hover {
+    background: var(--dark-gold);
+    border-color: var(--dark-gold);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--white);
+    border-color: var(--white);
+}
+
+.btn-secondary:hover {
+    background: var(--white);
+    color: var(--primary-blue);
+    transform: translateY(-3px);
+}
+
+.btn-small {
+    padding: 10px 25px;
+    font-size: 0.9rem;
+}
+
+/* ===================================
+   Section Styles
+   =================================== */
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.title-underline {
+    width: 80px;
+    height: 4px;
+    background: var(--gold);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+.section-intro {
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--text-gray);
+    max-width: 800px;
+    margin: 0 auto 50px;
+}
+
+/* ===================================
+   Welcome Section
+   =================================== */
+.welcome-section {
+    background: var(--white);
+}
+
+.welcome-text {
+    text-align: center;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-gray);
+    max-width: 900px;
+    margin: 0 auto 50px;
+}
+
+.welcome-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.welcome-card {
+    padding: 40px 30px;
+    text-align: center;
+    border-radius: 16px;
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.welcome-card h3 {
+    font-size: 1.5rem;
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.welcome-card p {
+    color: var(--text-gray);
+    margin-bottom: 20px;
+    line-height: 1.7;
+}
+
+.card-link {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.card-link:hover {
+    color: var(--dark-gold);
+    text-decoration: underline;
+}
+
+/* ===================================
+   Service Times Section
+   =================================== */
+.service-times-section {
+    background: linear-gradient(135deg, var(--pale-blue) 0%, var(--sky-blue) 100%);
+}
+
+.service-times-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.service-time-card {
+    padding: 40px 30px;
+    text-align: center;
+    border-radius: 16px;
+}
+
+.service-time-card h3 {
+    font-size: 1.4rem;
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.service-time-card .time {
+    font-size: 1.5rem;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.service-time-card .description {
+    color: var(--text-gray);
+    line-height: 1.6;
+}
+
+/* ===================================
+   Page Header (Internal Pages)
+   =================================== */
+.page-header {
+    position: relative;
+    height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    margin-top: 80px;
+}
+
+.page-header-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.8) 0%, rgba(59, 130, 246, 0.6) 100%);
+}
+
+.page-header-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    color: white;
+}
+
+.page-header-content h1 {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.page-header-content p {
+    font-size: 1.3rem;
+    opacity: 0.95;
+}
+
+/* ===================================
+   Content Sections
+   =================================== */
+.content-section {
+    background: var(--white);
+}
+
+.content-section.alt-bg {
+    background: var(--pale-blue);
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 50px;
+    align-items: center;
+}
+
+.content-text p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-gray);
+    margin-bottom: 20px;
+}
+
+.content-image {
+    border-radius: 16px;
+    overflow: hidden;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-placeholder {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-gray);
+    padding: 40px;
+}
+
+/* ===================================
+   Vision & Mission
+   =================================== */
+.vision-mission-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 40px;
+}
+
+.vm-card {
+    padding: 50px 40px;
+    border-radius: 16px;
+}
+
+.vm-card h3 {
+    font-size: 2rem;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.vm-card p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-gray);
+}
+
+/* ===================================
+   Leadership
+   =================================== */
+.leadership-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.leader-card {
+    padding: 30px;
+    text-align: center;
+    border-radius: 16px;
+}
+
+.leader-image {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid var(--gold);
+}
+
+.leader-image .image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--pale-blue);
+    font-size: 3rem;
+}
+
+.leader-card h3 {
+    font-size: 1.3rem;
+    color: var(--primary-blue);
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.leader-title {
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.leader-bio {
+    color: var(--text-gray);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* ===================================
+   Beliefs
+   =================================== */
+.beliefs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.belief-card {
+    padding: 35px 30px;
+    border-radius: 16px;
+}
+
+.belief-card h3 {
+    font-size: 1.3rem;
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.belief-card p {
+    color: var(--text-gray);
+    line-height: 1.7;
+}
+
+/* ===================================
+   Media Page Styles
+   =================================== */
+.sermon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+.sermon-card {
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.sermon-thumbnail {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sermon-thumbnail .image-placeholder {
+    font-size: 3rem;
+    color: white;
+}
+
+.sermon-info {
+    padding: 25px;
+}
+
+.sermon-info h3 {
+    font-size: 1.3rem;
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.sermon-date {
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.sermon-speaker {
+    color: var(--text-gray);
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+}
+
+.livestream-container {
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.livestream-video {
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.video-placeholder {
+    text-align: center;
+    color: white;
+    font-size: 1.3rem;
+}
+
+.livestream-info {
+    padding: 40px;
+    text-align: center;
+}
+
+.livestream-info h3 {
+    font-size: 1.8rem;
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.livestream-info p {
+    color: var(--text-gray);
+    line-height: 1.7;
+    margin-bottom: 25px;
+}
+
+/* Gallery */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.gallery-item {
+    height: 250px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--pale-blue) 0%, var(--sky-blue) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gallery-item .image-placeholder {
+    font-size: 3rem;
+}
+
+/* Testimonies */
+.testimonies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+.testimony-card {
+    padding: 40px 35px;
+    border-radius: 16px;
+}
+
+.testimony-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-dark);
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.testimony-author {
+    color: var(--gold);
+    font-weight: 600;
+    text-align: right;
+}
+
+/* ===================================
+   Contact Page Styles
+   =================================== */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+}
+
+.contact-form {
+    padding: 40px;
+    border-radius: 16px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--primary-blue);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--pale-blue);
+    border-radius: 8px;
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--white);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--light-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contact-card {
+    padding: 30px;
+    border-radius: 16px;
+}
+
+.contact-card h3 {
+    font-size: 1.2rem;
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.contact-card p {
+    color: var(--text-gray);
+    line-height: 1.6;
+}
+
+/* Location & Hours */
+.location-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 40px;
+}
+
+.map-container {
+    height: 400px;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--pale-blue) 0%, var(--sky-blue) 100%);
+}
+
+.map-placeholder {
+    text-align: center;
+    font-size: 3rem;
+    color: var(--primary-blue);
+}
+
+.hours-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.hours-card {
+    padding: 30px;
+    border-radius: 16px;
+}
+
+.hours-card h3 {
+    font-size: 1.4rem;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.hours-card ul {
+    list-style: none;
+}
+
+.hours-card li {
+    padding: 10px 0;
+    color: var(--text-gray);
+    border-bottom: 1px solid var(--pale-blue);
+}
+
+.hours-card li:last-child {
+    border-bottom: none;
+}
+
+/* Newsletter */
+.newsletter-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 50px 40px;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.newsletter-container p {
+    font-size: 1.1rem;
+    color: var(--text-gray);
+    margin-bottom: 30px;
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.newsletter-form input {
+    flex: 1;
+    min-width: 250px;
+    padding: 14px 20px;
+    border: 2px solid var(--pale-blue);
+    border-radius: 50px;
+    font-size: 1rem;
+}
+
+/* Events */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.event-card {
+    padding: 30px;
+    border-radius: 16px;
+    display: flex;
+    gap: 25px;
+}
+
+.event-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-blue);
+    color: white;
+    border-radius: 12px;
+    padding: 20px;
+    min-width: 80px;
+}
+
+.date-day {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.date-month {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.event-info {
+    flex: 1;
+}
+
+.event-info h3 {
+    font-size: 1.3rem;
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.event-time {
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.event-desc {
+    color: var(--text-gray);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+/* ===================================
+   Join Us Page Styles
+   =================================== */
+.service-details {
+    padding: 50px 40px;
+    border-radius: 16px;
+}
+
+.service-details h3 {
+    font-size: 2rem;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.service-details > p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-gray);
+    margin-bottom: 40px;
+}
+
+.service-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.info-box {
+    background: var(--pale-blue);
+    padding: 25px;
+    border-radius: 12px;
+    border-left: 4px solid var(--gold);
+}
+
+.info-box h4 {
+    color: var(--primary-blue);
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.info-box p {
+    color: var(--text-gray);
+    line-height: 1.6;
+    margin-bottom: 5px;
+}
+
+/* Ministries */
+.ministries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.ministry-card {
+    padding: 40px 30px;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.ministry-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.ministry-card h3 {
+    font-size: 1.4rem;
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.ministry-card p {
+    color: var(--text-gray);
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+/* Small Groups */
+.small-groups-list {
+    padding: 40px;
+    border-radius: 16px;
+}
+
+.small-groups-list h3 {
+    font-size: 1.6rem;
+    color: var(--primary-blue);
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+.small-groups-list ul {
+    list-style: none;
+}
+
+.small-groups-list li {
+    padding: 15px;
+    font-size: 1.05rem;
+    color: var(--text-dark);
+    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.small-groups-list li:last-child {
+    border-bottom: none;
+}
+
+/* Get Involved */
+.involvement-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+.involvement-card {
+    padding: 40px 35px;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.involvement-card h3 {
+    font-size: 1.6rem;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.involvement-card p {
+    color: var(--text-gray);
+    line-height: 1.7;
+    margin-bottom: 25px;
+}
+
+/* ===================================
+   Partner With Us Page Styles
+   =================================== */
+.giving-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+.giving-info h3 {
+    font-size: 2rem;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.giving-info p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-gray);
+    margin-bottom: 30px;
+}
+
+.giving-ways {
+    padding: 30px;
+    border-radius: 16px;
+}
+
+.giving-ways h4 {
+    font-size: 1.3rem;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.giving-ways ul {
+    list-style: none;
+}
+
+.giving-ways li {
+    padding: 12px 0;
+    font-size: 1.05rem;
+    color: var(--text-dark);
+    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.giving-ways li:last-child {
+    border-bottom: none;
+}
+
+.giving-form {
+    padding: 40px;
+    border-radius: 16px;
+}
+
+.giving-form h3 {
+    font-size: 1.8rem;
+    color: var(--primary-blue);
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.secure-notice {
+    text-align: center;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    margin-top: 15px;
+}
+
+/* Volunteer */
+.volunteer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.volunteer-card {
+    padding: 35px 30px;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.volunteer-card h3 {
+    font-size: 1.4rem;
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.volunteer-card p {
+    color: var(--text-gray);
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+/* Missions */
+.missions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.mission-card {
+    padding: 35px 30px;
+    border-radius: 16px;
+}
+
+.mission-location {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.mission-card h3 {
+    font-size: 1.4rem;
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.mission-card p {
+    color: var(--text-gray);
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.missions-cta {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    color: white;
+    padding: 60px 40px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.missions-cta h3 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.missions-cta p {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    opacity: 0.95;
+}
+
+/* Sponsorship */
+.sponsorship-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+}
+
+.sponsorship-card {
+    padding: 40px 35px;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.sponsorship-card h3 {
+    font-size: 1.6rem;
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.sponsorship-card p {
+    color: var(--text-gray);
+    line-height: 1.7;
+    margin-bottom: 25px;
+}
+
+/* ===================================
+   Footer
+   =================================== */
+.footer {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #1e293b 100%);
+    color: white;
+    padding: 60px 0 20px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.footer-section h3 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: var(--gold);
+}
+
+.footer-section h4 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: var(--gold);
+}
+
+.footer-section p {
+    line-height: 1.7;
+    opacity: 0.9;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section li {
+    margin-bottom: 10px;
+}
+
+.footer-section a {
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    opacity: 0.9;
+}
+
+.footer-section a:hover {
+    color: var(--gold);
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.footer-bottom p {
+    opacity: 0.8;
+}
+
+/* ===================================
+   Responsive Design
+   =================================== */
+@media (max-width: 1024px) {
+    .hero-title {
+        font-size: 2.8rem;
+    }
+    
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .giving-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Navigation */
+    .hamburger {
+        display: flex;
+    }
+    
+    .nav-menu {
+        position: fixed;
+        left: -100%;
+        top: 80px;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        width: 100%;
+        text-align: center;
+        transition: 0.3s;
+        box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+        padding: 20px 0;
+        gap: 0;
+    }
+    
+    .nav-menu.active {
+        left: 0;
+    }
+    
+    .nav-item {
+        margin: 5px 0;
+    }
+    
+    .dropdown-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        box-shadow: none;
+        background: transparent;
+        margin-top: 10px;
+    }
+    
+    /* Hero */
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .slider-controls {
+        bottom: 20px;
+        gap: 15px;
+    }
+    
+    .slider-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+    
+    /* Sections */
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .page-header {
+        height: 250px;
+        margin-top: 70px;
+    }
+    
+    .page-header-content h1 {
+        font-size: 2rem;
+    }
+    
+    .page-header-content p {
+        font-size: 1.1rem;
+    }
+    
+    /* Grids */
+    .welcome-grid,
+    .service-times-grid,
+    .leadership-grid,
+    .beliefs-grid,
+    .sermon-grid,
+    .gallery-grid,
+    .testimonies-grid,
+    .events-grid,
+    .ministries-grid,
+    .volunteer-grid,
+    .missions-grid,
+    .sponsorship-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .vision-mission-grid,
+    .location-grid,
+    .service-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Newsletter */
+    .newsletter-form {
+        flex-direction: column;
+    }
+    
+    .newsletter-form input {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.6rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .hero-content {
+        padding: 40px 20px;
+    }
+    
+    .section-title {
+        font-size: 1.6rem;
+    }
+    
+    .btn {
+        padding: 12px 25px;
+        font-size: 0.9rem;
+    }
+    
+    .church-name h1 {
+        font-size: 1.1rem;
+    }
+    
+    .church-name p {
+        font-size: 0.8rem;
+    }
+    
+    .event-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .event-date {
+        width: 100%;
+        padding: 15px;
+    }
+}
+
+/* ===================================
+   Scroll Animations
+   =================================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-on-scroll {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* ===================================
+   Print Styles
+   =================================== */
+@media print {
+    .header,
+    .footer,
+    .hero-section,
+    .slider-controls,
+    .btn {
+        display: none;
+    }
+}
