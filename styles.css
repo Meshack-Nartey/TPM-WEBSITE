@@ -91,7 +91,7 @@ section {
 }
 
 .about-block {
-    padding: 28px 24px;
+    padding: 20px 22px;
     border-radius: 16px;
     width: 100%;
     text-align: left;
@@ -360,6 +360,76 @@ section {
     
     .founder-intro {
         text-align: center;
+    }
+}
+
+/* ===================================
+   Church Database Section
+   =================================== */
+.database-content {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.database-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px 30px;
+    width: 100%;
+    margin-top: 40px;
+    align-items: start;
+}
+
+.database-card {
+    padding: 28px 24px;
+    border-radius: 16px;
+    width: 100%;
+    text-align: center;
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg,
+        rgba(219, 234, 254, 0.4) 0%,
+        rgba(147, 197, 253, 0.2) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    transition: all 0.3s ease;
+}
+
+.database-card:hover {
+    background: linear-gradient(135deg,
+        rgba(219, 234, 254, 0.5) 0%,
+        rgba(147, 197, 253, 0.3) 100%);
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        0 0 25px rgba(59, 130, 246, 0.2);
+    transform: translateY(-5px);
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+.database-card h3 {
+    font-size: 1.5rem;
+    color: var(--primary-blue);
+    margin-bottom: 18px;
+    font-weight: 600;
+}
+
+.database-card p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--text-gray);
+    margin-bottom: 20px;
+}
+
+@media (max-width: 900px) {
+    .database-grid {
+        grid-template-columns: 1fr;
     }
 }
 
