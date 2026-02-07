@@ -510,7 +510,7 @@ section {
 }
 
 .navbar {
-    padding: 15px 0;
+    padding: 8px 0;
 }
 
 .nav-container {
@@ -529,13 +529,20 @@ section {
 }
 
 .logo-placeholder {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
+}
+
+.logo-placeholder svg,
+.logo-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .church-name h1 {
     font-family: var(--font-display);
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     color: var(--primary-blue);
     font-weight: 700;
     line-height: 1.2;
@@ -543,7 +550,7 @@ section {
 }
 
 .church-name p {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     color: var(--gold);
     font-weight: 500;
     margin: 0;
@@ -582,7 +589,8 @@ section {
 .nav-menu {
     display: flex;
     list-style: none;
-    gap: 5px;
+    gap: 2px;
+    margin-left: auto;
 }
 
 .nav-item {
@@ -591,11 +599,11 @@ section {
 
 .nav-link {
     display: block;
-    padding: 12px 20px;
+    padding: 8px 15px;
     color: var(--primary-blue);
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     letter-spacing: 0.5px;
     transition: all 0.3s ease;
     border-radius: 8px;
@@ -606,6 +614,21 @@ section {
     background: var(--glass-bg);
     color: var(--gold);
     backdrop-filter: blur(12px);
+}
+
+/* Partner With Us - Blue Button */
+.nav-link[href="partner-with-us.html"] {
+    position: relative;
+    background: var(--primary-blue);
+    color: white !important;
+    padding: 8px 20px;
+    border-radius: 25px;
+    margin-left: 15px;
+}
+
+.nav-link[href="partner-with-us.html"]:hover {
+    background: var(--light-blue);
+    color: white !important;
 }
 
 /* Dropdown Menu */
@@ -1969,23 +1992,32 @@ section {
     
     /* Hero */
     .hero-title {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
     }
 
     .hero-subtitle {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 
     .hero-content {
         left: 20px;
-        max-width: 90%;
-        padding: 30px 20px;
+        top: auto;
+        bottom: 60px;
+        transform: none;
+        max-width: calc(100% - 40px);
+        padding: 20px 15px;
+        background: rgba(255, 255, 255, 0.12);
     }
 
     .hero-buttons {
         flex-direction: column;
-        gap: 15px;
+        gap: 10px;
         align-items: flex-start;
+    }
+
+    .hero-buttons .btn {
+        padding: 10px 20px;
+        font-size: 0.85rem;
     }
     
     .slider-controls {
