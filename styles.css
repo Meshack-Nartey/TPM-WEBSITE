@@ -85,17 +85,17 @@ section {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px 24px;
     width: 100%;
-    max-width: 1400px;
+    max-width: 900px;
     margin: 0 auto;
     align-items: stretch;
 }
 
 .about-block {
-    padding: 18px 20px;
+    padding: 12px 16px;
     border-radius: 16px;
     width: 100%;
     text-align: left;
-    min-height: 200px;
+    min-height: 140px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -124,16 +124,16 @@ section {
 }
 
 .about-block h3 {
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     color: var(--primary-blue);
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-weight: 600;
     line-height: 1.3;
 }
 
 .about-block p {
-    font-size: 1rem;
-    line-height: 1.7;
+    font-size: 0.9rem;
+    line-height: 1.6;
     color: var(--text-gray);
     margin: 0;
 }
@@ -691,28 +691,32 @@ section {
     width: 100%;
     height: 100%;
     background-size: cover;
-    background-position: center;
+    background-position: center 20%;
 }
 
-/* Hero Slide Backgrounds - Using gradients as placeholders */
+/* Hero Slide Backgrounds */
 .slide-1 {
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    background-image: url('assets/images/hero1.jpg');
 }
 
 .slide-2 {
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+    background-image: url('assets/images/hero2.jpg');
 }
 
 .slide-3 {
-    background: linear-gradient(135deg, #2563eb 0%, #93c5fd 100%);
+    background-image: url('assets/images/hero3.jpg');
 }
 
 .slide-4 {
-    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    background-image: url('assets/images/hero4.jpg');
 }
 
 .slide-5 {
-    background: linear-gradient(135deg, #1e3a8a 0%, #60a5fa 100%);
+    background-image: url('assets/images/hero5.jpg');
+}
+
+.slide-6 {
+    background-image: url('assets/images/hero6.jpg');
 }
 
 /* Light Blue Overlay */
@@ -722,34 +726,36 @@ section {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(30, 58, 138, 0.6) 100%);
+    background: transparent;
 }
 
 /* Hero Content */
 .hero-content {
-    position: relative;
+    position: absolute;
+    left: 40px;
+    top: 50%;
+    transform: translateY(-50%);
     z-index: 10;
-    text-align: center;
-    padding: 60px 40px;
+    text-align: left;
+    padding: 40px 30px;
     border-radius: 20px;
-    max-width: 900px;
-    margin: 0 20px;
+    max-width: 550px;
 }
 
 .hero-title {
     font-family: var(--font-display);
-    font-size: 3.5rem;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--white);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     line-height: 1.2;
     text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .hero-subtitle {
-    font-size: 1.3rem;
+    font-size: 1rem;
     color: var(--white);
-    margin-bottom: 35px;
+    margin-bottom: 25px;
     font-weight: 400;
     text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3);
 }
@@ -757,7 +763,7 @@ section {
 .hero-buttons {
     display: flex;
     gap: 20px;
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
 }
 
@@ -767,7 +773,7 @@ section {
     bottom: 40px;
     left: 50%;
     transform: translateX(-50%);
-    display: flex;
+    display: none;
     align-items: center;
     gap: 20px;
     z-index: 10;
@@ -792,8 +798,7 @@ section {
 }
 
 .slider-dots {
-    display: flex;
-    gap: 10px;
+    display: none;
 }
 
 .slider-dots .dot {
@@ -1964,16 +1969,23 @@ section {
     
     /* Hero */
     .hero-title {
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
-    
+
     .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 0.9rem;
     }
-    
+
+    .hero-content {
+        left: 20px;
+        max-width: 90%;
+        padding: 30px 20px;
+    }
+
     .hero-buttons {
         flex-direction: column;
         gap: 15px;
+        align-items: flex-start;
     }
     
     .slider-controls {

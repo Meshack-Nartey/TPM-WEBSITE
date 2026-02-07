@@ -89,11 +89,11 @@ function initHeroSlider() {
         showSlide(currentSlide - 1);
     }
     
-    // Auto slide every 5 seconds
+    // Auto slide every 7 seconds
     function startAutoSlide() {
         autoSlideInterval = setInterval(() => {
             showSlide(currentSlide + 1);
-        }, 5000);
+        }, 7000);
     }
     
     // Reset auto slide timer
