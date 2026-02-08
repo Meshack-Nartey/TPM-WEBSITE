@@ -3,16 +3,19 @@
 // ===================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    
+
     // Initialize Hero Slider
     initHeroSlider();
-    
+
+    // Initialize About Page Slider
+    initAboutSlider();
+
     // Initialize Mobile Navigation
     initMobileNav();
-    
+
     // Initialize Smooth Scrolling
     initSmoothScroll();
-    
+
     // Initialize Scroll Animations
     initScrollAnimations();
 });
@@ -152,6 +155,137 @@ function initHeroSlider() {
         });
         
         heroSection.addEventListener('mouseleave', () => {
+            startAutoSlide();
+        });
+    }
+}
+
+// ===================================
+// About Page Slider
+// ===================================
+function initAboutSlider() {
+    const slides = document.querySelectorAll('.about-slide');
+    const dotsContainer = document.getElementById('aboutSliderDots');
+    const prevBtn = document.getElementById('prevAboutSlide');
+    const nextBtn = document.getElementById('nextAboutSlide');
+
+    if (!slides.length) return; // Exit if no slider on page
+
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+    let autoSlideInterval;
+
+    // Create dots
+    slides.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        if (index === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goToSlide(index));
+        dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.about-slider-dots .dot');
+
+    // Show specific slide
+    function showSlide(n) {
+        // Wrap around
+        if (n >= totalSlides) {
+            currentSlide = 0;
+        } else if (n < 0) {
+            currentSlide = totalSlides - 1;
+        } else {
+            currentSlide = n;
+        }
+
+        // Update slides
+        slides.forEach((slide, index) => {
+            slide.classList.remove('active');
+            if (index === currentSlide) {
+                slide.classList.add('active');
+            }
+        });
+
+        // Update dots
+        dots.forEach((dot, index) => {
+            dot.classList.remove('active');
+            if (index === currentSlide) {
+                dot.classList.add('active');
+            }
+        });
+    }
+
+    // Navigate to specific slide
+    function goToSlide(n) {
+        resetAutoSlide();
+        showSlide(n);
+    }
+
+    // Next slide
+    function nextSlide() {
+        resetAutoSlide();
+        showSlide(currentSlide + 1);
+    }
+
+    // Previous slide
+    function prevSlide() {
+        resetAutoSlide();
+        showSlide(currentSlide - 1);
+    }
+
+    // Auto slide every 7 seconds
+    function startAutoSlide() {
+        autoSlideInterval = setInterval(() => {
+            showSlide(currentSlide + 1);
+        }, 7000);
+    }
+
+    // Reset auto slide timer
+    function resetAutoSlide() {
+        clearInterval(autoSlideInterval);
+        startAutoSlide();
+    }
+
+    // Event listeners
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+
+    // Touch/Swipe support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    const sliderSection = document.querySelector('.page-header-slider');
+
+    if (sliderSection) {
+        sliderSection.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        sliderSection.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                nextSlide(); // Swipe left
+            }
+            if (touchEndX > touchStartX + swipeThreshold) {
+                prevSlide(); // Swipe right
+            }
+        }
+    }
+
+    // Start auto slide
+    startAutoSlide();
+
+    // Pause auto slide on hover
+    if (sliderSection) {
+        sliderSection.addEventListener('mouseenter', () => {
+            clearInterval(autoSlideInterval);
+        });
+
+        sliderSection.addEventListener('mouseleave', () => {
             startAutoSlide();
         });
     }
