@@ -28,12 +28,13 @@ function initHeroSlider() {
     const dotsContainer = document.getElementById('sliderDots');
     const prevBtn = document.getElementById('prevSlide');
     const nextBtn = document.getElementById('nextSlide');
-    
+
     if (!slides.length) return; // Exit if no slider on page
-    
+
     let currentSlide = 0;
     const totalSlides = slides.length;
     let autoSlideInterval;
+    const HERO_SLIDE_INTERVAL = 2500;
     
     // Create dots
     slides.forEach((_, index) => {
@@ -92,13 +93,13 @@ function initHeroSlider() {
         showSlide(currentSlide - 1);
     }
     
-    // Auto slide every 7 seconds
+    // Auto slide every 2.5 seconds
     function startAutoSlide() {
         autoSlideInterval = setInterval(() => {
             showSlide(currentSlide + 1);
-        }, 7000);
+        }, HERO_SLIDE_INTERVAL);
     }
-    
+
     // Reset auto slide timer
     function resetAutoSlide() {
         clearInterval(autoSlideInterval);
