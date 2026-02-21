@@ -326,13 +326,21 @@ window.addEventListener('scroll', () => {
 // ===================================
 const forms = document.querySelectorAll('form');
 forms.forEach(form => {
+    // Skip forms handled by auth.js, portal.js, and statistics.js
+    if (form.id === 'inlineLoginForm' || form.id === 'inlineSignupForm' ||
+        form.id === 'loginForm' || form.id === 'signupForm' ||
+        form.id === 'memberDirectoryForm' || form.id === 'updateProfileForm' ||
+        form.id === 'dataEntryForm') {
+        return;
+    }
+
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         // Basic validation
         const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
         let isValid = true;
-        
+
         inputs.forEach(input => {
             if (!input.value.trim()) {
                 isValid = false;
@@ -341,7 +349,7 @@ forms.forEach(form => {
                 input.style.borderColor = '#dbeafe';
             }
         });
-        
+
         if (isValid) {
             // Show success message
             showNotification('Thank you! Your submission has been received.', 'success');

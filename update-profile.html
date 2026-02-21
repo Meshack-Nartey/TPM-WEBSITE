@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Profile - Transformation Project Ministries</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="dark-portal-page">
+    <!-- Header with Navigation -->
+    <header class="header">
+        <nav class="navbar glass">
+            <div class="nav-container">
+                <div class="logo-section">
+                    <div class="logo-placeholder">
+                        <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
+                    </div>
+                </div>
+
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <ul class="nav-menu" id="navMenu">
+                    <!-- Populated dynamically by auth.js -->
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Access Denied — Inline Login/Signup -->
+    <section class="content-section" id="accessDenied" style="display: none;">
+        <div class="container">
+            <div class="auth-container glass">
+                <div class="access-denied-icon" style="text-align:center; font-size:3rem; margin-bottom:15px;">&#128274;</div>
+                <h2 style="text-align:center; font-family: var(--font-display); color: var(--primary-blue); margin-bottom:5px;">Access Required</h2>
+                <p class="access-denied-text" style="text-align:center; color: var(--text-gray); margin-bottom:25px;">Please log in or sign up to access this page.</p>
+
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Login</button>
+                    <button class="auth-tab" data-tab="signup">Sign Up</button>
+                </div>
+
+                <form id="inlineLoginForm" class="auth-form active">
+                    <div class="form-group">
+                        <label for="inlineLoginEmail">Email Address</label>
+                        <input type="email" id="inlineLoginEmail" name="loginEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inlineLoginPassword">Password</label>
+                        <input type="password" id="inlineLoginPassword" name="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Login</button>
+                </form>
+
+                <form id="inlineSignupForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="inlineSignupName">Full Name</label>
+                        <input type="text" id="inlineSignupName" name="signupName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inlineSignupEmail">Email Address</label>
+                        <input type="email" id="inlineSignupEmail" name="signupEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inlineSignupPhone">Phone Number</label>
+                        <input type="tel" id="inlineSignupPhone" name="signupPhone" placeholder="e.g. +233241234567" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inlineSignupPassword">Password</label>
+                        <input type="password" id="inlineSignupPassword" name="signupPassword" placeholder="At least 6 characters" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inlineSignupConfirmPassword">Confirm Password</label>
+                        <input type="password" id="inlineSignupConfirmPassword" name="signupConfirmPassword" placeholder="Re-enter your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inlineSignupRole">Role</label>
+                        <select id="inlineSignupRole" name="signupRole" required>
+                            <option value="">Select your role</option>
+                            <option value="member">Member</option>
+                            <option value="leader">Leader</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Update Profile Form -->
+    <section class="content-section" id="mainContent" style="display: none;">
+        <div class="container">
+            <div class="form-card glass">
+                <div class="section-header">
+                    <h2 class="section-title">Edit Your Profile</h2>
+                    <div class="title-underline"></div>
+                    <p class="section-subtitle">Update the fields you wish to change. All changes will be reviewed by a church leader.</p>
+                </div>
+
+                <form id="updateProfileForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="editFirstName">First Name</label>
+                            <input type="text" id="editFirstName" name="firstName">
+                        </div>
+                        <div class="form-group">
+                            <label for="editLastName">Last Name</label>
+                            <input type="text" id="editLastName" name="lastName">
+                        </div>
+                        <div class="form-group">
+                            <label for="editDob">Date of Birth</label>
+                            <input type="date" id="editDob" name="dob">
+                        </div>
+                        <div class="form-group">
+                            <label for="editGender">Gender</label>
+                            <select id="editGender" name="gender">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPhone">Phone Number</label>
+                            <input type="tel" id="editPhone" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="editEmail">Email Address</label>
+                            <input type="email" id="editEmail" name="email">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="editAddress">Home Address</label>
+                            <input type="text" id="editAddress" name="address">
+                        </div>
+                        <div class="form-group">
+                            <label for="editBranchSelect">Church Branch</label>
+                            <select id="editBranchSelect" name="branch">
+                                <option value="">Select branch</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editDepartmentSelect">Department / Group</label>
+                            <select id="editDepartmentSelect" name="department">
+                                <option value="">Select department</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editDateJoined">Date Joined</label>
+                            <input type="date" id="editDateJoined" name="dateJoined">
+                        </div>
+                        <div class="form-group">
+                            <label for="editMembershipStatusSelect">Membership Status</label>
+                            <select id="editMembershipStatusSelect" name="membershipStatus">
+                                <option value="">Select status</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEmergencyName">Emergency Contact Name</label>
+                            <input type="text" id="editEmergencyName" name="emergencyContactName">
+                        </div>
+                        <div class="form-group">
+                            <label for="editEmergencyPhone">Emergency Contact Phone</label>
+                            <input type="tel" id="editEmergencyPhone" name="emergencyContactPhone">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-full">Submit Update Request</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Request Status Section -->
+            <div class="form-card glass" style="margin-top: 40px;">
+                <div class="section-header">
+                    <h2 class="section-title">Your Update Requests</h2>
+                    <div class="title-underline"></div>
+                    <p class="section-subtitle">Track the status of your profile change requests</p>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="stats-table">
+                        <thead>
+                            <tr>
+                                <th>Field Changed</th>
+                                <th>Old Value</th>
+                                <th>New Value</th>
+                                <th>Status</th>
+                                <th>Date Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestStatusBody">
+                            <!-- Populated by portal.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Transformation Project Ministries</h3>
+                    <p>Transforming lives through the power of God's love</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="media.html">Sermons</a></li>
+                        <li><a href="join-us.html">Join Us</a></li>
+                        <li><a href="contact-updates.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect With Us</h4>
+                    <ul>
+                        <li>info@tpministries.org</li>
+                        <li>+1 (555) 123-4567</li>
+                        <li>123 Faith Street, City, State</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Transformation Project Ministries. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="mockData.js"></script>
+    <script src="portal.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up - Transformation Project Ministries</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header with Navigation -->
+    <header class="header">
+        <nav class="navbar glass">
+            <div class="nav-container">
+                <div class="logo-section">
+                    <div class="logo-placeholder">
+                        <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
+                    </div>
+                </div>
+
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <ul class="nav-menu" id="navMenu">
+                    <!-- Populated dynamically by auth.js -->
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header auth-page-header">
+        <div class="page-header-overlay"></div>
+        <div class="page-header-content">
+            <h1>Account Access</h1>
+            <p>Login or create your TPM member account</p>
+        </div>
+    </section>
+
+    <!-- Auth Forms Section -->
+    <section class="content-section" id="authForms">
+        <div class="container">
+            <div class="auth-container glass">
+                <!-- Tab Switcher -->
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Login</button>
+                    <button class="auth-tab" data-tab="signup">Sign Up</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form active">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" name="loginEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Login</button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signupForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" name="signupName" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" name="signupEmail" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPhone">Phone Number</label>
+                        <input type="tel" id="signupPhone" name="signupPhone" placeholder="e.g. +233241234567" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" name="signupPassword" placeholder="At least 6 characters" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupConfirmPassword">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" name="signupConfirmPassword" placeholder="Re-enter your password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupRole">Role</label>
+                        <select id="signupRole" name="signupRole" required>
+                            <option value="">Select your role</option>
+                            <option value="member">Member</option>
+                            <option value="leader">Leader</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Transformation Project Ministries</h3>
+                    <p>Transforming lives through the power of God's love</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="media.html">Sermons</a></li>
+                        <li><a href="join-us.html">Join Us</a></li>
+                        <li><a href="contact-updates.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect With Us</h4>
+                    <ul>
+                        <li>info@tpministries.org</li>
+                        <li>+1 (555) 123-4567</li>
+                        <li>123 Faith Street, City, State</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Transformation Project Ministries. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
