@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
     <!-- Header with Navigation -->
     <header class="header">
         <nav class="navbar glass">
@@ -17,13 +18,11 @@
                         <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
                     </div>
                 </div>
-                
                 <div class="hamburger" id="hamburger">
                     <span></span>
                     <span></span>
                     <span></span>
                 </div>
-
                 <ul class="nav-menu" id="navMenu">
                     <!-- Populated dynamically by auth.js -->
                 </ul>
@@ -31,121 +30,526 @@
         </nav>
     </header>
 
-    <!-- Live Streaming Section -->
-    <section class="content-section" id="live-streaming">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Live Streaming</h2>
-                <div class="title-underline"></div>
-            </div>
-            <p class="section-intro">
-                Can't make it to church? No problem! Join us online every Sunday morning for our live worship services.
-                Experience the presence of God from the comfort of your home.
-            </p>
-            <div class="livestream-banner">
-                <div class="youtube-holder">
-                    <iframe src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <div class="media-dark-page">
+
+    <!-- ═══════════════════════════════════════
+         LIVE STREAMING
+    ═══════════════════════════════════════ -->
+    <section class="media-section" id="live-streaming">
+        <div class="media-container">
+
+            <div class="media-section-header">
+                <div class="media-title-row">
+                    <h2>Live Streaming</h2>
+                    <div class="live-badge">
+                        <span class="live-pulse-dot"></span>
+                        <span class="live-badge-text">LIVE</span>
+                    </div>
                 </div>
+                <div class="media-gold-line"></div>
+                <p>Can't make it to church? Join us online for our live worship services and experience God's presence from wherever you are.</p>
+            </div>
+
+            <div class="livestream-layout">
+                <!-- YouTube thumbnail / embed -->
+                <div class="livestream-player">
+                    <div class="yt-thumb-frame">
+                        <img src="assets/images/livestream-thumb.jpg" alt="TPM Live Stream">
+                        <div class="yt-thumb-overlay">
+                            <div class="yt-play-circle">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+                        <div class="yt-live-corner">
+                            <span class="live-pulse-dot small"></span>
+                            <span>LIVE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA info panel -->
+                <div class="livestream-info">
+                    <span class="media-eyebrow">Sundays &amp; Special Services</span>
+                    <h3>Join Us Live on YouTube</h3>
+                    <p>When service begins, the live stream goes up on our YouTube channel. Click below to join us in real time — comment, worship, and be part of the TPM family wherever you are.</p>
+                    <div class="livestream-schedule">
+                        <div class="schedule-item">
+                            <span class="schedule-dot"></span>
+                            <div>
+                                <strong>Morning Glory</strong>
+                                <span>Sundays, 9:00 AM</span>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-dot"></span>
+                            <div>
+                                <strong>Evening Feast</strong>
+                                <span>Sundays, 4:00 PM</span>
+                            </div>
+                        </div>
+                        <div class="schedule-item">
+                            <span class="schedule-dot"></span>
+                            <div>
+                                <strong>Love Therapy</strong>
+                                <span>Fridays, 6:00 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="https://www.youtube.com/@tpministries" target="_blank" rel="noopener" class="media-btn media-btn-yt">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        Watch on YouTube
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════
+         DEVOTIONALS
+    ═══════════════════════════════════════ -->
+    <section class="media-section media-section-alt" id="devotionals">
+        <div class="media-container">
+
+            <div class="media-section-header">
+                <h2>Daily Devotionals</h2>
+                <div class="media-gold-line"></div>
+                <p>Fuel your daily walk with God through our devotional pictures and reflections. A fresh word every day.</p>
+            </div>
+
+            <!-- Today's Devotional — Featured -->
+            <div class="devo-featured">
+                <div class="devo-featured-img">
+                    <img src="assets/images/devotional-today.jpg" alt="Today's Devotional">
+                    <span class="devo-today-badge">Today</span>
+                </div>
+                <div class="devo-featured-text">
+                    <span class="media-eyebrow">Daily Devotional</span>
+                    <h3>Walk in His Strength</h3>
+                    <blockquote>"I can do all things through Christ who strengthens me."<cite>Philippians 4:13</cite></blockquote>
+                    <p>God's strength is made perfect in our weakness. Today, lean not on your own understanding but trust fully in Him. His grace is sufficient — step forward in faith.</p>
+                </div>
+            </div>
+
+            <!-- Recent devotionals grid -->
+            <h3 class="media-sub-heading">Recent Devotionals</h3>
+            <div class="devo-grid">
+
+                <div class="devo-card">
+                    <div class="devo-card-img">
+                        <img src="assets/images/devotional-1.jpg" alt="Devotional">
+                        <span class="devo-date">Feb 20</span>
+                    </div>
+                    <div class="devo-card-body">
+                        <h4>Trust in the Lord</h4>
+                        <span class="devo-ref">Proverbs 3:5–6</span>
+                    </div>
+                </div>
+
+                <div class="devo-card">
+                    <div class="devo-card-img">
+                        <img src="assets/images/devotional-2.jpg" alt="Devotional">
+                        <span class="devo-date">Feb 19</span>
+                    </div>
+                    <div class="devo-card-body">
+                        <h4>The Power of Prayer</h4>
+                        <span class="devo-ref">Matthew 21:22</span>
+                    </div>
+                </div>
+
+                <div class="devo-card">
+                    <div class="devo-card-img">
+                        <img src="assets/images/devotional-3.jpg" alt="Devotional">
+                        <span class="devo-date">Feb 18</span>
+                    </div>
+                    <div class="devo-card-body">
+                        <h4>God's Faithfulness</h4>
+                        <span class="devo-ref">Lamentations 3:22–23</span>
+                    </div>
+                </div>
+
+                <div class="devo-card">
+                    <div class="devo-card-img">
+                        <img src="assets/images/devotional-4.jpg" alt="Devotional">
+                        <span class="devo-date">Feb 17</span>
+                    </div>
+                    <div class="devo-card-body">
+                        <h4>Be Still and Know</h4>
+                        <span class="devo-ref">Psalm 46:10</span>
+                    </div>
+                </div>
+
+                <div class="devo-card">
+                    <div class="devo-card-img">
+                        <img src="assets/images/devotional-5.jpg" alt="Devotional">
+                        <span class="devo-date">Feb 16</span>
+                    </div>
+                    <div class="devo-card-body">
+                        <h4>Renewed Strength</h4>
+                        <span class="devo-ref">Isaiah 40:31</span>
+                    </div>
+                </div>
+
+                <div class="devo-card">
+                    <div class="devo-card-img">
+                        <img src="assets/images/devotional-6.jpg" alt="Devotional">
+                        <span class="devo-date">Feb 15</span>
+                    </div>
+                    <div class="devo-card-body">
+                        <h4>Joy of the Lord</h4>
+                        <span class="devo-ref">Nehemiah 8:10</span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <!-- Devotionals Section -->
-    <section class="content-section alt-bg" id="devotionals">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Devotionals</h2>
-                <div class="title-underline"></div>
+    <!-- ═══════════════════════════════════════
+         PICTURE QUOTES
+    ═══════════════════════════════════════ -->
+    <section class="media-section" id="picture-quotes">
+        <div class="media-container">
+
+            <div class="media-section-header">
+                <h2>Picture Quotes</h2>
+                <div class="media-gold-line"></div>
+                <p>Visual inspiration for your faith journey. Save and share with friends and family.</p>
             </div>
-            <p class="section-intro">
-                Inspire your daily walk with God through our curated devotional readings and reflections.
-            </p>
-            <div class="coming-soon-container">
-                <div class="coming-soon-card glass">
-                    <h3>Coming Soon</h3>
-                    <p>Daily devotionals will be available here shortly. Stay connected!</p>
+
+            <!-- Featured quote — large showcase -->
+            <div class="pq-featured">
+                <img src="assets/images/quote-featured.jpg" alt="Featured Quote">
+                <div class="pq-featured-overlay">
+                    <div class="pq-featured-inner">
+                        <span class="pq-featured-label">Featured Quote</span>
+                        <p class="pq-featured-text">&ldquo;It is a great blessing to serve the Lord.&rdquo;</p>
+                        <span class="pq-featured-attr">&mdash; Apostle Andrews Amoh Ofori</span>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Category filters -->
+            <div class="pq-filters">
+                <button class="pq-filter active" data-cat="all">All</button>
+                <button class="pq-filter" data-cat="faith">Faith</button>
+                <button class="pq-filter" data-cat="encouragement">Encouragement</button>
+                <button class="pq-filter" data-cat="wisdom">Wisdom</button>
+                <button class="pq-filter" data-cat="prayer">Prayer</button>
+            </div>
+
+            <!-- Quote gallery grid -->
+            <div class="pq-gallery" id="pqGallery">
+
+                <div class="pq-card" data-cat="faith">
+                    <img src="assets/images/quote-faith-1.jpg" alt="Faith Quote">
+                    <div class="pq-card-hover">
+                        <p>&ldquo;Faith is the substance of things hoped for.&rdquo;</p>
+                        <span>Hebrews 11:1</span>
+                    </div>
+                </div>
+
+                <div class="pq-card" data-cat="encouragement">
+                    <img src="assets/images/quote-enc-1.jpg" alt="Encouragement Quote">
+                    <div class="pq-card-hover">
+                        <p>&ldquo;Be strong and courageous. Do not be afraid.&rdquo;</p>
+                        <span>Joshua 1:9</span>
+                    </div>
+                </div>
+
+                <div class="pq-card" data-cat="wisdom">
+                    <img src="assets/images/quote-wis-1.jpg" alt="Wisdom Quote">
+                    <div class="pq-card-hover">
+                        <p>&ldquo;The fear of the Lord is the beginning of wisdom.&rdquo;</p>
+                        <span>Proverbs 9:10</span>
+                    </div>
+                </div>
+
+                <div class="pq-card" data-cat="prayer">
+                    <img src="assets/images/quote-pray-1.jpg" alt="Prayer Quote">
+                    <div class="pq-card-hover">
+                        <p>&ldquo;Pray without ceasing.&rdquo;</p>
+                        <span>1 Thessalonians 5:17</span>
+                    </div>
+                </div>
+
+                <div class="pq-card" data-cat="faith">
+                    <img src="assets/images/quote-faith-2.jpg" alt="Faith Quote">
+                    <div class="pq-card-hover">
+                        <p>&ldquo;Trust in the Lord with all your heart.&rdquo;</p>
+                        <span>Proverbs 3:5</span>
+                    </div>
+                </div>
+
+                <div class="pq-card" data-cat="encouragement">
+                    <img src="assets/images/quote-enc-2.jpg" alt="Encouragement Quote">
+                    <div class="pq-card-hover">
+                        <p>&ldquo;I can do all things through Christ who strengthens me.&rdquo;</p>
+                        <span>Philippians 4:13</span>
+                    </div>
+                </div>
+
+                <div class="pq-card" data-cat="wisdom">
+                    <img src="assets/images/quote-wis-2.jpg" alt="Wisdom Quote">
+                    <div class="pq-card-hover">
+                        <p>&ldquo;Your word is a lamp to my feet and a light to my path.&rdquo;</p>
+                        <span>Psalm 119:105</span>
+                    </div>
+                </div>
+
+                <div class="pq-card" data-cat="prayer">
+                    <img src="assets/images/quote-pray-2.jpg" alt="Prayer Quote">
+                    <div class="pq-card-hover">
+                        <p>&ldquo;Ask and it shall be given to you.&rdquo;</p>
+                        <span>Matthew 7:7</span>
+                    </div>
+                </div>
+
+                <div class="pq-card" data-cat="faith">
+                    <img src="assets/images/quote-faith-3.jpg" alt="Faith Quote">
+                    <div class="pq-card-hover">
+                        <p>&ldquo;With God all things are possible.&rdquo;</p>
+                        <span>Matthew 19:26</span>
+                    </div>
+                </div>
+
+                <div class="pq-card" data-cat="encouragement">
+                    <img src="assets/images/quote-enc-3.jpg" alt="Encouragement Quote">
+                    <div class="pq-card-hover">
+                        <p>&ldquo;Cast your cares on the Lord and He will sustain you.&rdquo;</p>
+                        <span>Psalm 55:22</span>
+                    </div>
+                </div>
+
+                <div class="pq-card" data-cat="wisdom">
+                    <img src="assets/images/quote-wis-3.jpg" alt="Wisdom Quote">
+                    <div class="pq-card-hover">
+                        <p>&ldquo;Seek first the Kingdom of God and His righteousness.&rdquo;</p>
+                        <span>Matthew 6:33</span>
+                    </div>
+                </div>
+
+                <div class="pq-card" data-cat="prayer">
+                    <img src="assets/images/quote-pray-3.jpg" alt="Prayer Quote">
+                    <div class="pq-card-hover">
+                        <p>&ldquo;The prayer of a righteous person is powerful and effective.&rdquo;</p>
+                        <span>James 5:16</span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <!-- Picture Quotes Section -->
-    <section class="content-section" id="picture-quotes">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Picture Quotes</h2>
-                <div class="title-underline"></div>
+    <!-- ═══════════════════════════════════════
+         PODCAST
+    ═══════════════════════════════════════ -->
+    <section class="media-section media-section-alt" id="podcast">
+        <div class="media-container">
+
+            <div class="media-section-header">
+                <h2>Podcast</h2>
+                <div class="media-gold-line"></div>
+                <p>Listen to TPM messages anytime, anywhere. Find us on all major podcast platforms and never miss a teaching.</p>
             </div>
-            <p class="section-intro">
-                Visual inspiration for your faith journey. Share these quotes with your friends and family.
-            </p>
-            <div class="coming-soon-container">
-                <div class="coming-soon-card glass">
-                    <h3>Coming Soon</h3>
-                    <p>Inspirational picture quotes will be shared here shortly!</p>
-                </div>
+
+            <div class="podcast-platforms">
+
+                <!-- Spotify -->
+                <a href="https://open.spotify.com" target="_blank" rel="noopener" class="podcast-card podcast-spotify">
+                    <div class="podcast-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                    </div>
+                    <span class="podcast-name">Spotify</span>
+                    <span class="podcast-action">Listen Now &#8594;</span>
+                </a>
+
+                <!-- Apple Podcasts -->
+                <a href="https://podcasts.apple.com" target="_blank" rel="noopener" class="podcast-card podcast-apple">
+                    <div class="podcast-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.34 0A5.328 5.328 0 000 5.34v13.32A5.328 5.328 0 005.34 24h13.32A5.328 5.328 0 0024 18.66V5.34A5.328 5.328 0 0018.66 0zm6.525 2.568c2.336 0 4.448.902 6.056 2.587a9.065 9.065 0 012.428 5.928c.028 3.52-2.007 6.7-5.133 8.194a7.877 7.877 0 01-3.387.791 8.19 8.19 0 01-3.933-.997c-.24-.144-.36-.433-.28-.697a.582.582 0 01.697-.397 7.088 7.088 0 003.48.897 6.707 6.707 0 003.45-.983 7.814 7.814 0 003.904-6.71 7.93 7.93 0 00-2.038-5.211A7.37 7.37 0 0011.87 3.74c-3.796 0-7.049 2.818-7.562 6.574a7.72 7.72 0 001.752 5.923.582.582 0 01-.044.825.585.585 0 01-.825-.044A8.837 8.837 0 013.166 10.6C3.748 6.21 7.517 2.568 11.865 2.568zm.124 3.815a5.11 5.11 0 015.104 5.104 5.106 5.106 0 01-3.96 4.978.585.585 0 01-.697-.448.585.585 0 01.448-.697 3.935 3.935 0 003.044-3.833A3.935 3.935 0 0011.99 7.55a3.934 3.934 0 00-3.933 3.933 3.935 3.935 0 003.053 3.84.583.583 0 01.439.699.584.584 0 01-.699.439 5.104 5.104 0 01-3.957-4.978A5.11 5.11 0 0111.989 6.383zm-.012 3.768a1.336 1.336 0 011.336 1.336c0 .658-.48 1.202-1.11 1.318l-.027.568a.585.585 0 01-1.17-.028l-.03-.633a.585.585 0 01.557-.61 .167.167 0 00.154-.168.168.168 0 00-.168-.168.168.168 0 00-.168.168.585.585 0 01-1.17 0 1.338 1.338 0 011.336-1.336z"/></svg>
+                    </div>
+                    <span class="podcast-name">Apple Podcasts</span>
+                    <span class="podcast-action">Listen Now &#8594;</span>
+                </a>
+
+                <!-- YouTube -->
+                <a href="https://www.youtube.com/@tpministries" target="_blank" rel="noopener" class="podcast-card podcast-youtube">
+                    <div class="podcast-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    </div>
+                    <span class="podcast-name">YouTube</span>
+                    <span class="podcast-action">Watch Now &#8594;</span>
+                </a>
+
+                <!-- Amazon Music -->
+                <a href="https://music.amazon.com/podcasts" target="_blank" rel="noopener" class="podcast-card podcast-amazon">
+                    <div class="podcast-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.958 10.09c0 1.232.029 2.256-.591 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.699-3.182v.685zm3.186 7.705c-.209.189-.512.201-.745.074-1.052-.872-1.238-1.276-1.814-2.106-1.734 1.767-2.962 2.297-5.209 2.297-2.66 0-4.731-1.641-4.731-4.925 0-2.565 1.391-4.309 3.37-5.164 1.715-.754 4.11-.891 5.942-1.095v-.41c0-.753.06-1.642-.384-2.294-.385-.579-1.124-.82-1.775-.82-1.205 0-2.277.618-2.54 1.897-.054.285-.261.567-.549.582l-3.061-.333c-.259-.056-.548-.266-.472-.66C5.963 2.439 9.03 1.537 11.784 1.537c1.409 0 3.25.374 4.361 1.44 1.409 1.318 1.276 3.077 1.276 4.989v4.52c0 1.357.564 1.955 1.095 2.688.186.261.226.573-.009.767-.593.496-1.648 1.416-2.225 1.933l-.138-.079zM20.951 19.018c-1.977 1.468-4.838 2.243-7.298 2.243-3.453 0-6.566-1.275-8.918-3.396-.185-.167-.019-.394.203-.265 2.539 1.479 5.678 2.368 8.921 2.368 2.187 0 4.592-.455 6.806-1.397.334-.143.613.219.286.447z"/></svg>
+                    </div>
+                    <span class="podcast-name">Amazon Music</span>
+                    <span class="podcast-action">Listen Now &#8594;</span>
+                </a>
+
+                <!-- iHeart Radio -->
+                <a href="https://www.iheart.com" target="_blank" rel="noopener" class="podcast-card podcast-iheart">
+                    <div class="podcast-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.593c-.425-.439-6.77-7.012-6.77-7.012C3.72 12.92 3 11.38 3 9.75 3 7.13 5.13 5 7.75 5c1.54 0 2.93.75 3.8 1.92L12 7.98l.45-.06C13.32 5.75 14.71 5 16.25 5 18.87 5 21 7.13 21 9.75c0 1.63-.72 3.17-2.23 4.831L12 21.593z"/></svg>
+                    </div>
+                    <span class="podcast-name">iHeart Radio</span>
+                    <span class="podcast-action">Listen Now &#8594;</span>
+                </a>
+
+                <!-- Pocket Casts -->
+                <a href="https://pca.st" target="_blank" rel="noopener" class="podcast-card podcast-pocketcasts">
+                    <div class="podcast-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zm0 4.5c4.142 0 7.5 3.358 7.5 7.5S16.142 19.5 12 19.5 4.5 16.142 4.5 12 7.858 4.5 12 4.5zm0 2.5c-2.761 0-5 2.239-5 5s2.239 5 5 5 5-2.239 5-5-2.239-5-5-5zm0 2c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3z"/></svg>
+                    </div>
+                    <span class="podcast-name">Pocket Casts</span>
+                    <span class="podcast-action">Listen Now &#8594;</span>
+                </a>
+
             </div>
         </div>
     </section>
 
-    <!-- Podcast Section -->
-    <section class="content-section alt-bg" id="podcast">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Podcast</h2>
-                <div class="title-underline"></div>
+    <!-- ═══════════════════════════════════════
+         TIME WITH APOSTLE ANDREWS
+    ═══════════════════════════════════════ -->
+    <section class="media-section" id="apostle-andrews">
+        <div class="media-container">
+
+            <div class="media-section-header">
+                <h2>Time with Apostle Andrews</h2>
+                <div class="media-gold-line"></div>
+                <p>Join Apostle Andrews for intimate sessions sharing wisdom, biblical insights, and powerful encounters with God — designed to grow you deeper in faith and purpose.</p>
             </div>
-            <p class="section-intro">
-                Listen to our podcasts anytime, anywhere. Subscribe to stay updated with new episodes.
-            </p>
-            <div class="coming-soon-container">
-                <div class="coming-soon-card glass">
-                    <h3>Coming Soon</h3>
-                    <p>Our podcast episodes will be available shortly on all major platforms!</p>
+
+            <!-- Featured video -->
+            <div class="video-featured-layout">
+                <div class="vf-thumb">
+                    <img src="assets/images/apostle-video-thumb.jpg" alt="Time with Apostle Andrews">
+                    <div class="vf-play-overlay">
+                        <a href="https://www.youtube.com/@tpministries" target="_blank" rel="noopener" class="vf-play-btn" aria-label="Watch on YouTube">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        </a>
+                    </div>
+                    <span class="vf-duration">45:22</span>
+                </div>
+                <div class="vf-info">
+                    <span class="media-eyebrow">Latest Episode</span>
+                    <h3>Walking in Divine Purpose</h3>
+                    <p>Apostle Andrews shares profound revelations on discovering and walking in your God-given purpose. A life-changing teaching from our Sunday service that will challenge and inspire you.</p>
+                    <a href="https://www.youtube.com/@tpministries" target="_blank" rel="noopener" class="media-btn media-btn-yt">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        Watch on YouTube
+                    </a>
                 </div>
             </div>
+
+            <!-- Episode grid -->
+            <h3 class="media-sub-heading">More Episodes</h3>
+            <div class="video-grid">
+
+                <a href="https://www.youtube.com/@tpministries" target="_blank" rel="noopener" class="video-card">
+                    <div class="video-card-thumb">
+                        <img src="assets/images/apostle-vid-1.jpg" alt="The Power of Loyalty">
+                        <div class="vc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+                        <span class="vc-duration">38:10</span>
+                    </div>
+                    <div class="video-card-body">
+                        <h4>The Power of Loyalty</h4>
+                        <span class="vc-date">Feb 14, 2026</span>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/@tpministries" target="_blank" rel="noopener" class="video-card">
+                    <div class="video-card-thumb">
+                        <img src="assets/images/apostle-vid-2.jpg" alt="Faith That Moves Mountains">
+                        <div class="vc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+                        <span class="vc-duration">52:44</span>
+                    </div>
+                    <div class="video-card-body">
+                        <h4>Faith That Moves Mountains</h4>
+                        <span class="vc-date">Feb 7, 2026</span>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/@tpministries" target="_blank" rel="noopener" class="video-card">
+                    <div class="video-card-thumb">
+                        <img src="assets/images/apostle-vid-3.jpg" alt="Excellence in God's Kingdom">
+                        <div class="vc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+                        <span class="vc-duration">41:05</span>
+                    </div>
+                    <div class="video-card-body">
+                        <h4>Excellence in God's Kingdom</h4>
+                        <span class="vc-date">Jan 31, 2026</span>
+                    </div>
+                </a>
+
+                <a href="https://www.youtube.com/@tpministries" target="_blank" rel="noopener" class="video-card">
+                    <div class="video-card-thumb">
+                        <img src="assets/images/apostle-vid-4.jpg" alt="Raised to Serve">
+                        <div class="vc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+                        <span class="vc-duration">29:18</span>
+                    </div>
+                    <div class="video-card-body">
+                        <h4>Raised to Serve</h4>
+                        <span class="vc-date">Jan 24, 2026</span>
+                    </div>
+                </a>
+
+            </div>
+
+            <div class="video-more-cta">
+                <a href="https://www.youtube.com/@tpministries" target="_blank" rel="noopener" class="media-btn media-btn-outline">View All Episodes on YouTube &#8594;</a>
+            </div>
+
         </div>
     </section>
 
-    <!-- Time with Apostle Andrews Section -->
-    <section class="content-section" id="apostle-andrews">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Time with Apostle Andrews</h2>
-                <div class="title-underline"></div>
+    <!-- ═══════════════════════════════════════
+         SUCCESS SECRETS
+    ═══════════════════════════════════════ -->
+    <section class="media-section media-section-alt" id="success-secrets">
+        <div class="media-container">
+
+            <div class="media-section-header">
+                <h2>Success Secrets</h2>
+                <div class="media-gold-line"></div>
+                <p>Discover the biblical principles that unlock true success in every area of life — faith, purpose, relationships, and beyond.</p>
             </div>
-            <p class="section-intro">
-                Join Apostle Andrews for intimate sessions where he shares wisdom, biblical insights,
-                and powerful encounters with God. These sessions are designed to help you grow deeper
-                in your faith and understand God's purpose for your life.
-            </p>
-            <div class="coming-soon-container">
-                <div class="coming-soon-card glass">
-                    <h3>Coming Soon</h3>
-                    <p>Weekly teachings from our founder will be available here shortly!</p>
+
+            <!-- Featured video -->
+            <div class="video-featured-layout">
+                <div class="vf-thumb">
+                    <img src="assets/images/secrets-video-thumb.jpg" alt="Success Secrets">
+                    <div class="vf-play-overlay">
+                        <a href="https://www.youtube.com/@tpministries" target="_blank" rel="noopener" class="vf-play-btn" aria-label="Watch on YouTube">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        </a>
+                    </div>
+                    <span class="vf-duration">33:47</span>
+                </div>
+                <div class="vf-info">
+                    <span class="media-eyebrow">Featured</span>
+                    <h3>The Secret to Lasting Fruitfulness</h3>
+                    <p>Uncover the kingdom principles that unlock lasting fruitfulness in your personal life, ministry, and relationships. A transformational teaching you don't want to miss.</p>
+                    <a href="https://www.youtube.com/@tpministries" target="_blank" rel="noopener" class="media-btn media-btn-yt">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        Watch on YouTube
+                    </a>
                 </div>
             </div>
+
+            <div class="video-more-cta">
+                <a href="https://www.youtube.com/@tpministries" target="_blank" rel="noopener" class="media-btn media-btn-outline">View All Episodes on YouTube &#8594;</a>
+            </div>
+
         </div>
     </section>
 
-    <!-- Success Secrets Section -->
-    <section class="content-section alt-bg" id="success-secrets">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Success Secrets</h2>
-                <div class="title-underline"></div>
-            </div>
-            <p class="section-intro">
-                Discover the biblical principles that lead to true success in every area of life.
-            </p>
-            <div class="coming-soon-container">
-                <div class="coming-soon-card glass">
-                    <h3>Coming Soon</h3>
-                    <p>Biblical success principles will be shared here soon!</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    </div><!-- /media-dark-page -->
 
     <!-- Footer -->
     <footer class="footer">
@@ -159,7 +563,7 @@
                     <h4>Quick Links</h4>
                     <ul>
                         <li><a href="about.html">About Us</a></li>
-                        <li><a href="media.html">Sermons</a></li>
+                        <li><a href="media.html">Media</a></li>
                         <li><a href="join-us.html">Join Us</a></li>
                         <li><a href="contact-updates.html">Contact</a></li>
                     </ul>
@@ -167,9 +571,9 @@
                 <div class="footer-section">
                     <h4>Connect With Us</h4>
                     <ul>
-                        <li>📧 info@tpministries.org</li>
-                        <li>📞 +1 (555) 123-4567</li>
-                        <li>📍 123 Faith Street, City, State</li>
+                        <li>&#128231; info@tpministries.org</li>
+                        <li>&#128222; +1 (555) 123-4567</li>
+                        <li>&#128205; 123 Faith Street, City, State</li>
                     </ul>
                 </div>
             </div>
@@ -181,5 +585,7 @@
 
     <script src="auth.js"></script>
     <script src="script.js"></script>
+    <script src="search-data.js"></script>
+    <script src="search.js"></script>
 </body>
 </html>

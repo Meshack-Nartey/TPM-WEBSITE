@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact & Updates - Transformation Project Ministries</title>
+    <title>Contact - Transformation Project Ministries</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -17,7 +17,7 @@
                         <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
                     </div>
                 </div>
-                
+
                 <div class="hamburger" id="hamburger">
                     <span></span>
                     <span></span>
@@ -31,80 +31,91 @@
         </nav>
     </header>
 
-    <!-- Announcements Section -->
-    <section class="content-section" id="announcements">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Announcements</h2>
-                <div class="title-underline"></div>
-            </div>
-            <div class="coming-soon-container">
-                <div class="coming-soon-card glass">
-                    <h3>Coming Soon</h3>
-                    <p>Announcements and updates will be posted here shortly. Stay tuned!</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Contact Page -->
+    <div class="contact-dark-page" id="contact">
 
-    <!-- Contact Us Section -->
-    <section class="content-section alt-bg" id="contact">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Contact Us</h2>
-                <div class="title-underline"></div>
+        <div class="contact-dark-container">
+
+            <!-- Page Header -->
+            <div class="contact-dark-header">
+                <h1>Contact Us</h1>
+                <div class="contact-title-line"></div>
+                <p>We'd love to hear from you. Reach out and we'll get back to you as soon as possible.</p>
             </div>
-            <div class="contact-grid">
-                <div class="contact-form glass">
+
+            <!-- Main Grid: Form + Info -->
+            <div class="contact-dark-grid">
+
+                <!-- Contact Form -->
+                <div class="contact-dark-form">
                     <form>
-                        <div class="form-group">
+                        <div class="contact-form-group">
                             <label for="name">Full Name</label>
-                            <input type="text" id="name" name="name" required>
+                            <input type="text" id="name" name="name" placeholder="Your full name" required>
                         </div>
-                        <div class="form-group">
+                        <div class="contact-form-group">
                             <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" required>
+                            <input type="email" id="email" name="email" placeholder="your@email.com" required>
                         </div>
-                        <div class="form-group">
+                        <div class="contact-form-group">
                             <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone">
+                            <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000">
                         </div>
-                        <div class="form-group">
+                        <div class="contact-form-group">
                             <label for="subject">Subject</label>
-                            <input type="text" id="subject" name="subject" required>
+                            <input type="text" id="subject" name="subject" placeholder="How can we help?" required>
                         </div>
-                        <div class="form-group">
+                        <div class="contact-form-group">
                             <label for="message">Message</label>
-                            <textarea id="message" name="message" rows="5" required></textarea>
+                            <textarea id="message" name="message" rows="5" placeholder="Write your message here..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Send Message</button>
+                        <button type="submit" class="btn btn-primary contact-submit-btn">Send Message</button>
                     </form>
                 </div>
-                <div class="contact-info">
-                    <div class="contact-card glass">
-                        <h3>📧 Email</h3>
-                        <p>info@tpministries.org</p>
-                        <p class="contact-subtext">For general inquiries</p>
+
+                <!-- Contact Info Cards -->
+                <div class="contact-dark-info">
+
+                    <div class="contact-dark-card">
+                        <span class="contact-dark-icon">&#128231;</span>
+                        <div>
+                            <h3>Email</h3>
+                            <p>info@tpministries.org</p>
+                            <span class="contact-dark-sub">For general inquiries</span>
+                        </div>
                     </div>
-                    <div class="contact-card glass">
-                        <h3>📞 Phone</h3>
-                        <p>+1 (555) 123-4567</p>
-                        <p class="contact-subtext">Monday-Friday: 9 AM - 5 PM</p>
+
+                    <div class="contact-dark-card">
+                        <span class="contact-dark-icon">&#128222;</span>
+                        <div>
+                            <h3>Phone</h3>
+                            <p>+1 (555) 123-4567</p>
+                            <span class="contact-dark-sub">Monday – Friday, 9 AM – 5 PM</span>
+                        </div>
                     </div>
-                    <div class="contact-card glass">
-                        <h3>📍 Address</h3>
-                        <p>123 Faith Street<br>City, State 12345</p>
-                        <p class="contact-subtext">Main office location</p>
+
+                    <div class="contact-dark-card">
+                        <span class="contact-dark-icon">&#128205;</span>
+                        <div>
+                            <h3>Address</h3>
+                            <p>123 Faith Street<br>City, State 12345</p>
+                            <span class="contact-dark-sub">Main office location</span>
+                        </div>
                     </div>
-                    <div class="contact-card glass">
-                        <h3>⏰ Hours</h3>
-                        <p>Mon-Fri: 9:00 AM - 5:00 PM<br>Sunday: 8:00 AM - 12:00 PM</p>
-                        <p class="contact-subtext">Closed on Saturday</p>
+
+                    <div class="contact-dark-card">
+                        <span class="contact-dark-icon">&#8987;</span>
+                        <div>
+                            <h3>Office Hours</h3>
+                            <p>Mon – Fri: 9:00 AM – 5:00 PM<br>Sunday: 8:00 AM – 12:00 PM</p>
+                            <span class="contact-dark-sub">Closed on Saturday</span>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -126,9 +137,9 @@
                 <div class="footer-section">
                     <h4>Connect With Us</h4>
                     <ul>
-                        <li>📧 info@tpministries.org</li>
-                        <li>📞 +1 (555) 123-4567</li>
-                        <li>📍 123 Faith Street, City, State</li>
+                        <li>&#128231; info@tpministries.org</li>
+                        <li>&#128222; +1 (555) 123-4567</li>
+                        <li>&#128205; 123 Faith Street, City, State</li>
                     </ul>
                 </div>
             </div>
@@ -140,5 +151,7 @@
 
     <script src="auth.js"></script>
     <script src="script.js"></script>
+    <script src="search-data.js"></script>
+    <script src="search.js"></script>
 </body>
 </html>

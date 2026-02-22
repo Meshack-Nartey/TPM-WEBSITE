@@ -97,13 +97,19 @@
         // ABOUT (dropdown)
         navHTML += buildDropdownItem('about.html', 'ABOUT', currentPage, [
             { href: 'about.html#about-us', label: 'About Us' },
-            { href: 'about.html#founder', label: 'The Founder' },
-            { href: 'about.html#database', label: 'Church Database' }
+            { href: 'about.html#founder', label: 'The Founder' }
+        ]);
+
+        // BOOKS (dropdown)
+        navHTML += buildDropdownItem('books.html', 'BOOKS', currentPage, [
+            { href: 'books.html#buy', label: 'Buy Books' },
+            { href: 'books.html#free', label: 'Free Resources' },
+            { href: 'books.html#devotional', label: 'Daily Devotional' }
         ]);
 
         // MEDIA (dropdown)
         navHTML += buildDropdownItem('media.html', 'MEDIA', currentPage, [
-            { href: 'media.html#live-streaming', label: 'Live Streaming' },
+            { href: 'media.html#live-streaming', label: '<span class="nav-live-dot"></span>Live Streaming' },
             { href: 'media.html#devotionals', label: 'Devotionals' },
             { href: 'media.html#picture-quotes', label: 'Picture Quotes' },
             { href: 'media.html#podcast', label: 'Podcast' },
@@ -111,11 +117,14 @@
             { href: 'media.html#success-secrets', label: 'Success Secrets' }
         ]);
 
-        // CONTACT & UPDATES (dropdown)
-        navHTML += buildDropdownItem('contact-updates.html', 'CONTACT & UPDATES', currentPage, [
-            { href: 'contact-updates.html#announcements', label: 'Announcements' },
-            { href: 'contact-updates.html#contact', label: 'Contact Us' }
+        // GIVE (dropdown)
+        navHTML += buildDropdownItem('give.html', 'GIVE', currentPage, [
+            { href: 'give.html#local-accounts', label: 'Local Accounts' },
+            { href: 'give.html#bank-transfer', label: 'Bank Transfer' }
         ]);
+
+        // CONTACT
+        navHTML += buildNavItem('contact-updates.html', 'CONTACT', currentPage);
 
         // JOIN US (dropdown)
         navHTML += buildDropdownItem('join-us.html', 'JOIN US', currentPage, [
@@ -136,6 +145,12 @@
         navHTML += buildDropdownItem('partner-with-us.html', 'PARTNER WITH US', currentPage, [
             { href: 'partner-with-us.html#partner', label: 'Partner with Us Today' }
         ]);
+
+        // Search icon trigger
+        navHTML += '<li class="nav-item nav-search-trigger">' +
+            '<button class="search-nav-btn" onclick="openTPMSearch()" aria-label="Search">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+            '</button></li>';
 
         // User info and logout removed from nav
 

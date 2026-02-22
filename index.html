@@ -19,7 +19,7 @@
                         <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
                     </div>
                 </div>
-                
+
                 <div class="hamburger" id="hamburger">
                     <span></span>
                     <span></span>
@@ -61,7 +61,7 @@
                 <div class="overlay"></div>
             </div>
         </div>
-        
+
         <div class="hero-content glass">
             <h1 class="hero-title">WELCOME TO<br>TRANSFORMATION PROJECT<br>MINISTRIES</h1>
             <p class="hero-subtitle">Experience the transforming power of God's love</p>
@@ -71,6 +71,40 @@
             </div>
         </div>
 
+        <!-- Announcement Slider — bottom right of hero -->
+        <div class="hero-announcements" id="heroAnnouncements">
+            <div class="announce-strip">
+                <span class="announce-badge">&#128226; Announcements</span>
+            </div>
+            <div class="announce-track" id="announceTrack">
+                <div class="announce-card active">
+                    <span class="announce-tag">Upcoming Event</span>
+                    <h4>Holy Ghost Festival 2026</h4>
+                    <p>Mark your calendars for our annual Spirit-filled gathering. Experience God's power like never before.</p>
+                    <span class="announce-date">Date: TBA</span>
+                </div>
+                <div class="announce-card">
+                    <span class="announce-tag">Camp</span>
+                    <h4>Sharpening Camp</h4>
+                    <p>Join us for intensive leadership training and spiritual equipping for effective ministry.</p>
+                    <span class="announce-date">Date: TBA</span>
+                </div>
+                <div class="announce-card">
+                    <span class="announce-tag">Weekly Service</span>
+                    <h4>Love Therapy — Fridays</h4>
+                    <p>Join us every Friday evening for powerful teaching on love and relationships.</p>
+                    <span class="announce-date">Every Friday, 6:00 PM</span>
+                </div>
+                <div class="announce-card">
+                    <span class="announce-tag">Conference</span>
+                    <h4>Transformation Conference</h4>
+                    <p>A powerful gathering of worship, faith, and prophetic teaching. All are welcome.</p>
+                    <span class="announce-date">Date: TBA</span>
+                </div>
+            </div>
+            <div class="announce-nav" id="announceNav"></div>
+        </div>
+
         <div class="slider-controls">
             <button class="slider-btn prev" id="prevSlide">&#10094;</button>
             <div class="slider-dots" id="sliderDots"></div>
@@ -78,67 +112,84 @@
         </div>
     </section>
 
+    <!-- Content Below Hero — dark about-feel -->
+    <div style="background: #0a0a0a;">
+
     <!-- Welcome Section -->
-    <section class="welcome-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Experience God's Transforming Love</h2>
-                <div class="title-underline"></div>
+    <section class="about-section" data-images='["assets/images/hero2.jpg", "assets/images/hero4.jpg", "assets/images/about3.jpg"]'>
+        <div class="section-bg"></div>
+        <div class="section-overlay"></div>
+        <div class="section-fade-top"></div>
+        <div class="section-fade-bottom"></div>
+        <div class="section-content home-wide">
+            <h2>Experience God's Transforming Love</h2>
+            <div class="title-line"></div>
+            <div class="section-glass">
+                <p>
+                    At Transformation Project Ministries, we believe in the life-changing power of God's Word.
+                    Whether you're new to faith or have been walking with Christ for years, you'll find a
+                    welcoming community here to encourage you on your spiritual journey.
+                </p>
             </div>
-            <p class="welcome-text">
-                At Transformation Project Ministries, we believe in the life-changing power of God's Word. 
-                Whether you're new to faith or have been walking with Christ for years, you'll find a 
-                welcoming community here that will encourage you on your spiritual journey.
-            </p>
-            <div class="welcome-grid">
-                <div class="welcome-card glass">
-                    <div class="card-icon">🙏</div>
+            <div class="home-cards-grid">
+                <div class="home-feature-card">
+                    <span class="home-card-icon">&#128591;</span>
                     <h3>Worship With Us</h3>
-                    <p>Join us every Sunday for powerful worship and inspiring messages</p>
-                    <a href="join-us.html" class="card-link">Learn More →</a>
+                    <p>Join us every Sunday for powerful worship and Spirit-filled messages that transform hearts.</p>
+                    <a href="join-us.html" class="home-card-link">Learn More &#8594;</a>
                 </div>
-                <div class="welcome-card glass">
-                    <div class="card-icon">📖</div>
+                <div class="home-feature-card">
+                    <span class="home-card-icon">&#128214;</span>
                     <h3>Grow in Faith</h3>
-                    <p>Discover small groups and ministries to deepen your relationship with God</p>
-                    <a href="join-us.html#ministries" class="card-link">Explore →</a>
+                    <p>Discover ministries and communities designed to deepen your walk with God and sharpen your calling.</p>
+                    <a href="join-us.html" class="home-card-link">Explore &#8594;</a>
                 </div>
-                <div class="welcome-card glass">
-                    <div class="card-icon">🤝</div>
+                <div class="home-feature-card">
+                    <span class="home-card-icon">&#129309;</span>
                     <h3>Serve Together</h3>
-                    <p>Use your gifts to make a difference in our community</p>
-                    <a href="partner-with-us.html#volunteer" class="card-link">Get Involved →</a>
+                    <p>Use your God-given gifts to make a lasting difference in our community and advance His Kingdom.</p>
+                    <a href="partner-with-us.html" class="home-card-link">Get Involved &#8594;</a>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Service Times Section -->
-    <section class="service-times-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Join Us for Our Services</h2>
-                <div class="title-underline"></div>
+    <section class="about-section" data-images='["assets/images/hero3.jpg", "assets/images/hero5.jpg", "assets/images/about2.jpg"]'>
+        <div class="section-bg"></div>
+        <div class="section-overlay"></div>
+        <div class="section-fade-top"></div>
+        <div class="section-fade-bottom"></div>
+        <div class="section-content home-wide">
+            <h2>Join Us for Our Services</h2>
+            <div class="title-line"></div>
+            <div class="section-glass">
+                <p>Our gatherings are marked by heartfelt worship, fervent prayer, and the tangible presence of God. Come and experience it for yourself.</p>
             </div>
-            <div class="service-times-grid">
-                <div class="service-time-card glass">
+            <div class="home-cards-grid">
+                <div class="home-service-card">
                     <h3>Morning Glory</h3>
-                    <p class="time">Sundays, 9:00 AM - 11:30 AM</p>
-                    <p class="description">Experience dynamic worship and powerful biblical teaching</p>
+                    <p class="service-time-label">Sundays</p>
+                    <p class="service-time-hours">9:00 AM &ndash; 11:30 AM</p>
+                    <p class="service-desc">Experience dynamic worship and powerful biblical teaching</p>
                 </div>
-                <div class="service-time-card glass">
+                <div class="home-service-card">
                     <h3>Evening Feast</h3>
-                    <p class="time">Sundays, 4:00 PM - 6:00 PM</p>
-                    <p class="description">An evening of worship, prayer, and divine encounters</p>
+                    <p class="service-time-label">Sundays</p>
+                    <p class="service-time-hours">4:00 PM &ndash; 6:00 PM</p>
+                    <p class="service-desc">An evening of worship, prayer, and divine encounters</p>
                 </div>
-                <div class="service-time-card glass">
+                <div class="home-service-card">
                     <h3>Love Therapy</h3>
-                    <p class="time">Fridays, 6:00 PM - 8:00 PM</p>
-                    <p class="description">Biblical teaching about love and relationships</p>
+                    <p class="service-time-label">Fridays</p>
+                    <p class="service-time-hours">6:00 PM &ndash; 8:00 PM</p>
+                    <p class="service-desc">Biblical teaching about love, relationships, and God's design</p>
                 </div>
             </div>
         </div>
     </section>
+
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -174,5 +225,7 @@
 
     <script src="auth.js"></script>
     <script src="script.js"></script>
+    <script src="search-data.js"></script>
+    <script src="search.js"></script>
 </body>
 </html>

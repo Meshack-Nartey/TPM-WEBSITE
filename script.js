@@ -19,6 +19,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize Scroll Animations
     initScrollAnimations();
+
+    // Initialize Hero Announcement Slider
+    initAnnouncementSlider();
+
+    // Initialize Picture Quotes Category Filter
+    initQuoteCategoryFilter();
+
+    // Initialize Picture Quotes Lightbox
+    initQuoteLightbox();
+
+    // Initialize Give Page Copy Buttons
+    initGiveCopyButtons();
 });
 
 // ===================================
@@ -305,21 +317,7 @@ function initScrollAnimations() {
     animateElements.forEach(el => observer.observe(el));
 }
 
-// ===================================
-// Header Scroll Effect
-// ===================================
-window.addEventListener('scroll', () => {
-    const header = document.querySelector('.header');
-    if (window.scrollY > 50) {
-        header.style.background = 'rgba(255, 255, 255, 0.95)';
-        header.style.backdropFilter = 'blur(16px)';
-        header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
-    } else {
-        header.style.background = 'rgba(255, 255, 255, 0.15)';
-        header.style.backdropFilter = 'blur(12px)';
-        header.style.boxShadow = 'none';
-    }
-});
+// Header colour is constant — set via CSS only, no scroll changes.
 
 // ===================================
 // Form Validation (Contact & Giving Forms)
@@ -563,9 +561,174 @@ skipLink.addEventListener('blur', () => {
 document.body.insertBefore(skipLink, document.body.firstChild);
 
 // ===================================
+// Picture Quotes Category Filter
+// ===================================
+function initQuoteCategoryFilter() {
+    const filters = document.querySelectorAll('.pq-filter');
+    const cards   = document.querySelectorAll('.pq-card');
+
+    if (!filters.length || !cards.length) return;
+
+    filters.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filters.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const cat = btn.dataset.cat;
+            cards.forEach(card => {
+                if (cat === 'all' || card.dataset.cat === cat) {
+                    card.classList.remove('dimmed');
+                } else {
+                    card.classList.add('dimmed');
+                }
+            });
+        });
+    });
+}
+
+// ===================================
+// Picture Quotes Lightbox
+// ===================================
+function initQuoteLightbox() {
+    const cards = document.querySelectorAll('.pq-card');
+    if (!cards.length) return;
+
+    // Build lightbox DOM
+    const overlay = document.createElement('div');
+    overlay.className = 'pq-lightbox';
+    overlay.innerHTML = `
+        <button class="pq-lightbox-close" aria-label="Close">&times;</button>
+        <div class="pq-lightbox-inner">
+            <img class="pq-lightbox-img" src="" alt="Quote">
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    const img = overlay.querySelector('.pq-lightbox-img');
+    const closeBtn = overlay.querySelector('.pq-lightbox-close');
+
+    function openLightbox(card) {
+        const cardImg = card.querySelector('img');
+        if (!cardImg) return;
+        img.src = cardImg.src;
+        img.alt = cardImg.alt;
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    cards.forEach(card => {
+        card.addEventListener('click', () => openLightbox(card));
+    });
+
+    closeBtn.addEventListener('click', closeLightbox);
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeLightbox();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeLightbox();
+    });
+}
+
+// ===================================
+// Hero Announcement Slider
+// ===================================
+function initAnnouncementSlider() {
+    const track = document.getElementById('announceTrack');
+    const navContainer = document.getElementById('announceNav');
+
+    if (!track || !navContainer) return;
+
+    const cards = Array.from(track.querySelectorAll('.announce-card'));
+    if (cards.length === 0) return;
+
+    let current = 0;
+    let timer;
+    const INTERVAL = 5000;
+
+    // Build dot indicators
+    cards.forEach((_, i) => {
+        const dot = document.createElement('span');
+        dot.classList.add('announce-dot');
+        if (i === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goTo(i));
+        navContainer.appendChild(dot);
+    });
+
+    const dots = Array.from(navContainer.querySelectorAll('.announce-dot'));
+
+    function goTo(index) {
+        if (index === current) return;
+
+        const prev = current;
+        current = (index + cards.length) % cards.length;
+
+        // Slide out current card to the left
+        cards[prev].classList.remove('active');
+        cards[prev].classList.add('leaving');
+
+        // Clean up leaving class after transition
+        const leavingCard = cards[prev];
+        setTimeout(() => {
+            leavingCard.classList.remove('leaving');
+        }, 600);
+
+        // Slide in new card from the right
+        cards[current].classList.add('active');
+
+        // Sync dots
+        dots.forEach((d, i) => d.classList.toggle('active', i === current));
+
+        resetTimer();
+    }
+
+    function next() {
+        goTo((current + 1) % cards.length);
+    }
+
+    function resetTimer() {
+        clearInterval(timer);
+        timer = setInterval(next, INTERVAL);
+    }
+
+    resetTimer();
+}
+
+// ===================================
+// Give Page — Copy to Clipboard
+// ===================================
+function initGiveCopyButtons() {
+    const btns = document.querySelectorAll('.give-copy-btn');
+    if (!btns.length) return;
+
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const text = btn.dataset.copy;
+            if (!text) return;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const original = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = original;
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        });
+    });
+}
+
+// ===================================
 // Console Welcome Message
 // ===================================
-console.log('%cWelcome to Transformation Project Ministries! 🙏', 
+console.log('%cWelcome to Transformation Project Ministries! 🙏',
     'color: #1e3a8a; font-size: 20px; font-weight: bold;');
-console.log('%cExperience the transforming power of God\'s love', 
+console.log('%cExperience the transforming power of God\'s love',
     'color: #D4AF37; font-size: 14px;');
