@@ -7,6 +7,7 @@
 
     const AUTH_KEY = 'tpm_auth';
     const USERS_KEY = 'tpm_users';
+    const LEADER_CODE = 'TPM-LEADER-2026'; // Change this code and share it only with verified leaders
 
     // --- Auth Helper Functions ---
 
@@ -114,7 +115,8 @@
             { href: 'media.html#picture-quotes', label: 'Picture Quotes' },
             { href: 'media.html#podcast', label: 'Podcast' },
             { href: 'media.html#apostle-andrews', label: 'Time with Apostle Andrews' },
-            { href: 'media.html#success-secrets', label: 'Success Secrets' }
+            { href: 'media.html#success-secrets', label: 'Success Secrets' },
+            { href: 'media.html#social-media', label: 'Social Media' }
         ]);
 
         // GIVE (dropdown)
@@ -211,10 +213,15 @@
         var authForms = document.getElementById('authForms');
         if (!authForms) return;
 
-        // If already logged in, redirect home
+        // If already logged in, show a banner instead of redirecting
+        var loggedInBanner = document.getElementById('loggedInBanner');
         if (isLoggedIn()) {
-            window.location.href = 'index.html';
-            return;
+            var auth = getAuthState();
+            if (loggedInBanner && auth && auth.user) {
+                var nameEl = loggedInBanner.querySelector('.logged-in-name');
+                if (nameEl) nameEl.textContent = auth.user.fullName;
+                loggedInBanner.style.display = 'block';
+            }
         }
 
         // Tab switching
@@ -237,6 +244,17 @@
                 }
             });
         });
+
+        // Show leader code field when "Leader" role is selected
+        var roleSelect = document.getElementById('signupRole');
+        var leaderCodeGroup = document.getElementById('leaderCodeGroup');
+        if (roleSelect && leaderCodeGroup) {
+            roleSelect.addEventListener('change', function() {
+                leaderCodeGroup.style.display = this.value === 'leader' ? 'block' : 'none';
+                var codeInput = document.getElementById('signupLeaderCode');
+                if (codeInput) codeInput.required = this.value === 'leader';
+            });
+        }
 
         // Login handler
         if (loginForm) {
@@ -284,10 +302,17 @@
                 var password = signupForm.querySelector('[name="signupPassword"]').value;
                 var confirmPassword = signupForm.querySelector('[name="signupConfirmPassword"]').value;
                 var role = signupForm.querySelector('[name="signupRole"]').value;
+                var leaderCodeInput = signupForm.querySelector('[name="signupLeaderCode"]');
+                var leaderCode = leaderCodeInput ? leaderCodeInput.value.trim() : '';
 
                 // Validation
                 if (!fullName || !email || !phone || !password || !confirmPassword || !role) {
                     showFormError(signupForm, 'Please fill in all fields.');
+                    return;
+                }
+
+                if (role === 'leader' && leaderCode !== LEADER_CODE) {
+                    showFormError(signupForm, 'Invalid leader access code. Please contact TPM administration.');
                     return;
                 }
 
@@ -343,6 +368,15 @@
                 setTimeout(function() {
                     window.location.href = 'index.html';
                 }, 1000);
+            });
+        }
+
+        // Banner logout button
+        var bannerLogoutBtn = document.getElementById('bannerLogoutBtn');
+        if (bannerLogoutBtn) {
+            bannerLogoutBtn.addEventListener('click', function() {
+                clearAuthState();
+                window.location.reload();
             });
         }
     }
@@ -469,9 +503,16 @@
                 var password = inlineSignup.querySelector('[name="signupPassword"]').value;
                 var confirmPassword = inlineSignup.querySelector('[name="signupConfirmPassword"]').value;
                 var role = inlineSignup.querySelector('[name="signupRole"]').value;
+                var inlineLeaderCodeInput = inlineSignup.querySelector('[name="signupLeaderCode"]');
+                var inlineLeaderCode = inlineLeaderCodeInput ? inlineLeaderCodeInput.value.trim() : '';
 
                 if (!fullName || !email || !phone || !password || !confirmPassword || !role) {
                     showFormError(inlineSignup, 'Please fill in all fields.');
+                    return;
+                }
+
+                if (role === 'leader' && inlineLeaderCode !== LEADER_CODE) {
+                    showFormError(inlineSignup, 'Invalid leader access code. Please contact TPM administration.');
                     return;
                 }
                 if (!isValidEmail(email)) {
@@ -512,31 +553,16 @@
         }
     }
 
-    // --- Seed Default Users ---
-    function seedDefaultUsers() {
-        var users = getUsers();
-        var defaults = [
-            { fullName: 'Admin Leader', email: 'admin@tpm.org', phone: '+233241000000', password: 'admin123', role: 'leader' },
-            { fullName: 'John Member', email: 'member@tpm.org', phone: '+233241000001', password: 'member123', role: 'member' }
-        ];
-        defaults.forEach(function(def) {
-            var exists = users.some(function(u) { return u.email.toLowerCase() === def.email.toLowerCase(); });
-            if (!exists) {
-                addUser(def);
-            }
-        });
-    }
-
     // --- Initialize on DOM Ready ---
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Clear stale auto-login from previous version
-        if (!localStorage.getItem('tpm_v2')) {
+        // Clear any stale sessions from previous versions
+        if (!localStorage.getItem('tpm_v3')) {
             clearAuthState();
-            localStorage.setItem('tpm_v2', '1');
+            localStorage.removeItem('tpm_v2');
+            localStorage.setItem('tpm_v3', '1');
         }
 
-        seedDefaultUsers();
         buildNav();
         initAuthPage();
         initInlineAuth();

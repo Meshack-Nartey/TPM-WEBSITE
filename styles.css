@@ -228,7 +228,6 @@ section {
     width: 100%;
     height: 70px;              /* hard lock — nothing inside can stretch this */
     box-sizing: border-box;    /* border is absorbed into the declared height, not added on top */
-    overflow: hidden;          /* any child taller than 70px is clipped, not expanding */
     z-index: 1000;
     background: rgba(255, 255, 255, 0.35) !important;
     backdrop-filter: blur(24px) saturate(180%) !important;
@@ -467,7 +466,7 @@ section {
     width: 100%;
     height: 100%;
     background-size: cover;
-    background-position: center 20%;
+    background-position: center top;
 }
 
 /* Hero Slide Backgrounds */
@@ -1078,13 +1077,13 @@ section {
     background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
     background-image: url('assets/images/about.jpg');
     background-size: cover;
-    background-position: center 35%;
+    background-position: center top;
     margin-top: 80px;
 }
 
 .join-us-header {
     background-image: url('assets/images/joinus.jpg');
-    background-position: center center;
+    background-position: center top;
     height: 400px;
 }
 
@@ -1147,7 +1146,7 @@ section {
     width: 100%;
     height: 100%;
     background-size: cover;
-    background-position: center;
+    background-position: center top;
     opacity: 0;
     transition: opacity 2s ease-in-out;
     animation: kenBurns 20s ease-in-out infinite alternate;
@@ -1971,6 +1970,14 @@ section {
     color: var(--primary-blue);
     font-weight: 600;
     font-size: 0.95rem;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: rgba(100, 116, 139, 0.85);
+    font-style: italic;
 }
 
 body:not(.dark-portal-page) .form-group input,
@@ -4378,6 +4385,89 @@ body:not(.dark-portal-page) .form-group select:focus {
     margin-top: 40px;
 }
 
+/* ── Social Media Section ── */
+.social-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.social-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px 24px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.social-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(212, 175, 55, 0.4);
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.social-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.social-icon-wrap svg {
+    width: 24px;
+    height: 24px;
+}
+
+.social-facebook .social-icon-wrap  { background: rgba(24, 119, 242, 0.18); color: #1877f2; }
+.social-instagram .social-icon-wrap { background: rgba(225, 48, 108, 0.18);  color: #e1306c; }
+.social-tiktok .social-icon-wrap    { background: rgba(255, 255, 255, 0.1);  color: #ffffff; }
+.social-twitter .social-icon-wrap   { background: rgba(255, 255, 255, 0.1);  color: #ffffff; }
+.social-whatsapp .social-icon-wrap  { background: rgba(37, 211, 102, 0.18);  color: #25d366; }
+.social-youtube .social-icon-wrap   { background: rgba(255, 0, 0, 0.18);     color: #ff0000; }
+
+.social-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+}
+
+.social-platform {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+.social-handle {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.social-follow-btn {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gold);
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+    transition: color 0.2s;
+}
+
+.social-card:hover .social-follow-btn {
+    color: #fff;
+}
+
 /* ── Responsive ── */
 @media (max-width: 1100px) {
     .pq-gallery {
@@ -4433,6 +4523,10 @@ body:not(.dark-portal-page) .form-group select:focus {
     .video-featured-layout {
         grid-template-columns: 1fr;
     }
+
+    .social-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 560px) {
@@ -4462,6 +4556,10 @@ body:not(.dark-portal-page) .form-group select:focus {
     }
 
     .video-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .social-grid {
         grid-template-columns: 1fr;
     }
 }
@@ -4844,6 +4942,52 @@ body:has(.auth-page-header) .footer {
 /* ===================================
    Auth Page Styles
    =================================== */
+.logged-in-banner {
+    max-width: 520px;
+    margin: 0 auto 20px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    color: #86efac;
+    font-size: 0.9rem;
+}
+
+.logged-in-banner strong {
+    color: #fff;
+}
+
+.logged-in-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-sm {
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    border-radius: 8px;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #fff;
+    cursor: pointer;
+    font-family: var(--font-primary);
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #fff;
+}
+
 .auth-container {
     max-width: 520px;
     margin: 0 auto;
@@ -5852,6 +5996,109 @@ body.dark-portal-page .form-group textarea:focus {
     font-style: italic;
 }
 
+/* Previous Devotional Editions Archive */
+.devo-archive {
+    margin-top: 40px;
+}
+
+.devo-archive-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #c9a84c;
+    margin-bottom: 18px;
+}
+
+.devo-archive-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.devo-archive-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.25s, transform 0.25s;
+}
+
+.devo-archive-card:hover {
+    border-color: rgba(212, 175, 55, 0.45);
+    transform: translateY(-3px);
+}
+
+.devo-archive-cover {
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+}
+
+.dac-1 { background: linear-gradient(135deg, #1a0800, #4a1800); }
+.dac-2 { background: linear-gradient(135deg, #001a0a, #003a18); }
+.dac-3 { background: linear-gradient(135deg, #0a001a, #220040); }
+.dac-4 { background: linear-gradient(135deg, #001520, #003050); }
+
+.devo-archive-year {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba(212, 175, 55, 0.7);
+    text-transform: uppercase;
+}
+
+.devo-archive-icon {
+    font-size: 2.2rem;
+}
+
+.devo-archive-info {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.devo-archive-info h4 {
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    color: #e8c96a;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.devo-archive-edition {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 6px;
+}
+
+.book-btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(212, 175, 55, 0.1);
+    color: #e8c96a;
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.25s;
+    width: fit-content;
+}
+
+.book-btn-download:hover {
+    background: rgba(212, 175, 55, 0.2);
+    border-color: #c9a84c;
+    color: #fff;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .books-grid {
@@ -5883,6 +6130,16 @@ body.dark-portal-page .form-group textarea:focus {
 
     .devo-today-card {
         flex-direction: column;
+    }
+
+    .devo-archive-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .devo-archive-grid {
+        grid-template-columns: 1fr;
     }
 }
 
