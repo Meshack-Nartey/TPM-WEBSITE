@@ -111,7 +111,6 @@
         // MEDIA (dropdown)
         navHTML += buildDropdownItem('media.html', 'MEDIA', currentPage, [
             { href: 'media.html#live-streaming', label: '<span class="nav-live-dot"></span>Live Streaming' },
-            { href: 'media.html#devotionals', label: 'Devotionals' },
             { href: 'media.html#picture-quotes', label: 'Picture Quotes' },
             { href: 'media.html#podcast', label: 'Podcast' },
             { href: 'media.html#apostle-andrews', label: 'Time with Apostle Andrews' },

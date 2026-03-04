@@ -226,18 +226,19 @@ section {
     top: 0;
     left: 0;
     width: 100%;
-    height: 70px;              /* hard lock — nothing inside can stretch this */
-    box-sizing: border-box;    /* border is absorbed into the declared height, not added on top */
+    height: 70px;
+    box-sizing: border-box;
+    overflow: hidden;          /* hard clamp — children can never stretch this */
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.35) !important;
-    backdrop-filter: blur(24px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+    background: var(--primary-blue) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-bottom: 2px solid var(--gold);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .navbar {
-    height: 100%;              /* fills the header's locked 70px */
+    height: 100%;
     box-sizing: border-box;
 }
 
@@ -245,7 +246,7 @@ section {
     max-width: var(--container-width);
     margin: 0 auto;
     padding: 0 20px;
-    height: 100%;              /* fills the navbar */
+    height: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -260,16 +261,20 @@ section {
 }
 
 .logo-placeholder {
-    width: 260px;
-    height: 100%;              /* scales to the header height — never taller */
+    height: 100%;              /* fills full navbar height — header overflow:hidden is the clamp */
+    width: auto;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
 }
 
 .logo-placeholder svg,
 .logo-placeholder img {
-    width: 100%;
     height: 100%;
+    width: auto;
+    max-width: 260px;
     object-fit: contain;
+    display: block;
 }
 
 .church-name h1 {
@@ -332,7 +337,7 @@ section {
 .nav-link {
     display: block;
     padding: 6px 10px;
-    color: var(--primary-blue);
+    color: var(--gold);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.78rem;
@@ -6484,7 +6489,7 @@ body.dark-portal-page .form-group textarea:focus {
     border: none;
     cursor: pointer;
     padding: 6px 10px;
-    color: var(--primary-blue);
+    color: var(--gold);
     border-radius: 8px;
     border: 2px solid transparent;
     transition: all 0.3s ease;
@@ -6727,6 +6732,246 @@ body.search-open {
 
     .search-result-title {
         grid-row: 1;
+    }
+}
+
+/* ===================================
+   Statistics Gate — Access Screen
+   =================================== */
+
+.stats-gate-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: linear-gradient(135deg, #050a18 0%, #0f1f4a 60%, #0a0f2e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.stats-gate-card {
+    width: 100%;
+    max-width: 440px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 20px;
+    padding: 44px 40px 36px;
+    text-align: center;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+    animation: gateCardIn 0.4s ease both;
+}
+
+@keyframes gateCardIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.stats-gate-logo {
+    width: 160px;
+    margin: 0 auto 16px;
+}
+
+.stats-gate-logo img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.stats-gate-ministry {
+    font-family: var(--font-primary);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 10px;
+    opacity: 0.85;
+}
+
+.stats-gate-title {
+    font-family: var(--font-display);
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.stats-gate-rule {
+    width: 48px;
+    height: 2px;
+    background: var(--gold);
+    border-radius: 2px;
+    margin: 18px auto;
+    opacity: 0.7;
+}
+
+.stats-gate-desc {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.65;
+    margin: 0 0 28px;
+}
+
+/* Form */
+
+.stats-gate-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.stats-gate-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.stats-gate-input {
+    width: 100%;
+    padding: 13px 44px 13px 16px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1.5px solid rgba(212, 175, 55, 0.3);
+    border-radius: 10px;
+    color: #ffffff;
+    font-family: var(--font-primary);
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.stats-gate-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 0;
+}
+
+.stats-gate-input:focus {
+    border-color: var(--gold);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.stats-gate-input:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.stats-gate-eye {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.35);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s ease;
+}
+
+.stats-gate-eye:hover {
+    color: var(--gold);
+}
+
+/* Error */
+
+.stats-gate-error {
+    min-height: 20px;
+    font-size: 0.8rem;
+    color: #ff6b6b;
+    text-align: left;
+    margin: 8px 2px 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.stats-gate-error.visible {
+    opacity: 1;
+}
+
+/* Submit button */
+
+.stats-gate-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 13px 20px;
+    background: var(--gold);
+    color: #0a0f2e;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease, opacity 0.2s ease;
+}
+
+.stats-gate-btn:hover:not(:disabled) {
+    background: var(--dark-gold);
+    transform: translateY(-1px);
+}
+
+.stats-gate-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.stats-gate-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Hint */
+
+.stats-gate-hint {
+    margin-top: 24px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.28);
+    line-height: 1.5;
+}
+
+/* Granted state */
+
+.stats-gate-granted .stats-gate-card {
+    border-color: rgba(212, 175, 55, 0.5);
+    background: rgba(212, 175, 55, 0.06);
+}
+
+.stats-gate-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.15);
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    font-size: 2rem;
+    animation: gateCheckPop 0.35s ease both;
+}
+
+@keyframes gateCheckPop {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+}
+
+/* Mobile */
+
+@media (max-width: 480px) {
+    .stats-gate-card {
+        padding: 36px 24px 28px;
+        border-radius: 16px;
+    }
+
+    .stats-gate-logo {
+        width: 130px;
+    }
+
+    .stats-gate-title {
+        font-size: 1.35rem;
     }
 }
 
