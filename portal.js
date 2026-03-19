@@ -46,6 +46,7 @@
         // Populate dropdowns from mock data
         populateSelect('branchSelect', TPM_MOCK_DATA.branches);
         populateSelect('departmentSelect', TPM_MOCK_DATA.departments);
+        populateSelect('fellowshipSelect', TPM_MOCK_DATA.fellowships);
         populateSelect('membershipStatusSelect', TPM_MOCK_DATA.membershipStatuses);
 
         // Photo preview
@@ -79,7 +80,9 @@
 
             // Validate required fields
             var firstName = form.querySelector('[name="firstName"]').value.trim();
+            var middleName = form.querySelector('[name="middleName"]').value.trim();
             var lastName = form.querySelector('[name="lastName"]').value.trim();
+            var fellowship = form.querySelector('[name="fellowship"]') ? form.querySelector('[name="fellowship"]').value : '';
             var dob = form.querySelector('[name="dob"]').value;
             var gender = form.querySelector('[name="gender"]').value;
             var phone = form.querySelector('[name="phone"]').value.trim();
@@ -116,7 +119,7 @@
 
             // Save registration to localStorage
             var regData = {
-                firstName: firstName, lastName: lastName, dob: dob, gender: gender,
+                firstName: firstName, middleName: middleName, lastName: lastName, fellowship: fellowship, dob: dob, gender: gender,
                 phone: phone, email: email, address: address, branch: branch,
                 department: department, dateJoined: dateJoined, membershipStatus: membershipStatus,
                 emergencyContactName: emergencyName, emergencyContactPhone: emergencyPhone
@@ -203,7 +206,9 @@
 
         // Populate dropdowns
         populateSelect('editBranchSelect', TPM_MOCK_DATA.branches);
+        populateSelect('editBaseniaSelect', TPM_MOCK_DATA.basenias);
         populateSelect('editDepartmentSelect', TPM_MOCK_DATA.departments);
+        populateSelect('editFellowshipSelect', TPM_MOCK_DATA.fellowships);
         populateSelect('editMembershipStatusSelect', TPM_MOCK_DATA.membershipStatuses);
 
         // Pre-populate with mock member data (first member)
@@ -216,6 +221,8 @@
         form.querySelector('[name="email"]').value = member.email;
         form.querySelector('[name="address"]').value = member.address;
         form.querySelector('[name="branch"]').value = member.branch;
+        form.querySelector('[name="basenia"]').value = member.basenia || '';
+        form.querySelector('[name="fellowship"]').value = member.fellowship || '';
         form.querySelector('[name="department"]').value = member.department;
         form.querySelector('[name="dateJoined"]').value = member.dateJoined;
         form.querySelector('[name="membershipStatus"]').value = member.membershipStatus;

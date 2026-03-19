@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - Transformation Project Ministries</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .announcements-page {
+            min-height: 100vh;
+            background: #0a0a0a;
+            padding-top: 80px;
+        }
+
+        .announcements-page-header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, rgba(30,58,138,0.25) 0%, transparent 100%);
+        }
+
+        .announcements-page-header h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            color: #fff;
+            letter-spacing: 2px;
+            margin-bottom: 14px;
+        }
+
+        .announce-title-line {
+            width: 70px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--dark-gold));
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+
+        .announcements-page-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 1rem;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .announcements-grid-section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 20px 80px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .ann-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 28px 24px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+        }
+
+        .ann-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(212,175,55,0.45);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .ann-tag {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+            color: #c9a84c;
+        }
+
+        .ann-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            color: #fff;
+            margin: 0;
+            line-height: 1.35;
+        }
+
+        .ann-card p {
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.65);
+            line-height: 1.65;
+            margin: 0;
+            flex: 1;
+        }
+
+        .ann-date {
+            font-size: 0.75rem;
+            color: rgba(212,175,55,0.85);
+            font-weight: 600;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            margin-top: auto;
+        }
+
+        .ann-date span {
+            margin-right: 6px;
+        }
+
+        /* category colour accents */
+        .ann-card[data-category="event"] { border-top: 3px solid #3b82f6; }
+        .ann-card[data-category="camp"]  { border-top: 3px solid #10b981; }
+        .ann-card[data-category="weekly"] { border-top: 3px solid #c9a84c; }
+        .ann-card[data-category="conference"] { border-top: 3px solid #8b5cf6; }
+        .ann-card[data-category="prayer"] { border-top: 3px solid #f59e0b; }
+        .ann-card[data-category="general"] { border-top: 3px solid #64748b; }
+    </style>
+</head>
+<body>
+    <!-- Header with Navigation -->
+    <header class="header">
+        <nav class="navbar glass">
+            <div class="nav-container">
+                <div class="logo-section">
+                    <a href="index.html"><div class="logo-placeholder">
+                        <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
+                    </div></a>
+                </div>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <ul class="nav-menu" id="navMenu">
+                    <!-- Populated dynamically by auth.js -->
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="announcements-page">
+
+        <div class="announcements-page-header">
+            <h1>Announcements</h1>
+            <div class="announce-title-line"></div>
+            <p>Stay up to date with everything happening at Transformation Project Ministries.</p>
+        </div>
+
+        <div class="announcements-grid-section" id="announcementsGrid">
+
+            <div class="ann-card" data-category="event">
+                <span class="ann-tag">Upcoming Event</span>
+                <h3>Holy Ghost Festival 2026</h3>
+                <p>Mark your calendars for our annual Spirit-filled gathering. Experience God's power like never before. Come ready to encounter the Holy Spirit in a fresh and powerful way.</p>
+                <div class="ann-date"><span>&#128197;</span>Date: TBA</div>
+            </div>
+
+            <div class="ann-card" data-category="camp">
+                <span class="ann-tag">Camp</span>
+                <h3>Sharpening Camp</h3>
+                <p>Join us for intensive leadership training and spiritual equipping for effective ministry. This camp is designed to develop sharp, effective leaders for the Kingdom of God.</p>
+                <div class="ann-date"><span>&#128197;</span>Date: TBA</div>
+            </div>
+
+            <div class="ann-card" data-category="weekly">
+                <span class="ann-tag">Weekly Service</span>
+                <h3>Love Therapy — Fridays</h3>
+                <p>Join us every Friday evening for powerful teaching on love and relationships. A transformative experience grounded in the Word of God.</p>
+                <div class="ann-date"><span>&#128336;</span>Every Friday, 6:00 PM</div>
+            </div>
+
+            <div class="ann-card" data-category="conference">
+                <span class="ann-tag">Conference</span>
+                <h3>Transformation Conference</h3>
+                <p>A powerful gathering of worship, faith, and prophetic teaching. All are welcome to come and be transformed by the Word and the Spirit.</p>
+                <div class="ann-date"><span>&#128197;</span>Date: TBA</div>
+            </div>
+
+            <div class="ann-card" data-category="weekly">
+                <span class="ann-tag">Weekly Service</span>
+                <h3>Sunday Celebration Service</h3>
+                <p>Join us every Sunday for a powerful time of worship, the Word, and fellowship with the family of God. Bring someone with you!</p>
+                <div class="ann-date"><span>&#128336;</span>Every Sunday, 9:00 AM</div>
+            </div>
+
+            <div class="ann-card" data-category="prayer">
+                <span class="ann-tag">Prayer</span>
+                <h3>Corporate Prayer Night</h3>
+                <p>Come together as one body to seek God's face. Our monthly corporate prayer night is a powerful time of intercession and worship.</p>
+                <div class="ann-date"><span>&#128197;</span>Last Friday of every month</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Transformation Project Ministries</h3>
+                    <p>Transforming lives</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="leaders.html">Our Leaders</a></li>
+                        <li><a href="media.html">Sermons</a></li>
+                        <li><a href="books.html">Books</a></li>
+                        <li><a href="give.html">Give</a></li>
+                        <li><a href="contact-updates.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect With Us</h4>
+                    <ul>
+                        <li>&#128231; info@tpministries.org</li>
+                        <li>&#128222; +1 (555) 123-4567</li>
+                        <li>&#128205; 123 Faith Street, City, State</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Transformation Project Ministries. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+    <script src="search-data.js"></script>
+    <script src="search.js"></script>
+</body>
+</html>

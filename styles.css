@@ -228,7 +228,7 @@ section {
     width: 100%;
     height: 70px;
     box-sizing: border-box;
-    overflow: hidden;          /* hard clamp — children can never stretch this */
+    overflow: visible;
     z-index: 1000;
     background: var(--primary-blue) !important;
     backdrop-filter: none !important;
@@ -245,7 +245,7 @@ section {
 .nav-container {
     max-width: var(--container-width);
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 20px 0 0;
     height: 100%;
     display: flex;
     justify-content: space-between;
@@ -336,7 +336,7 @@ section {
 
 .nav-link {
     display: block;
-    padding: 6px 10px;
+    padding: 6px 14px;
     color: var(--gold);
     text-decoration: none;
     font-weight: 600;
@@ -344,7 +344,7 @@ section {
     letter-spacing: 0.3px;
     white-space: nowrap;
     transition: all 0.3s ease;
-    border-radius: 8px;
+    border-radius: 50px;
     border: 2px solid transparent;
 }
 
@@ -353,6 +353,7 @@ section {
     background: transparent;
     color: var(--gold);
     border: 2px solid var(--gold);
+    border-radius: 50px;
 }
 
 /* Partner With Us - Blue Button */
@@ -516,17 +517,17 @@ section {
     bottom: 60px;
     z-index: 10;
     text-align: left;
-    padding: 40px 30px;
-    border-radius: 20px;
-    max-width: 550px;
+    padding: 24px 22px;
+    border-radius: 16px;
+    max-width: 440px;
 }
 
 .hero-title {
     font-family: var(--font-display);
-    font-size: 2rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: var(--white);
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     line-height: 1.2;
     text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
 }

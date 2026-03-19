@@ -8,7 +8,7 @@ window.TPM_SEARCH_INDEX = [
     /* ---- Pages & Sections ---- */
     {
         title: 'Home',
-        desc: 'Welcome to Transformation Project Ministries. Experience God\'s transforming love.',
+        desc: 'Welcome to Transformation Project Ministries. Transforming lives.',
         url: 'index.html',
         category: 'Page'
     },

@@ -98,7 +98,8 @@
         // ABOUT (dropdown)
         navHTML += buildDropdownItem('about.html', 'ABOUT', currentPage, [
             { href: 'about.html#about-us', label: 'About Us' },
-            { href: 'about.html#founder', label: 'The Founder' }
+            { href: 'about.html#founder', label: 'The Founder' },
+            { href: 'leaders.html', label: 'Our Leaders' }
         ]);
 
         // BOOKS (dropdown)
@@ -115,7 +116,8 @@
             { href: 'media.html#podcast', label: 'Podcast' },
             { href: 'media.html#apostle-andrews', label: 'Time with Apostle Andrews' },
             { href: 'media.html#success-secrets', label: 'Success Secrets' },
-            { href: 'media.html#social-media', label: 'Social Media' }
+            { href: 'media.html#social-media', label: 'Social Media' },
+            { href: 'announcements.html', label: 'Announcements' }
         ]);
 
         // GIVE (dropdown)
@@ -136,11 +138,11 @@
         // MEMBER PORTAL (dropdown, always visible)
         var portalItems = [
             { href: 'member-directory.html', label: 'Member Directory' },
-            { href: 'update-profile.html', label: 'Update Profile' },
-            { href: 'statistics.html', label: 'Church Statistics' }
+            { href: 'update-profile.html', label: 'Update Profile' }
         ];
         navHTML += buildDropdownItem('#', 'MEMBER PORTAL', currentPage, portalItems,
-            ['member-directory.html', 'update-profile.html', 'statistics.html']);
+            ['member-directory.html', 'update-profile.html']);
+
 
         // PARTNER WITH US (dropdown)
         navHTML += buildDropdownItem('partner-with-us.html', 'PARTNER WITH US', currentPage, [

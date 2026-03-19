@@ -15,9 +15,9 @@
         <nav class="navbar glass">
             <div class="nav-container">
                 <div class="logo-section">
-                    <div class="logo-placeholder">
+                    <a href="index.html"><div class="logo-placeholder">
                         <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
-                    </div>
+                    </div></a>
                 </div>
 
                 <div class="hamburger" id="hamburger">
@@ -39,11 +39,10 @@
             <div class="auth-container glass">
                 <div class="access-denied-icon" style="text-align:center; font-size:3rem; margin-bottom:15px;">&#128274;</div>
                 <h2 style="text-align:center; font-family: var(--font-display); color: var(--primary-blue); margin-bottom:5px;">Access Required</h2>
-                <p class="access-denied-text" style="text-align:center; color: var(--text-gray); margin-bottom:25px;">Please log in or sign up to access this page.</p>
+                <p class="access-denied-text" style="text-align:center; color: var(--text-gray); margin-bottom:25px;">Please log in to access this page.</p>
 
                 <div class="auth-tabs">
                     <button class="auth-tab active" data-tab="login">Login</button>
-                    <button class="auth-tab" data-tab="signup">Sign Up</button>
                 </div>
 
                 <form id="inlineLoginForm" class="auth-form active">
@@ -56,38 +55,6 @@
                         <input type="password" id="inlineLoginPassword" name="loginPassword" placeholder="Enter your password" required>
                     </div>
                     <button type="submit" class="btn btn-primary btn-full">Login</button>
-                </form>
-
-                <form id="inlineSignupForm" class="auth-form">
-                    <div class="form-group">
-                        <label for="inlineSignupName">Full Name</label>
-                        <input type="text" id="inlineSignupName" name="signupName" placeholder="Enter your full name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inlineSignupEmail">Email Address</label>
-                        <input type="email" id="inlineSignupEmail" name="signupEmail" placeholder="Enter your email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inlineSignupPhone">Phone Number</label>
-                        <input type="tel" id="inlineSignupPhone" name="signupPhone" placeholder="e.g. +233241234567" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inlineSignupPassword">Password</label>
-                        <input type="password" id="inlineSignupPassword" name="signupPassword" placeholder="At least 6 characters" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inlineSignupConfirmPassword">Confirm Password</label>
-                        <input type="password" id="inlineSignupConfirmPassword" name="signupConfirmPassword" placeholder="Re-enter your password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inlineSignupRole">Role</label>
-                        <select id="inlineSignupRole" name="signupRole" required>
-                            <option value="">Select your role</option>
-                            <option value="member">Member</option>
-                            <option value="leader">Leader</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">Create Account</button>
                 </form>
             </div>
         </div>
@@ -121,6 +88,10 @@
                         <div class="form-group">
                             <label for="firstName">First Name *</label>
                             <input type="text" id="firstName" name="firstName" placeholder="Enter your first name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="middleName">Middle Name</label>
+                            <input type="text" id="middleName" name="middleName" placeholder="Enter your middle name (optional)">
                         </div>
                         <div class="form-group">
                             <label for="lastName">Last Name *</label>
@@ -160,6 +131,12 @@
                             <label for="departmentSelect">Department / Group *</label>
                             <select id="departmentSelect" name="department" required>
                                 <option value="">Select department</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="fellowshipSelect">Fellowship</label>
+                            <select id="fellowshipSelect" name="fellowship">
+                                <option value="">Select fellowship (optional)</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -203,7 +180,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Transformation Project Ministries</h3>
-                    <p>Transforming lives through the power of God's love</p>
+                    <p>Transforming lives</p>
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>

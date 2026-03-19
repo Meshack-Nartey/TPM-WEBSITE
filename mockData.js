@@ -9,6 +9,17 @@ var TPM_MOCK_DATA = {
         'Cape Coast', 'Sunyani', 'Ho', 'Koforidua'
     ],
 
+    fellowships: [
+        'Transformed Men Fellowship', 'Transformed Law', 'Transformed Shepherds',
+        'Transformed Couples', 'Transformed Women Fellowship', 'Transformed Youth Fellowship'
+    ],
+
+    basenias: [
+        'HeavenSpring Basenia', 'LoveSpring Basenia', 'GraceSpring Basenia',
+        'FaithSpring Basenia', 'HopeSpring Basenia', 'JoySpring Basenia',
+        'PeaceSpring Basenia', 'GlorySpring Basenia'
+    ],
+
     departments: [
         'Choir', 'Ushers', 'Media', 'Youth', 'Children',
         'Protocol', 'Prayer Warriors', 'Evangelism', 'Welfare'
@@ -135,6 +146,95 @@ var TPM_MOCK_DATA = {
             emergencyContactName: 'Joseph Turkson',
             emergencyContactPhone: '+233531234666',
             profilePhoto: null
+        }
+    ],
+
+    leaders: [
+        {
+            id: 1,
+            name: 'Apostle Andrews A. Ofori',
+            title: 'Founder & Lead Apostle',
+            branch: 'Accra Central',
+            fellowship: '',
+            quote: 'It is a great blessing to serve the Lord.',
+            bio: 'Apostle Andrews A. Ofori is the founder of Transformation Project Ministries (TPM). Driven by a fervent passion for the Gospel and a burning desire to see lives transformed by the power of God\'s Word, he established TPM as a movement committed to discipleship, soul-winning, and raising the next generation of Kingdom ministers. He is a member of Young Ministers\' Network International (YMNI), a growing fellowship of young Gospel ministers under the leadership of the renowned Teaching Priest, Rev. John Winfred. Apostle Andrews firmly believes in Church Leaders and Workers Conferences and Camps as strategic platforms for raising effective leaders and strengthening the Church. Through practical, dynamic, and Spirit-filled teaching, he releases divine keys for church growth and multiplication. He hosts the annual Holy Ghost Festival, a powerful gathering where many lives are saved, empowered, and ignited with fresh passion for advancing the Kingdom of God.',
+            highlights: [
+                'Founder of Transformation Project Ministries',
+                'Member, Young Ministers\' Network International (YMNI)',
+                'Host of the Annual Holy Ghost Festival',
+                'Champion of leadership development and workers\' camps'
+            ],
+            photo: null,
+            email: 'apostle@tpministries.org',
+            phone: ''
+        },
+        {
+            id: 2,
+            name: 'Pastor Emmanuel Tetteh',
+            title: 'Associate Pastor',
+            branch: 'Accra Central',
+            fellowship: 'Transformed Men Fellowship',
+            quote: 'Faith without works is dead.',
+            bio: 'Pastor Emmanuel Tetteh serves as Associate Pastor at the Accra Central branch. He oversees midweek services, discipleship programs, and the Transformed Men Fellowship. With a heart for practical ministry, he equips believers to live out their faith in everyday life.',
+            highlights: [
+                'Oversees midweek and discipleship programs',
+                'Leader of Transformed Men Fellowship',
+                'Passionate about family and community ministry'
+            ],
+            photo: null,
+            email: 'emmanuel.tetteh@tpministries.org',
+            phone: ''
+        },
+        {
+            id: 3,
+            name: 'Pastor Grace Acheampong',
+            title: 'Women\'s Ministry Leader',
+            branch: 'Kumasi',
+            fellowship: 'Transformed Women Fellowship',
+            quote: 'She is clothed with strength and dignity.',
+            bio: 'Pastor Grace Acheampong leads the Transformed Women Fellowship across all branches. Her ministry focuses on empowering women through the Word of God, building strong families, and raising godly women of influence in society.',
+            highlights: [
+                'Leads Transformed Women Fellowship',
+                'Oversees women\'s camps and retreats',
+                'Counsellor and mentor to young women in ministry'
+            ],
+            photo: null,
+            email: 'grace.acheampong@tpministries.org',
+            phone: ''
+        },
+        {
+            id: 4,
+            name: 'Elder Joseph Mensah',
+            title: 'Church Elder & Welfare Lead',
+            branch: 'Takoradi',
+            fellowship: 'Transformed Couples',
+            quote: 'Love one another as I have loved you.',
+            bio: 'Elder Joseph Mensah has served TPM faithfully for over a decade. He leads the Welfare department and the Transformed Couples fellowship, bringing pastoral care and practical support to members and families within the church.',
+            highlights: [
+                'Over 10 years of faithful service to TPM',
+                'Leads the Welfare department',
+                'Co-leads the Transformed Couples fellowship'
+            ],
+            photo: null,
+            email: 'joseph.mensah@tpministries.org',
+            phone: ''
+        },
+        {
+            id: 5,
+            name: 'Minister Abigail Darko',
+            title: 'Youth & Evangelism Minister',
+            branch: 'Accra Central',
+            fellowship: 'Transformed Youth Fellowship',
+            quote: 'Go into all the world and preach the Gospel.',
+            bio: 'Minister Abigail Darko is the engine behind TPM\'s youth and evangelism drive. She coordinates outreach programmes, mentors young ministers, and leads the Transformed Youth Fellowship with energy and vision. Her passion for souls has directly contributed to significant church growth.',
+            highlights: [
+                'Leads Transformed Youth Fellowship',
+                'Coordinates outreach and evangelism across branches',
+                'Mentor to young ministers and workers'
+            ],
+            photo: null,
+            email: 'abigail.darko@tpministries.org',
+            phone: ''
         }
     ],
 

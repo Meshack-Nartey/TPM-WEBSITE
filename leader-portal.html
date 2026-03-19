@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leader Portal - Transformation Project Ministries</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+
+        /* ── Auth screen ── */
+        .lp-auth-bg { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:60px 20px; background:linear-gradient(135deg,#0f1b4d 0%,#0a0a0a 65%); }
+        .lp-auth-box { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:42px 38px; width:100%; max-width:450px; }
+        .lp-auth-brand { text-align:center; margin-bottom:22px; }
+        .lp-auth-brand img { height:46px; object-fit:contain; }
+        .lp-auth-title { font-family:var(--font-display); font-size:1.4rem; color:#fff; text-align:center; margin:0 0 4px; }
+        .lp-auth-sub { font-size:.77rem; color:rgba(255,255,255,.38); text-align:center; margin:0 0 22px; }
+
+        .lp-atabs { display:flex; border-bottom:1px solid rgba(255,255,255,.1); margin-bottom:22px; }
+        .lp-atab { flex:1; background:none; border:none; padding:10px 0; font-size:.77rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:rgba(255,255,255,.3); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:color .2s,border-color .2s; }
+        .lp-atab.active { color:#c9a84c; border-bottom-color:#c9a84c; }
+
+        .lp-aform { display:none; }
+        .lp-aform.active { display:block; }
+
+        .lp-afield { margin-bottom:12px; }
+        .lp-afield label { display:block; font-size:.67rem; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:rgba(255,255,255,.4); margin-bottom:5px; }
+        .lp-afield input, .lp-afield select { width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.11); border-radius:8px; padding:10px 12px; font-size:.86rem; color:#fff; font-family:var(--font-body); outline:none; transition:border-color .2s; -webkit-appearance:none; }
+        .lp-afield input:focus, .lp-afield select:focus { border-color:rgba(212,175,55,.5); }
+        .lp-afield input::placeholder { color:rgba(255,255,255,.22); }
+        .lp-afield select option { background:#1a1a2e; color:#fff; }
+        .lp-arow { display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+
+        .lp-abtn { width:100%; padding:12px; background:linear-gradient(135deg,#c9a84c,#a07830); border:none; border-radius:8px; color:#fff; font-size:.82rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; cursor:pointer; margin-top:6px; transition:opacity .2s; }
+        .lp-abtn:hover { opacity:.85; }
+        .lp-aghost { width:100%; padding:10px; background:transparent; border:1px solid rgba(255,255,255,.11); border-radius:8px; color:rgba(255,255,255,.45); font-size:.77rem; font-weight:600; cursor:pointer; margin-top:6px; transition:background .2s,color .2s; }
+        .lp-aghost:hover { background:rgba(255,255,255,.07); color:#fff; }
+
+        .lp-amsg { padding:9px 12px; border-radius:8px; font-size:.8rem; margin-bottom:12px; display:none; }
+        .lp-amsg.err { background:rgba(220,60,60,.14); border:1px solid rgba(220,60,60,.28); color:#f87171; display:block; }
+        .lp-amsg.ok  { background:rgba(60,180,100,.14); border:1px solid rgba(60,180,100,.28); color:#6ee7a0; display:block; }
+
+        .lp-steps { display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:5px; }
+        .lp-sdot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.18); transition:background .3s; }
+        .lp-sdot.on { background:#c9a84c; }
+        .lp-slbl { font-size:.67rem; color:rgba(255,255,255,.3); text-align:center; margin-bottom:16px; }
+
+        /* ── Portal shell ── */
+        .lp-shell { display:flex; min-height:100vh; background:#0a0a0a; }
+
+        .lp-sidebar { width:220px; background:rgba(255,255,255,.03); border-right:1px solid rgba(255,255,255,.07); display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:200; }
+        .lp-sidebar-brand { padding:18px 16px; border-bottom:1px solid rgba(255,255,255,.07); }
+        .lp-sidebar-brand img { height:30px; object-fit:contain; }
+        .lp-sidebar-brand-lbl { font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:rgba(255,255,255,.28); margin-top:4px; }
+
+        .lp-sidenav { flex:1; padding:10px 8px; overflow-y:auto; }
+        .lp-nav-btn { width:100%; display:flex; align-items:center; gap:10px; padding:9px 12px; background:none; border:none; border-radius:8px; color:rgba(255,255,255,.45); font-size:.79rem; font-weight:600; cursor:pointer; text-align:left; transition:background .2s,color .2s; margin-bottom:2px; font-family:var(--font-body); }
+        .lp-nav-btn:hover { background:rgba(255,255,255,.07); color:rgba(255,255,255,.85); }
+        .lp-nav-btn.active { background:rgba(212,175,55,.12); color:#c9a84c; }
+        .lp-nav-icon { font-size:.95rem; width:20px; text-align:center; flex-shrink:0; }
+
+        .lp-sidebar-user { padding:14px 12px; border-top:1px solid rgba(255,255,255,.07); }
+        .lp-sidebar-uname { font-size:.78rem; font-weight:600; color:rgba(255,255,255,.8); margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .lp-sidebar-urole { font-size:.62rem; text-transform:uppercase; letter-spacing:1px; color:#c9a84c; margin-bottom:8px; }
+        .lp-logout { width:100%; padding:7px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:6px; color:rgba(255,255,255,.4); font-size:.71rem; font-weight:600; cursor:pointer; transition:background .2s,color .2s; font-family:var(--font-body); }
+        .lp-logout:hover { background:rgba(255,255,255,.12); color:#fff; }
+
+        .lp-main { margin-left:220px; flex:1; display:flex; flex-direction:column; min-height:100vh; }
+        .lp-topbar { padding:14px 24px; border-bottom:1px solid rgba(255,255,255,.07); display:flex; align-items:center; gap:12px; }
+        .lp-topbar-title { font-size:.86rem; font-weight:700; color:#fff; }
+        .lp-mob-toggle { display:none; background:none; border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:6px 10px; color:rgba(255,255,255,.6); cursor:pointer; font-size:1rem; margin-left:auto; }
+
+        .lp-content { padding:24px; flex:1; }
+
+        /* Overlay for mobile sidebar */
+        .lp-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:190; }
+        .lp-overlay.show { display:block; }
+
+        @media (max-width:768px) {
+            .lp-sidebar { transform:translateX(-100%); transition:transform .25s ease; }
+            .lp-sidebar.open { transform:translateX(0); box-shadow:4px 0 24px rgba(0,0,0,.6); }
+            .lp-main { margin-left:0; }
+            .lp-mob-toggle { display:block; }
+            .lp-content { padding:16px; }
+        }
+
+        /* ── Common view components ── */
+        .lp-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:22px 20px; margin-bottom:18px; }
+        .lp-card-title { font-family:var(--font-display); font-size:1.05rem; color:#fff; margin:0 0 16px; }
+
+        .lp-sec-label { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:#c9a84c; margin-bottom:12px; margin-top:24px; }
+        .lp-sec-label:first-child { margin-top:0; }
+
+        /* Stats */
+        .lp-stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:12px; }
+        .lp-stat { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:18px 16px; }
+        .lp-stat-lbl { font-size:.61rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,.3); margin-bottom:7px; }
+        .lp-stat-val { font-family:var(--font-display); font-size:1.75rem; color:#fff; line-height:1; margin-bottom:3px; }
+        .lp-stat-sub { font-size:.67rem; color:rgba(255,255,255,.3); }
+
+        /* Op cards */
+        .lp-ops-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+        .lp-op { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:20px 18px; cursor:pointer; display:block; width:100%; text-align:left; transition:background .2s,border-color .2s,transform .2s; font-family:var(--font-body); }
+        .lp-op:hover { background:rgba(255,255,255,.09); border-color:rgba(212,175,55,.3); transform:translateY(-2px); }
+        .lp-op-icon { font-size:1.4rem; margin-bottom:9px; }
+        .lp-op-name { font-size:.85rem; font-weight:700; color:#fff; margin-bottom:4px; }
+        .lp-op-desc { font-size:.73rem; color:rgba(255,255,255,.38); line-height:1.5; }
+
+        /* Form grid */
+        .lp-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:4px; }
+        .lp-form-grid .full { grid-column:1 / -1; }
+        .lp-field { }
+        .lp-field label { display:block; font-size:.66rem; font-weight:700; text-transform:uppercase; letter-spacing:1.2px; color:rgba(255,255,255,.4); margin-bottom:5px; }
+        .lp-field input, .lp-field select, .lp-field textarea { width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.11); border-radius:8px; padding:10px 12px; font-size:.85rem; color:#fff; font-family:var(--font-body); outline:none; transition:border-color .2s; -webkit-appearance:none; }
+        .lp-field input:focus, .lp-field select:focus { border-color:rgba(212,175,55,.5); }
+        .lp-field input::placeholder { color:rgba(255,255,255,.22); }
+        .lp-field select option { background:#1a1a2e; color:#fff; }
+
+        .lp-btn { padding:11px 24px; background:linear-gradient(135deg,#c9a84c,#a07830); border:none; border-radius:8px; color:#fff; font-size:.81rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; cursor:pointer; margin-top:14px; transition:opacity .2s; font-family:var(--font-body); }
+        .lp-btn:hover { opacity:.85; }
+        .lp-btn.full { width:100%; }
+
+        .lp-vmsg { padding:9px 12px; border-radius:8px; font-size:.8rem; margin-bottom:14px; display:none; }
+        .lp-vmsg.err { background:rgba(220,60,60,.14); border:1px solid rgba(220,60,60,.28); color:#f87171; display:block; }
+        .lp-vmsg.ok  { background:rgba(60,180,100,.14); border:1px solid rgba(60,180,100,.28); color:#6ee7a0; display:block; }
+
+        /* Tables */
+        .lp-table-wrap { overflow-x:auto; }
+        .lp-table { width:100%; border-collapse:collapse; font-size:.81rem; }
+        .lp-table th { padding:9px 13px; text-align:left; font-size:.63rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,.33); border-bottom:1px solid rgba(255,255,255,.08); white-space:nowrap; }
+        .lp-table td { padding:10px 13px; color:rgba(255,255,255,.72); border-bottom:1px solid rgba(255,255,255,.05); }
+        .lp-table tr:last-child td { border-bottom:none; }
+        .lp-table tr:hover td { background:rgba(255,255,255,.03); }
+
+        /* Badges */
+        .lp-badge { display:inline-block; padding:3px 8px; border-radius:4px; font-size:.69rem; font-weight:700; }
+        .lp-badge.pending  { background:rgba(234,179,8,.15);  color:#fbbf24; }
+        .lp-badge.approved { background:rgba(34,197,94,.15);  color:#4ade80; }
+        .lp-badge.rejected { background:rgba(239,68,68,.15);  color:#f87171; }
+
+        .lp-req-btn { padding:4px 10px; border-radius:5px; font-size:.71rem; font-weight:700; cursor:pointer; border:none; font-family:var(--font-body); }
+        .lp-req-approve { background:rgba(34,197,94,.2); color:#4ade80; }
+        .lp-req-reject  { background:rgba(239,68,68,.2);  color:#f87171; margin-left:5px; }
+
+        /* Tab pills */
+        .lp-tabs-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+        .lp-tab-pill { padding:5px 13px; border-radius:20px; font-size:.72rem; font-weight:700; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.42); cursor:pointer; transition:background .2s,color .2s,border-color .2s; font-family:var(--font-body); }
+        .lp-tab-pill.active { background:rgba(212,175,55,.14); border-color:rgba(212,175,55,.38); color:#c9a84c; }
+
+        /* Filter row */
+        .lp-filters { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+        .lp-filter-btn { padding:5px 12px; border-radius:16px; font-size:.71rem; font-weight:700; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.38); cursor:pointer; transition:background .2s,color .2s,border-color .2s; font-family:var(--font-body); }
+        .lp-filter-btn.active { background:rgba(212,175,55,.13); border-color:rgba(212,175,55,.35); color:#c9a84c; }
+
+        /* Leader cards */
+        .lp-leaders-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; }
+        .lp-leader-card { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:13px; padding:20px 18px; display:flex; align-items:center; gap:14px; }
+        .lp-leader-av { width:52px; height:52px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,rgba(30,58,138,.8),rgba(212,175,55,.3)); border:2px solid rgba(212,175,55,.4); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:1.1rem; color:rgba(255,255,255,.75); font-weight:700; overflow:hidden; }
+        .lp-leader-av img { width:100%; height:100%; object-fit:cover; }
+        .lp-leader-name { font-size:.86rem; font-weight:700; color:#fff; margin-bottom:2px; }
+        .lp-leader-role { font-size:.72rem; color:#c9a84c; margin-bottom:2px; }
+        .lp-leader-branch { font-size:.7rem; color:rgba(255,255,255,.36); }
+
+        /* Announcements */
+        .lp-ann-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:14px; }
+        .lp-ann-card { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:13px; padding:20px 18px 16px; display:flex; flex-direction:column; gap:8px; }
+        .lp-ann-tag { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#c9a84c; }
+        .lp-ann-title { font-family:var(--font-display); font-size:1rem; color:#fff; }
+        .lp-ann-body { font-size:.81rem; color:rgba(255,255,255,.52); line-height:1.6; flex:1; }
+        .lp-ann-date { font-size:.71rem; color:rgba(212,175,55,.8); padding-top:8px; border-top:1px solid rgba(255,255,255,.07); }
+
+        /* My info */
+        .lp-info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:16px; }
+        .lp-prow { display:flex; flex-direction:column; gap:3px; }
+        .lp-prow span:first-child { font-size:.61rem; font-weight:700; text-transform:uppercase; letter-spacing:1.3px; color:rgba(255,255,255,.28); }
+        .lp-prow span:last-child { font-size:.83rem; color:rgba(255,255,255,.8); }
+
+        /* Welcome */
+        .lp-welcome-tag { font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:#c9a84c; margin-bottom:4px; }
+        .lp-welcome-name { font-family:var(--font-display); font-size:clamp(1.3rem,3vw,1.85rem); color:#fff; margin:0 0 4px; }
+        .lp-welcome-meta { font-size:.77rem; color:rgba(255,255,255,.38); }
+
+        @media (max-width:480px) {
+            .lp-auth-box { padding:28px 18px; }
+            .lp-arow { grid-template-columns:1fr; }
+            .lp-form-grid { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+<div id="lpPage"></div>
+<script src="mockData.js"></script>
+<script src="auth.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    var INVITE_CODE = 'TPM-LEADER-2026';
+    var activeView = 'dashboard';
+    var activeReportTab = 'loucs';
+    var activeReqFilter = 'all';
+    var chartInsts = [];
+
+    /* ── Helpers ── */
+    function esc(s) { var d = document.createElement('div'); d.appendChild(document.createTextNode(s || '')); return d.innerHTML; }
+    function fmt(n) { return Number(n || 0).toLocaleString(); }
+    function $(id) { return document.getElementById(id); }
+    function getUser() { var a = window.TPMAuth.getAuthState(); return (a && a.loggedIn) ? a.user : null; }
+    function getReg(email) { try { return JSON.parse(localStorage.getItem('tpm_registration_' + email) || 'null'); } catch(e) { return null; } }
+    function getReports() { try { return JSON.parse(localStorage.getItem('tpm_lp_reports') || '[]'); } catch(e) { return []; } }
+    function saveReports(arr) { localStorage.setItem('tpm_lp_reports', JSON.stringify(arr)); }
+    function getRequests() { try { var s = localStorage.getItem('tpm_profile_requests'); return s ? JSON.parse(s) : (window.TPM_MOCK_DATA.profileUpdateRequests || []); } catch(e) { return window.TPM_MOCK_DATA.profileUpdateRequests || []; } }
+    function saveRequests(arr) { localStorage.setItem('tpm_profile_requests', JSON.stringify(arr)); }
+    function selectOpts(opts, ph) { return '<option value="">' + ph + '</option>' + opts.map(function(o){ return '<option value="'+esc(o)+'">'+esc(o)+'</option>'; }).join(''); }
+    function destroyCharts() { chartInsts.forEach(function(c){ try{ c.destroy(); }catch(e){} }); chartInsts = []; }
+
+    function showMsg(id, cls, text, auto) {
+        var el = $(id); if (!el) return;
+        el.className = 'lp-amsg ' + cls; el.textContent = text;
+        if (auto) setTimeout(function(){ if(el) el.className='lp-amsg'; }, 4000);
+    }
+    function showVMsg(id, cls, text) { showMsg(id, cls, text, true); }
+
+    /* ══════════════════════
+       AUTH
+    ══════════════════════ */
+    function renderAuth() {
+        var d = window.TPM_MOCK_DATA || {};
+        $('lpPage').innerHTML =
+            '<div class="lp-auth-bg"><div class="lp-auth-box">' +
+                '<div class="lp-auth-brand"><img src="assets/images/TPM LOGO WHITE.png" alt="TPM"></div>' +
+                '<h1 class="lp-auth-title">Leader Portal</h1>' +
+                '<p class="lp-auth-sub">Transformation Project Ministries</p>' +
+                '<div class="lp-atabs">' +
+                    '<button class="lp-atab active" data-tab="login">Log In</button>' +
+                    '<button class="lp-atab" data-tab="register">Register</button>' +
+                '</div>' +
+
+                /* Login */
+                '<form class="lp-aform active" id="loginForm">' +
+                    '<div class="lp-amsg" id="loginMsg"></div>' +
+                    '<div class="lp-afield"><label>Email</label><input type="email" id="li_email" placeholder="your@email.com"></div>' +
+                    '<div class="lp-afield"><label>Password</label><input type="password" id="li_pwd" placeholder="••••••••"></div>' +
+                    '<button type="submit" class="lp-abtn">Log In</button>' +
+                '</form>' +
+
+                /* Register */
+                '<form class="lp-aform" id="regForm">' +
+                    '<div class="lp-amsg" id="regMsg"></div>' +
+
+                    /* Step 1 */
+                    '<div id="rs1">' +
+                        '<div class="lp-steps"><div class="lp-sdot on"></div><div class="lp-sdot"></div><div class="lp-sdot"></div></div>' +
+                        '<p class="lp-slbl">Step 1 of 3 — Enter your invite code</p>' +
+                        '<div class="lp-afield"><label>Invite Code</label><input type="text" id="r_code" placeholder="TPM-XXXX-XXXX"></div>' +
+                        '<button type="button" class="lp-abtn" id="s1Btn">Continue</button>' +
+                    '</div>' +
+
+                    /* Step 2 */
+                    '<div id="rs2" style="display:none">' +
+                        '<div class="lp-steps"><div class="lp-sdot"></div><div class="lp-sdot on"></div><div class="lp-sdot"></div></div>' +
+                        '<p class="lp-slbl">Step 2 of 3 — Create your account</p>' +
+                        '<div class="lp-arow">' +
+                            '<div class="lp-afield"><label>First Name</label><input type="text" id="r_first" placeholder="First name"></div>' +
+                            '<div class="lp-afield"><label>Last Name</label><input type="text" id="r_last" placeholder="Last name"></div>' +
+                        '</div>' +
+                        '<div class="lp-afield"><label>Email</label><input type="email" id="r_email" placeholder="your@email.com"></div>' +
+                        '<div class="lp-afield"><label>Password</label><input type="password" id="r_pwd" placeholder="Min. 6 characters"></div>' +
+                        '<div class="lp-afield"><label>Confirm Password</label><input type="password" id="r_pwd2" placeholder="Repeat password"></div>' +
+                        '<button type="button" class="lp-abtn" id="s2Btn">Continue</button>' +
+                        '<button type="button" class="lp-aghost" id="s2Back">&#8592; Back</button>' +
+                    '</div>' +
+
+                    /* Step 3 */
+                    '<div id="rs3" style="display:none">' +
+                        '<div class="lp-steps"><div class="lp-sdot"></div><div class="lp-sdot"></div><div class="lp-sdot on"></div></div>' +
+                        '<p class="lp-slbl">Step 3 of 3 — Your church details</p>' +
+                        '<div class="lp-afield"><label>Phone Number</label><input type="tel" id="r_phone" placeholder="+233 XX XXX XXXX"></div>' +
+                        '<div class="lp-afield"><label>Branch *</label><select id="r_branch">'+selectOpts(d.branches||[],'Select branch')+'</select></div>' +
+                        '<div class="lp-afield"><label>Basenia</label><select id="r_basenia">'+selectOpts(d.basenias||[],'Select basenia')+'</select></div>' +
+                        '<div class="lp-afield"><label>Fellowship</label><select id="r_fellowship">'+selectOpts(d.fellowships||[],'Select fellowship')+'</select></div>' +
+                        '<div class="lp-afield"><label>Department *</label><select id="r_dept">'+selectOpts(d.departments||[],'Select department')+'</select></div>' +
+                        '<div class="lp-afield"><label>Date Joined *</label><input type="date" id="r_joined"></div>' +
+                        '<button type="submit" class="lp-abtn">Complete Registration</button>' +
+                        '<button type="button" class="lp-aghost" id="s3Back">&#8592; Back</button>' +
+                    '</div>' +
+                '</form>' +
+            '</div></div>';
+
+        /* Tab switch */
+        document.querySelectorAll('.lp-atab').forEach(function(t) {
+            t.addEventListener('click', function() {
+                document.querySelectorAll('.lp-atab').forEach(function(x){ x.classList.remove('active'); });
+                t.classList.add('active');
+                var tab = t.getAttribute('data-tab');
+                $('loginForm').classList.toggle('active', tab==='login');
+                $('regForm').classList.toggle('active', tab==='register');
+            });
+        });
+
+        /* Login */
+        $('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var email = $('li_email').value.trim(), pwd = $('li_pwd').value;
+            if (!email || !pwd) { showMsg('loginMsg','err','Please fill in all fields.'); return; }
+            var user = window.TPMAuth.findUser(email, pwd);
+            if (!user) { showMsg('loginMsg','err','Invalid email or password.'); return; }
+            if (user.role !== 'leader') { showMsg('loginMsg','err','This portal is for church leaders only.'); return; }
+            window.TPMAuth.setAuthState({ fullName:user.fullName, email:user.email, phone:user.phone, role:'leader' });
+            showMsg('loginMsg','ok','Welcome back! Loading dashboard...');
+            setTimeout(renderPortal, 900);
+        });
+
+        /* Step 1 → 2 */
+        $('s1Btn').addEventListener('click', function() {
+            var code = ($('r_code').value||'').trim().toUpperCase();
+            if (!code) { showMsg('regMsg','err','Please enter your invite code.'); return; }
+            if (code !== INVITE_CODE) { showMsg('regMsg','err','Invalid invite code. Please contact TPM administration.'); return; }
+            $('rs1').style.display='none'; $('rs2').style.display='block'; $('regMsg').className='lp-amsg';
+        });
+
+        /* Step 2 → 3 */
+        $('s2Btn').addEventListener('click', function() {
+            var first=$('r_first').value.trim(), last=$('r_last').value.trim(),
+                email=$('r_email').value.trim().toLowerCase(),
+                pwd=$('r_pwd').value, pwd2=$('r_pwd2').value;
+            if (!first||!last||!email||!pwd||!pwd2) { showMsg('regMsg','err','Please fill in all fields.'); return; }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showMsg('regMsg','err','Please enter a valid email.'); return; }
+            if (pwd.length<6) { showMsg('regMsg','err','Password must be at least 6 characters.'); return; }
+            if (pwd!==pwd2) { showMsg('regMsg','err','Passwords do not match.'); return; }
+            if (window.TPMAuth.getUsers().some(function(u){ return u.email.toLowerCase()===email; })) { showMsg('regMsg','err','An account with this email already exists. Please log in.'); return; }
+            $('rs2').style.display='none'; $('rs3').style.display='block'; $('regMsg').className='lp-amsg';
+        });
+
+        $('s2Back').addEventListener('click', function(){ $('rs2').style.display='none'; $('rs1').style.display='block'; $('regMsg').className='lp-amsg'; });
+        $('s3Back').addEventListener('click', function(){ $('rs3').style.display='none'; $('rs2').style.display='block'; $('regMsg').className='lp-amsg'; });
+
+        /* Step 3 submit */
+        $('regForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var first=$('r_first').value.trim(), last=$('r_last').value.trim(),
+                email=$('r_email').value.trim().toLowerCase(), pwd=$('r_pwd').value,
+                phone=($('r_phone').value||'').trim(),
+                branch=$('r_branch').value, basenia=$('r_basenia').value,
+                fellowship=$('r_fellowship').value, dept=$('r_dept').value,
+                joined=$('r_joined').value;
+            if (!branch||!dept||!joined) { showMsg('regMsg','err','Please fill in Branch, Department, and Date Joined.'); return; }
+            var fullName = first+' '+last;
+            window.TPMAuth.addUser({ fullName:fullName, email:email, phone:phone, password:pwd, role:'leader', branch:branch, basenia:basenia, fellowship:fellowship, department:dept, dateJoined:joined });
+            localStorage.setItem('tpm_registration_'+email, JSON.stringify({ firstName:first, lastName:last, email:email, phone:phone, branch:branch, basenia:basenia, fellowship:fellowship, department:dept, dateJoined:joined, membershipStatus:'Leader' }));
+            window.TPMAuth.setAuthState({ fullName:fullName, email:email, phone:phone, role:'leader' });
+            showMsg('regMsg','ok','Registration complete! Loading dashboard...');
+            setTimeout(renderPortal, 900);
+        });
+    }
+
+    /* ══════════════════════
+       PORTAL SHELL
+    ══════════════════════ */
+    function renderPortal() {
+        var user = getUser(); if (!user) { renderAuth(); return; }
+        var nav = [
+            { id:'dashboard',    icon:'&#127968;', label:'Dashboard' },
+            { id:'reports',      icon:'&#128203;', label:'Submit Reports' },
+            { id:'members',      icon:'&#128101;', label:'Member Directory' },
+            { id:'requests',     icon:'&#9997;',   label:'Profile Requests' },
+            { id:'statistics',   icon:'&#128200;', label:'Statistics' },
+            { id:'leaders',      icon:'&#127960;', label:'Leaders' },
+            { id:'announcements',icon:'&#128227;', label:'Announcements' }
+        ];
+        var navHTML = nav.map(function(n){
+            return '<button class="lp-nav-btn'+(activeView===n.id?' active':'')+'" data-view="'+n.id+'"><span class="lp-nav-icon">'+n.icon+'</span>'+esc(n.label)+'</button>';
+        }).join('');
+
+        $('lpPage').innerHTML =
+            '<div class="lp-overlay" id="lpOverlay"></div>' +
+            '<div class="lp-shell">' +
+                '<aside class="lp-sidebar" id="lpSidebar">' +
+                    '<div class="lp-sidebar-brand"><img src="assets/images/TPM LOGO WHITE.png" alt="TPM"><div class="lp-sidebar-brand-lbl">Leader Portal</div></div>' +
+                    '<nav class="lp-sidenav">' + navHTML + '</nav>' +
+                    '<div class="lp-sidebar-user">' +
+                        '<div class="lp-sidebar-uname">'+esc(user.fullName)+'</div>' +
+                        '<div class="lp-sidebar-urole">Leader</div>' +
+                        '<button class="lp-logout" id="logoutBtn">Log Out</button>' +
+                    '</div>' +
+                '</aside>' +
+                '<div class="lp-main">' +
+                    '<div class="lp-topbar">' +
+                        '<button class="lp-mob-toggle" id="mobToggle">&#9776;</button>' +
+                        '<span class="lp-topbar-title" id="lpTopTitle">Dashboard</span>' +
+                    '</div>' +
+                    '<div class="lp-content" id="lpContent"></div>' +
+                '</div>' +
+            '</div>';
+
+        document.querySelectorAll('.lp-nav-btn').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                closeSidebar();
+                showView(this.getAttribute('data-view'));
+            });
+        });
+
+        $('mobToggle').addEventListener('click', function(){
+            $('lpSidebar').classList.toggle('open');
+            $('lpOverlay').classList.toggle('show');
+        });
+
+        $('lpOverlay').addEventListener('click', closeSidebar);
+
+        $('logoutBtn').addEventListener('click', function(){
+            window.TPMAuth.clearAuthState();
+            activeView = 'dashboard';
+            renderAuth();
+        });
+
+        showView(activeView);
+    }
+
+    function closeSidebar() {
+        var s = $('lpSidebar'), o = $('lpOverlay');
+        if (s) s.classList.remove('open');
+        if (o) o.classList.remove('show');
+    }
+
+    function showView(name) {
+        activeView = name;
+        destroyCharts();
+        document.querySelectorAll('.lp-nav-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-view')===name); });
+        var titles = { dashboard:'Dashboard', reports:'Submit Reports', members:'Member Directory', requests:'Profile Requests', statistics:'Statistics', leaders:'Leaders', announcements:'Announcements' };
+        var t = $('lpTopTitle'); if (t) t.textContent = titles[name]||'';
+        var views = { dashboard:vDashboard, reports:vReports, members:vMembers, requests:vRequests, statistics:vStatistics, leaders:vLeaders, announcements:vAnnouncements };
+        if (views[name]) views[name]();
+    }
+
+    /* ══════════════════════
+       DASHBOARD
+    ══════════════════════ */
+    function vDashboard() {
+        var user=getUser(), reg=getReg(user.email), d=window.TPM_MOCK_DATA||{}, stats=d.statistics||{};
+        var pending=getRequests().filter(function(r){return r.status==='Pending';}).length;
+        var meta=[]; if(reg&&reg.branch) meta.push(reg.branch); if(reg&&reg.department) meta.push(reg.department);
+        var ops=[
+            {id:'reports',      icon:'&#128203;', name:'Submit Reports',      desc:'Submit LOUCS, Basenia, Friday Service, Tithe, Souls Won records.'},
+            {id:'members',      icon:'&#128101;', name:'Member Directory',     desc:'Register new members into the church database.'},
+            {id:'requests',     icon:'&#9997;',   name:'Profile Requests',     desc:'Review and approve member profile change requests.'},
+            {id:'statistics',   icon:'&#128200;', name:'Church Statistics',    desc:'View attendance trends and branch comparisons.'},
+            {id:'leaders',      icon:'&#127960;', name:'Leadership Directory', desc:'View all church leaders across branches.'},
+            {id:'announcements',icon:'&#128227;', name:'Announcements',        desc:'Stay up to date with church events.'}
+        ];
+        $('lpContent').innerHTML =
+            '<div class="lp-welcome-tag">Welcome back</div>' +
+            '<h1 class="lp-welcome-name">'+esc(user.fullName)+'</h1>' +
+            (meta.length?'<div class="lp-welcome-meta">'+esc(meta.join(' · '))+'</div>':'')+
+            '<div class="lp-sec-label" style="margin-top:24px">Church Overview</div>' +
+            '<div class="lp-stats-grid">' +
+                sc('Total Members',    fmt(stats.totalMembers),      'registered')+
+                sc('Attendance',       fmt(stats.attendanceThisWeek),'this week')+
+                sc('Tithe',            'GH&#8373; '+fmt(stats.titheThisMonth),'this month')+
+                sc('Souls Won',        fmt(stats.soulsWon),          'this month')+
+                sc('Branches',         fmt((d.branches||[]).length), 'active')+
+                sc('Pending Requests', fmt(pending),                 'awaiting review')+
+            '</div>' +
+            '<div class="lp-sec-label">Quick Actions</div>' +
+            '<div class="lp-ops-grid">'+ops.map(function(o){
+                return '<button class="lp-op" data-view="'+o.id+'"><div class="lp-op-icon">'+o.icon+'</div><div class="lp-op-name">'+esc(o.name)+'</div><div class="lp-op-desc">'+esc(o.desc)+'</div></button>';
+            }).join('')+'</div>';
+
+        $('lpContent').querySelectorAll('.lp-op').forEach(function(b){
+            b.addEventListener('click', function(){ showView(this.getAttribute('data-view')); });
+        });
+    }
+
+    /* ══════════════════════
+       SUBMIT REPORTS
+    ══════════════════════ */
+    function vReports() {
+        var d=window.TPM_MOCK_DATA||{}, branches=d.branches||[], types=d.meetingTypes||[];
+        var typeMap={loucs:'LOUCS Report',basenia:'Basenia',friday:'Friday Service',general:'General Meeting',tithe:'Tithe Collection',souls:'Souls Won'};
+        var tabLabels={loucs:'LOUCS',basenia:'Basenia',friday:'Friday Service',general:'General Meeting',tithe:'Tithe',souls:'Souls Won'};
+        var pills=Object.keys(tabLabels).map(function(k){
+            return '<button class="lp-tab-pill'+(activeReportTab===k?' active':'')+'" data-rtab="'+k+'">'+tabLabels[k]+'</button>';
+        }).join('');
+
+        var submitted=getReports().filter(function(r){return r.meetingType===typeMap[activeReportTab];});
+        var mockSrc={loucs:d.loucsReport,basenia:d.baseniaReport,friday:d.fridayServiceReport,general:d.generalMeetingReport,tithe:d.titheRecords,souls:d.soulsWonReport};
+        var combined=(mockSrc[activeReportTab]||[]).concat(submitted);
+
+        var isSouls = activeReportTab === 'souls';
+        var isTithe = activeReportTab === 'tithe';
+
+        // Table headers
+        var extraHead = isTithe ? '<th>Tithe (GH&#8373;)</th>' : '';
+        var attHead   = '<th>Male</th><th>Female</th><th>Total</th>';
+        var soulsHead = isSouls ? '<th>Souls (M)</th><th>Souls (F)</th><th>Souls Total</th>' : '';
+
+        // Table rows
+        var rows = combined.length ? combined.map(function(r){
+            var attM   = Number(r.attMale   || 0);
+            var attF   = Number(r.attFemale || 0);
+            var attTot = attM + attF || fmt(r.attendance) || '—';
+            var soulsM   = Number(r.soulsMale   || 0);
+            var soulsF   = Number(r.soulsFemale || 0);
+            var soulsTot = soulsM + soulsF || fmt(r.souls) || '—';
+            return '<tr>' +
+                '<td>'+esc(r.date||'')+'</td>' +
+                '<td>'+esc(r.branch||'')+'</td>' +
+                '<td>'+fmt(attM)+'</td><td>'+fmt(attF)+'</td><td><strong>'+fmt(attM+attF)+'</strong></td>' +
+                (isTithe ? '<td>'+fmt(r.tithe)+'</td>' : '') +
+                (isSouls ? '<td>'+fmt(soulsM)+'</td><td>'+fmt(soulsF)+'</td><td><strong>'+fmt(soulsM+soulsF)+'</strong></td>' : '') +
+                '<td>'+esc(r.notes||'')+'</td>' +
+            '</tr>';
+        }).join('') : '<tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,.3);padding:20px">No records yet</td></tr>';
+
+        $('lpContent').innerHTML =
+            '<div class="lp-card">' +
+                '<h2 class="lp-card-title">Submit New Record</h2>' +
+                '<div class="lp-vmsg" id="rptMsg"></div>' +
+                '<form id="rptForm">' +
+                    '<div class="lp-form-grid">' +
+                        '<div class="lp-field"><label>Record Type *</label><select id="rType"><option value="">Select type</option>'+types.map(function(t){return'<option>'+esc(t)+'</option>';}).join('')+'</select></div>' +
+                        '<div class="lp-field"><label>Branch *</label><select id="rBranch"><option value="">Select branch</option>'+branches.map(function(b){return'<option>'+esc(b)+'</option>';}).join('')+'</select></div>' +
+                        '<div class="lp-field"><label>Date *</label><input type="date" id="rDate"></div>' +
+                        '<div class="lp-field"><label>Attendance — Male</label><input type="number" id="rAttM" min="0" placeholder="0"></div>' +
+                        '<div class="lp-field"><label>Attendance — Female</label><input type="number" id="rAttF" min="0" placeholder="0"></div>' +
+                        '<div class="lp-field"><label>Tithe (GH&#8373;)</label><input type="number" id="rTithe" min="0" step="0.01" placeholder="0.00"></div>' +
+                        '<div class="lp-field"><label>Souls Won — Male</label><input type="number" id="rSoulsM" min="0" placeholder="0"></div>' +
+                        '<div class="lp-field"><label>Souls Won — Female</label><input type="number" id="rSoulsF" min="0" placeholder="0"></div>' +
+                        '<div class="lp-field full"><label>Notes</label><input type="text" id="rNotes" placeholder="Optional notes"></div>' +
+                    '</div>' +
+                    '<button type="submit" class="lp-btn">Submit Record</button>' +
+                '</form>' +
+            '</div>' +
+            '<div class="lp-card">' +
+                '<h2 class="lp-card-title">Records</h2>' +
+                '<div class="lp-tabs-row">'+pills+'</div>' +
+                '<div class="lp-table-wrap"><table class="lp-table"><thead><tr><th>Date</th><th>Branch</th>'+attHead+extraHead+soulsHead+'<th>Notes</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
+            '</div>';
+
+        $('lpContent').querySelectorAll('.lp-tab-pill').forEach(function(p){
+            p.addEventListener('click',function(){ activeReportTab=this.getAttribute('data-rtab'); vReports(); });
+        });
+
+        $('rptForm').addEventListener('submit',function(e){
+            e.preventDefault();
+            var type=$('rType').value, branch=$('rBranch').value, date=$('rDate').value;
+            if(!type||!branch||!date){showVMsg('rptMsg','err','Please fill in Record Type, Branch, and Date.');return;}
+            var attM=Number($('rAttM').value||0), attF=Number($('rAttF').value||0);
+            var soulsM=Number($('rSoulsM').value||0), soulsF=Number($('rSoulsF').value||0);
+            var rpts=getReports();
+            rpts.push({meetingType:type,branch:branch,date:date,attMale:attM,attFemale:attF,attendance:attM+attF,tithe:$('rTithe').value||0,soulsMale:soulsM,soulsFemale:soulsF,souls:soulsM+soulsF,notes:$('rNotes').value||''});
+            saveReports(rpts);
+            showVMsg('rptMsg','ok','Record submitted successfully!');
+            $('rptForm').reset();
+            setTimeout(vReports,1200);
+        });
+    }
+
+    /* ══════════════════════
+       MEMBER DIRECTORY
+    ══════════════════════ */
+    function vMembers() {
+        var d=window.TPM_MOCK_DATA||{};
+        $('lpContent').innerHTML =
+            '<div class="lp-card">' +
+                '<h2 class="lp-card-title">Register New Member</h2>' +
+                '<div class="lp-vmsg" id="memMsg"></div>' +
+                '<form id="memForm">' +
+                    '<div class="lp-form-grid">' +
+                        '<div class="lp-field"><label>First Name *</label><input type="text" id="m_first" placeholder="First name"></div>' +
+                        '<div class="lp-field"><label>Middle Name</label><input type="text" id="m_mid" placeholder="Optional"></div>' +
+                        '<div class="lp-field"><label>Last Name *</label><input type="text" id="m_last" placeholder="Last name"></div>' +
+                        '<div class="lp-field"><label>Date of Birth *</label><input type="date" id="m_dob"></div>' +
+                        '<div class="lp-field"><label>Gender *</label><select id="m_gender"><option value="">Select gender</option><option>Male</option><option>Female</option></select></div>' +
+                        '<div class="lp-field"><label>Phone *</label><input type="tel" id="m_phone" placeholder="+233241234567"></div>' +
+                        '<div class="lp-field"><label>Email *</label><input type="email" id="m_email" placeholder="email@example.com"></div>' +
+                        '<div class="lp-field full"><label>Home Address *</label><input type="text" id="m_addr" placeholder="Home address"></div>' +
+                        '<div class="lp-field"><label>Branch *</label><select id="m_branch"><option value="">Select branch</option>'+( d.branches||[]).map(function(b){return'<option>'+esc(b)+'</option>';}).join('')+'</select></div>' +
+                        '<div class="lp-field"><label>Department *</label><select id="m_dept"><option value="">Select department</option>'+(d.departments||[]).map(function(x){return'<option>'+esc(x)+'</option>';}).join('')+'</select></div>' +
+                        '<div class="lp-field"><label>Fellowship</label><select id="m_fellow"><option value="">Select fellowship (optional)</option>'+(d.fellowships||[]).map(function(x){return'<option>'+esc(x)+'</option>';}).join('')+'</select></div>' +
+                        '<div class="lp-field"><label>Date Joined *</label><input type="date" id="m_joined"></div>' +
+                        '<div class="lp-field"><label>Membership Status *</label><select id="m_status"><option value="">Select status</option>'+(d.membershipStatuses||[]).map(function(x){return'<option>'+esc(x)+'</option>';}).join('')+'</select></div>' +
+                        '<div class="lp-field"><label>Emergency Contact Name *</label><input type="text" id="m_ecname" placeholder="Full name"></div>' +
+                        '<div class="lp-field"><label>Emergency Contact Phone *</label><input type="tel" id="m_ecphone" placeholder="+233209876543"></div>' +
+                    '</div>' +
+                    '<button type="submit" class="lp-btn">Register Member</button>' +
+                '</form>' +
+            '</div>';
+
+        $('memForm').addEventListener('submit',function(e){
+            e.preventDefault();
+            var first=$('m_first').value.trim(),last=$('m_last').value.trim(),dob=$('m_dob').value,
+                gender=$('m_gender').value,phone=$('m_phone').value.trim(),email=$('m_email').value.trim(),
+                addr=$('m_addr').value.trim(),branch=$('m_branch').value,dept=$('m_dept').value,
+                joined=$('m_joined').value,status=$('m_status').value,
+                ecname=$('m_ecname').value.trim(),ecphone=$('m_ecphone').value.trim();
+            if(!first||!last||!dob||!gender||!phone||!email||!addr||!branch||!dept||!joined||!status||!ecname||!ecphone){
+                showVMsg('memMsg','err','Please fill in all required fields.'); return;
+            }
+            localStorage.setItem('tpm_registration_'+email.toLowerCase(), JSON.stringify({
+                firstName:first,middleName:$('m_mid').value.trim(),lastName:last,dob:dob,gender:gender,
+                phone:phone,email:email,address:addr,branch:branch,department:dept,
+                fellowship:$('m_fellow').value,dateJoined:joined,membershipStatus:status,
+                emergencyContactName:ecname,emergencyContactPhone:ecphone
+            }));
+            showVMsg('memMsg','ok',first+' '+last+' registered successfully!');
+            $('memForm').reset();
+        });
+    }
+
+    /* ══════════════════════
+       PROFILE REQUESTS
+    ══════════════════════ */
+    function vRequests() {
+        var all=getRequests();
+        var filters=['all','pending','approved','rejected'];
+        var filtered=activeReqFilter==='all'?all:all.filter(function(r){return r.status.toLowerCase()===activeReqFilter;});
+        var filterBtns=filters.map(function(f){
+            var count=f==='all'?all.length:all.filter(function(r){return r.status.toLowerCase()===f;}).length;
+            return '<button class="lp-filter-btn'+(activeReqFilter===f?' active':'')+'" data-rf="'+f+'">'+f.charAt(0).toUpperCase()+f.slice(1)+' ('+count+')</button>';
+        }).join('');
+
+        var rows=filtered.length?filtered.map(function(r){
+            var p=r.status==='Pending';
+            return '<tr>' +
+                '<td>'+esc(r.memberName||'')+'</td>'+
+                '<td>'+esc(r.field||'')+'</td>'+
+                '<td style="color:rgba(255,255,255,.4);text-decoration:line-through">'+esc(r.oldValue||'')+'</td>'+
+                '<td style="color:#6ee7a0">'+esc(r.newValue||'')+'</td>'+
+                '<td><span class="lp-badge '+r.status.toLowerCase()+'">'+r.status+'</span></td>'+
+                '<td>'+esc(r.date||'')+'</td>'+
+                '<td>'+(p?'<button class="lp-req-btn lp-req-approve" data-id="'+r.id+'" data-action="Approved">Approve</button><button class="lp-req-btn lp-req-reject" data-id="'+r.id+'" data-action="Rejected">Reject</button>':'—')+'</td>'+
+            '</tr>';
+        }).join(''):'<tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,.3);padding:20px">No requests found</td></tr>';
+
+        $('lpContent').innerHTML =
+            '<div class="lp-card">' +
+                '<h2 class="lp-card-title">Profile Update Requests</h2>' +
+                '<div class="lp-filters">'+filterBtns+'</div>' +
+                '<div class="lp-table-wrap"><table class="lp-table"><thead><tr><th>Member</th><th>Field</th><th>Old Value</th><th>New Value</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
+            '</div>';
+
+        $('lpContent').querySelectorAll('.lp-filter-btn').forEach(function(b){
+            b.addEventListener('click',function(){ activeReqFilter=this.getAttribute('data-rf'); vRequests(); });
+        });
+        $('lpContent').querySelectorAll('.lp-req-btn').forEach(function(b){
+            b.addEventListener('click',function(){
+                var id=parseInt(this.getAttribute('data-id')), action=this.getAttribute('data-action');
+                var reqs=getRequests(), req=reqs.find(function(r){return r.id===id;});
+                if(req) req.status=action;
+                saveRequests(reqs); vRequests();
+            });
+        });
+    }
+
+    /* ══════════════════════
+       STATISTICS
+    ══════════════════════ */
+    function vStatistics() {
+        var d=window.TPM_MOCK_DATA||{}, stats=d.statistics||{}, trends=d.attendanceTrends||{}, bc=d.branchComparisons||{};
+        var tabLabels={loucs:'LOUCS',basenia:'Basenia',friday:'Friday Service',general:'General Meeting',tithe:'Tithe',souls:'Souls Won'};
+        var pills=Object.keys(tabLabels).map(function(k){
+            return '<button class="lp-tab-pill'+(activeReportTab===k?' active':'')+'" data-stab="'+k+'">'+tabLabels[k]+'</button>';
+        }).join('');
+        var mockSrc={loucs:d.loucsReport,basenia:d.baseniaReport,friday:d.fridayServiceReport,general:d.generalMeetingReport,tithe:d.titheRecords,souls:d.soulsWonReport};
+        var stIsSouls = activeReportTab === 'souls';
+        var stIsTithe = activeReportTab === 'tithe';
+        var stAttHead = '<th>Male</th><th>Female</th><th>Total</th>';
+        var stExtraHead = stIsTithe ? '<th>Tithe (GH&#8373;)</th>' : (stIsSouls ? '<th>Souls (M)</th><th>Souls (F)</th><th>Souls Total</th>' : '');
+
+        var rows=(mockSrc[activeReportTab]||[]);
+        var tableRows=rows.length?rows.map(function(r){
+            var attM=Number(r.attMale||0), attF=Number(r.attFemale||0), attTot=attM+attF||Number(r.attendance||0);
+            var soulsM=Number(r.soulsMale||0), soulsF=Number(r.soulsFemale||0), soulsTot=soulsM+soulsF||Number(r.souls||0);
+            return '<tr>' +
+                '<td>'+esc(r.date||'')+'</td><td>'+esc(r.branch||'')+'</td>' +
+                '<td>'+fmt(attM)+'</td><td>'+fmt(attF)+'</td><td><strong>'+fmt(attTot)+'</strong></td>' +
+                (stIsTithe?'<td>'+fmt(r.tithe)+'</td>':'') +
+                (stIsSouls?'<td>'+fmt(soulsM)+'</td><td>'+fmt(soulsF)+'</td><td><strong>'+fmt(soulsTot)+'</strong></td>':'') +
+                '<td>'+esc(r.notes||'')+'</td>' +
+            '</tr>';
+        }).join(''):'<tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,.3);padding:20px">No data</td></tr>';
+
+        $('lpContent').innerHTML =
+            '<div class="lp-stats-grid" style="margin-bottom:18px">' +
+                sc('Total Members',fmt(stats.totalMembers),'registered')+
+                sc('This Week',fmt(stats.attendanceThisWeek),'attendance')+
+                sc('Tithe','GH&#8373; '+fmt(stats.titheThisMonth),'this month')+
+                sc('Souls Won',fmt(stats.soulsWon),'this month')+
+            '</div>' +
+            '<div class="lp-card"><h2 class="lp-card-title">Attendance Trend</h2><canvas id="trendChart" height="90"></canvas></div>' +
+            '<div class="lp-card"><h2 class="lp-card-title">Branch Attendance</h2><canvas id="branchChart" height="90"></canvas></div>' +
+            '<div class="lp-card">' +
+                '<h2 class="lp-card-title">Detailed Records</h2>' +
+                '<div class="lp-tabs-row">'+pills+'</div>' +
+                '<div class="lp-table-wrap"><table class="lp-table"><thead><tr><th>Date</th><th>Branch</th>'+stAttHead+stExtraHead+'<th>Notes</th></tr></thead><tbody>'+tableRows+'</tbody></table></div>' +
+            '</div>';
+
+        $('lpContent').querySelectorAll('.lp-tab-pill').forEach(function(p){
+            p.addEventListener('click',function(){ activeReportTab=this.getAttribute('data-stab'); vStatistics(); });
+        });
+
+        var chartOpts={ plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'rgba(255,255,255,.4)',font:{size:11}},grid:{color:'rgba(255,255,255,.06)'}}, y:{ticks:{color:'rgba(255,255,255,.4)',font:{size:11}},grid:{color:'rgba(255,255,255,.06)'}} } };
+        setTimeout(function(){
+            var tc=$('trendChart'), bc2=$('branchChart');
+            if(tc&&window.Chart){ chartInsts.push(new Chart(tc,{type:'line',data:{labels:trends.labels||[],datasets:[{data:trends.data||[],borderColor:'#c9a84c',backgroundColor:'rgba(201,168,76,.1)',tension:.4,fill:true,pointBackgroundColor:'#c9a84c'}]},options:chartOpts})); }
+            if(bc2&&window.Chart){ chartInsts.push(new Chart(bc2,{type:'bar',data:{labels:bc.labels||[],datasets:[{data:bc.attendance||[],backgroundColor:'rgba(59,130,246,.6)',borderColor:'rgba(59,130,246,.9)',borderWidth:1}]},options:chartOpts})); }
+        }, 50);
+    }
+
+    /* ══════════════════════
+       LEADERS
+    ══════════════════════ */
+    function vLeaders() {
+        var leaders=(window.TPM_MOCK_DATA||{}).leaders||[];
+        var cards=leaders.map(function(l){
+            var init=l.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2);
+            var av=l.photo?'<img src="'+esc(l.photo)+'" alt="'+esc(l.name)+'">':init;
+            return '<div class="lp-leader-card"><div class="lp-leader-av">'+av+'</div><div><div class="lp-leader-name">'+esc(l.name)+'</div><div class="lp-leader-role">'+esc(l.title)+'</div><div class="lp-leader-branch">&#128205; '+esc(l.branch)+'</div></div></div>';
+        }).join('');
+        $('lpContent').innerHTML = '<div class="lp-leaders-grid">'+(cards||'<p style="color:rgba(255,255,255,.4)">No leaders found.</p>')+'</div>';
+    }
+
+    /* ══════════════════════
+       ANNOUNCEMENTS
+    ══════════════════════ */
+    function vAnnouncements() {
+        var anns=[
+            {tag:'Upcoming Event',title:'Holy Ghost Festival 2026',body:'Mark your calendars for our annual Spirit-filled gathering. Experience God\'s power like never before.',date:'Date: TBA'},
+            {tag:'Camp',title:'Sharpening Camp',body:'Join us for intensive leadership training and spiritual equipping for effective ministry.',date:'Date: TBA'},
+            {tag:'Weekly Service',title:'Love Therapy — Fridays',body:'Join us every Friday evening for powerful teaching on love and relationships.',date:'Every Friday, 6:00 PM'},
+            {tag:'Conference',title:'Transformation Conference',body:'A powerful gathering of worship, faith, and prophetic teaching. All are welcome.',date:'Date: TBA'},
+            {tag:'Weekly Service',title:'Sunday Celebration Service',body:'Join us every Sunday for worship, the Word, and fellowship with the family of God.',date:'Every Sunday, 9:00 AM'},
+            {tag:'Prayer',title:'Corporate Prayer Night',body:'Come together as one body to seek God\'s face. Monthly corporate prayer night.',date:'Last Friday of every month'}
+        ];
+        $('lpContent').innerHTML = '<div class="lp-ann-grid">'+anns.map(function(a){
+            return '<div class="lp-ann-card"><div class="lp-ann-tag">'+esc(a.tag)+'</div><div class="lp-ann-title">'+esc(a.title)+'</div><div class="lp-ann-body">'+esc(a.body)+'</div><div class="lp-ann-date">&#128336; '+esc(a.date)+'</div></div>';
+        }).join('')+'</div>';
+    }
+
+    /* ── Stat card helper ── */
+    function sc(label, value, sub) {
+        return '<div class="lp-stat"><div class="lp-stat-lbl">'+esc(label)+'</div><div class="lp-stat-val">'+value+'</div><div class="lp-stat-sub">'+esc(sub)+'</div></div>';
+    }
+
+    /* ── Boot ── */
+    document.addEventListener('DOMContentLoaded', function() {
+        var auth = window.TPMAuth.getAuthState();
+        if (auth && auth.loggedIn && auth.user.role === 'leader') {
+            renderPortal();
+        } else {
+            renderAuth();
+        }
+    });
+
+})();
+</script>
+</body>
+</html>

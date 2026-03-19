@@ -16,9 +16,9 @@
         <nav class="navbar glass">
             <div class="nav-container">
                 <div class="logo-section">
-                    <div class="logo-placeholder">
+                    <a href="index.html"><div class="logo-placeholder">
                         <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
-                    </div>
+                    </div></a>
                 </div>
 
                 <div class="hamburger" id="hamburger">
@@ -41,11 +41,10 @@
             <div class="auth-container glass">
                 <div class="access-denied-icon" style="text-align:center; font-size:3rem; margin-bottom:15px;">&#128274;</div>
                 <h2 style="text-align:center; font-family: var(--font-display); color: var(--primary-blue); margin-bottom:5px;">Access Required</h2>
-                <p class="access-denied-text" style="text-align:center; color: var(--text-gray); margin-bottom:25px;">Please log in or sign up to access this page.</p>
+                <p class="access-denied-text" style="text-align:center; color: var(--text-gray); margin-bottom:25px;">Please log in to access this page.</p>
 
                 <div class="auth-tabs">
                     <button class="auth-tab active" data-tab="login">Login</button>
-                    <button class="auth-tab" data-tab="signup">Sign Up</button>
                 </div>
 
                 <form id="inlineLoginForm" class="auth-form active">
@@ -59,44 +58,50 @@
                     </div>
                     <button type="submit" class="btn btn-primary btn-full">Login</button>
                 </form>
-
-                <form id="inlineSignupForm" class="auth-form">
-                    <div class="form-group">
-                        <label for="inlineSignupName">Full Name</label>
-                        <input type="text" id="inlineSignupName" name="signupName" placeholder="Enter your full name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inlineSignupEmail">Email Address</label>
-                        <input type="email" id="inlineSignupEmail" name="signupEmail" placeholder="Enter your email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inlineSignupPhone">Phone Number</label>
-                        <input type="tel" id="inlineSignupPhone" name="signupPhone" placeholder="e.g. +233241234567" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inlineSignupPassword">Password</label>
-                        <input type="password" id="inlineSignupPassword" name="signupPassword" placeholder="At least 6 characters" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inlineSignupConfirmPassword">Confirm Password</label>
-                        <input type="password" id="inlineSignupConfirmPassword" name="signupConfirmPassword" placeholder="Re-enter your password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="inlineSignupRole">Role</label>
-                        <select id="inlineSignupRole" name="signupRole" required>
-                            <option value="">Select your role</option>
-                            <option value="member">Member</option>
-                            <option value="leader">Leader</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-full">Create Account</button>
-                </form>
             </div>
         </div>
     </section>
 
     <!-- Dashboard Content -->
     <div id="dashboardContent" style="display: none;">
+
+        <!-- Leader Profile Card -->
+        <div id="leaderProfileBanner" style="display:none;">
+            <div style="max-width:1200px; margin:0 auto; padding:32px 20px 0;">
+                <div id="leaderProfileCard" style="
+                    display:flex; align-items:center; gap:20px;
+                    background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(212,175,55,0.35);
+                    border-radius:16px;
+                    padding:22px 28px;
+                    position:relative;
+                    overflow:hidden;
+                ">
+                    <div style="
+                        position:absolute; inset:0;
+                        background:linear-gradient(135deg, rgba(30,58,138,0.2) 0%, transparent 60%);
+                        pointer-events:none;
+                    "></div>
+                    <!-- Avatar -->
+                    <div id="leaderAvatar" style="
+                        width:72px; height:72px; border-radius:50%; flex-shrink:0;
+                        background:linear-gradient(135deg,rgba(30,58,138,0.8),rgba(212,175,55,0.4));
+                        border:2px solid rgba(212,175,55,0.55);
+                        display:flex; align-items:center; justify-content:center;
+                        font-family:'Playfair Display',serif; font-size:1.6rem;
+                        color:rgba(255,255,255,0.8); font-weight:700;
+                        position:relative; z-index:1;
+                        overflow:hidden;
+                    "></div>
+                    <!-- Details -->
+                    <div style="position:relative; z-index:1; flex:1;">
+                        <div id="leaderCardTitle" style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#c9a84c;margin-bottom:4px;"></div>
+                        <div id="leaderCardName" style="font-family:'Playfair Display',serif;font-size:1.4rem;color:#fff;font-weight:600;margin-bottom:6px;line-height:1.2;"></div>
+                        <div id="leaderCardMeta" style="display:flex;flex-wrap:wrap;gap:14px;font-size:0.8rem;color:rgba(255,255,255,0.55);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Summary Cards -->
         <section class="content-section stats-summary-section">
@@ -285,12 +290,13 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <h3>Transformation Project Ministries</h3>
-                    <p>Transforming lives through the power of God's love</p>
+                    <p>Transforming lives</p>
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
                         <li><a href="about.html">About Us</a></li>
+                        <li><a href="leaders.html">Our Leaders</a></li>
                         <li><a href="media.html">Sermons</a></li>
                         <li><a href="join-us.html">Join Us</a></li>
                         <li><a href="contact-updates.html">Contact</a></li>
@@ -318,5 +324,42 @@
     <script src="script.js"></script>
     <script src="search-data.js"></script>
     <script src="search.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var auth = window.TPMAuth && window.TPMAuth.getAuthState();
+            if (!auth || !auth.loggedIn || auth.user.role !== 'leader') return;
+
+            var leader = TPM_MOCK_DATA.leaders.find(function (l) {
+                return l.email.toLowerCase() === auth.user.email.toLowerCase();
+            });
+            if (!leader) return;
+
+            var banner = document.getElementById('leaderProfileBanner');
+            var avatar = document.getElementById('leaderAvatar');
+            var titleEl = document.getElementById('leaderCardTitle');
+            var nameEl  = document.getElementById('leaderCardName');
+            var metaEl  = document.getElementById('leaderCardMeta');
+
+            var initials = leader.name.split(' ').map(function (w) { return w[0]; }).join('').slice(0, 2);
+            if (leader.photo) {
+                avatar.innerHTML = '<img src="' + leader.photo + '" style="width:100%;height:100%;object-fit:cover;">';
+            } else {
+                avatar.textContent = initials;
+            }
+
+            titleEl.textContent = leader.title;
+            nameEl.textContent  = leader.name;
+
+            var metaParts = [];
+            if (leader.branch)    metaParts.push('&#128205; ' + leader.branch);
+            if (leader.fellowship) metaParts.push('&#9679; ' + leader.fellowship);
+
+            metaEl.innerHTML = metaParts.map(function (p) {
+                return '<span>' + p + '</span>';
+            }).join('');
+
+            banner.style.display = 'block';
+        });
+    </script>
 </body>
 </html>
