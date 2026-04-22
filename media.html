@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .yt-thumb-frame img.yt-thumb-service-image {
+            object-fit: contain;
+            object-position: center;
+            background: #0b0b12;
+        }
+    </style>
 </head>
 <body>
 
@@ -55,7 +62,7 @@
                 <!-- YouTube thumbnail / embed -->
                 <div class="livestream-player">
                     <div class="yt-thumb-frame">
-                        <img src="assets/services/image.png" alt="TPM Live Stream">
+                        <img class="yt-thumb-service-image" src="assets/services/image.png" alt="TPM Live Stream">
                         <div class="yt-thumb-overlay">
                             <div class="yt-play-circle">
                                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
