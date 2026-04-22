@@ -3784,6 +3784,34 @@ body:not(.dark-portal-page) .form-group select:focus {
     border: 1px solid rgba(212, 175, 55, 0.15);
 }
 
+.livestream-service-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+.livestream-service-card {
+    padding: 20px 18px;
+    border-radius: 12px;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(212, 175, 55, 0.12);
+}
+
+.livestream-service-card h4 {
+    font-size: 0.98rem;
+    color: #ffffff;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.livestream-service-card .time {
+    font-size: 1rem;
+    color: #c9a84c;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
 .schedule-item {
     display: flex;
     align-items: flex-start;
