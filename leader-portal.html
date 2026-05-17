@@ -370,69 +370,100 @@
 <body>
 <div id="mpPage"></div>
 <script src="mockData.js"></script>
-<script>
-(function () {
-    'use strict';
+<script type="module">
+    import { initializeApp }                                          from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
+    import { getAuth, createUserWithEmailAndPassword,
+             signInWithEmailAndPassword, signOut,
+             onAuthStateChanged }                                     from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
+    import { getFirestore, collection, doc, setDoc, getDoc,
+             getDocs, addDoc, updateDoc, query, where }               from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js';
+
+    /* ── FIREBASE INIT ───────────────────────── */
+    const fbApp  = initializeApp({
+        apiKey:            'AIzaSyD4Dv9hTaUd0x1rvlz8yYdhBnJj6QrBpVU',
+        authDomain:        'tpm-website-60905.firebaseapp.com',
+        projectId:         'tpm-website-60905',
+        storageBucket:     'tpm-website-60905.firebasestorage.app',
+        messagingSenderId: '1082315300826',
+        appId:             '1:1082315300826:web:eb42a3f324fc4364862ae3'
+    });
+    const fbAuth = getAuth(fbApp);
+    const fbDb   = getFirestore(fbApp);
 
     /* ── CONSTANTS ───────────────────────────── */
     var CODES = { leader: 'TPM-LEADER-2026', admin: 'TPM-ADMIN-2026' };
 
-    /* ── AUTH LAYER ──────────────────────────────
-       Swap these functions for Firebase SDK calls
-       when ready to go live.
-    ─────────────────────────────────────────── */
-    var Auth = {
-        _usersKey:   'tpm_portal_users',
-        _sessionKey: 'tpm_portal_session',
+    /* ── AUTH LAYER (Firebase) ───────────────── */
+    var currentUser = null; // set by onAuthStateChanged
 
-        getUsers: function () {
-            try { return JSON.parse(localStorage.getItem(this._usersKey) || '[]'); } catch (e) { return []; }
-        },
-        saveUsers: function (users) {
-            localStorage.setItem(this._usersKey, JSON.stringify(users));
-        },
-        findByEmail: function (email) {
-            return this.getUsers().find(function (u) { return u.email === email.toLowerCase(); });
-        },
-        login: function (email, password, cb) {
-            var user = this.findByEmail(email);
-            if (!user || user.password !== password) { cb('Invalid email or password.'); return; }
-            localStorage.setItem(this._sessionKey, JSON.stringify({ email: user.email }));
-            cb(null, user);
-        },
-        register: function (data, cb) {
-            var users = this.getUsers();
-            if (users.some(function (u) { return u.email === data.email; })) {
-                cb('An account with this email already exists.'); return;
-            }
-            users.push(data);
-            this.saveUsers(users);
-            localStorage.setItem(this._sessionKey, JSON.stringify({ email: data.email }));
-            cb(null, data);
-        },
-        getSession: function () {
+    var Auth = {
+        login: async function (email, password, cb) {
             try {
-                var s = JSON.parse(localStorage.getItem(this._sessionKey) || 'null');
-                return s ? (this.findByEmail(s.email) || null) : null;
-            } catch (e) { return null; }
+                var cred = await signInWithEmailAndPassword(fbAuth, email, password);
+                var snap = await getDoc(doc(fbDb, 'users', cred.user.uid));
+                if (snap.exists()) {
+                    currentUser = Object.assign({ uid: cred.user.uid }, snap.data());
+                    cb(null, currentUser);
+                } else {
+                    await signOut(fbAuth);
+                    cb('Account profile not found. Please contact admin.');
+                }
+            } catch (e) {
+                var msg = 'Invalid email or password.';
+                if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') msg = 'No account found with this email.';
+                if (e.code === 'auth/too-many-requests') msg = 'Too many attempts. Please try again later.';
+                cb(msg);
+            }
         },
-        logout: function () { localStorage.removeItem(this._sessionKey); }
+        register: async function (data, cb) {
+            try {
+                var cred = await createUserWithEmailAndPassword(fbAuth, data.email, data.password);
+                var profile = {
+                    firstName: data.firstName, lastName: data.lastName, fullName: data.fullName,
+                    email: data.email, phone: data.phone || '', role: data.role,
+                    branch: data.branch, department: data.department, fellowship: data.fellowship || '',
+                    dateJoined: data.dateJoined, createdAt: data.createdAt
+                };
+                await setDoc(doc(fbDb, 'users', cred.user.uid), profile);
+                currentUser = Object.assign({ uid: cred.user.uid }, profile);
+                cb(null, currentUser);
+            } catch (e) {
+                var msg = 'Registration failed. Please try again.';
+                if (e.code === 'auth/email-already-in-use') msg = 'An account with this email already exists.';
+                if (e.code === 'auth/weak-password') msg = 'Password must be at least 6 characters.';
+                cb(msg);
+            }
+        },
+        logout: async function () {
+            currentUser = null;
+            await signOut(fbAuth);
+        },
+        getSession: function () { return currentUser; },
+        getUsers: async function () {
+            var snap = await getDocs(collection(fbDb, 'users'));
+            return snap.docs.map(function (d) { return Object.assign({ uid: d.id }, d.data()); });
+        }
     };
 
-    /* ── DATA LAYER ──────────────────────────────
-       Swap localStorage calls for Firestore when
-       connecting Firebase.
-    ─────────────────────────────────────────── */
+    /* ── DATA LAYER (Firestore) ──────────────── */
     var DB = {
-        getReports:  function () { try { return JSON.parse(localStorage.getItem('tpm_reports') || '[]'); } catch (e) { return []; } },
-        saveReports: function (r) { localStorage.setItem('tpm_reports', JSON.stringify(r)); },
-        getRequests: function () {
-            try {
-                var s = localStorage.getItem('tpm_profile_requests');
-                return s ? JSON.parse(s) : ((window.TPM_MOCK_DATA || {}).profileUpdateRequests || []);
-            } catch (e) { return []; }
+        getReports: async function (meetingType) {
+            var q    = meetingType
+                ? query(collection(fbDb, 'reports'), where('meetingType', '==', meetingType))
+                : collection(fbDb, 'reports');
+            var snap = await getDocs(q);
+            return snap.docs.map(function (d) { return Object.assign({ _id: d.id }, d.data()); });
         },
-        saveRequests: function (r) { localStorage.setItem('tpm_profile_requests', JSON.stringify(r)); },
+        addReport: async function (r) { await addDoc(collection(fbDb, 'reports'), r); },
+        getRequests: async function () {
+            var snap = await getDocs(collection(fbDb, 'profileRequests'));
+            return snap.docs.map(function (d) { return Object.assign({ _id: d.id }, d.data()); });
+        },
+        addRequest: async function (r) { await addDoc(collection(fbDb, 'profileRequests'), r); },
+        updateRequest: async function (id, status) {
+            await updateDoc(doc(fbDb, 'profileRequests', id), { status: status });
+        },
+        addMember: async function (m) { await addDoc(collection(fbDb, 'members'), m); },
         mock: function () { return window.TPM_MOCK_DATA || {}; }
     };
 
@@ -487,14 +518,16 @@
             '</div>';
 
         $('toReg').onclick = renderRegister;
-        $('loginForm').onsubmit = function (e) {
+        $('loginForm').onsubmit = async function (e) {
             e.preventDefault();
             var email = $('li_email').value.trim(), pwd = $('li_pwd').value;
             if (!email || !pwd) { showMsg('loginMsg', 'err', 'Please fill in all fields.'); return; }
+            $('loginForm').querySelector('button').disabled = true;
             Auth.login(email, pwd, function (err, user) {
+                $('loginForm').querySelector('button').disabled = false;
                 if (err) { showMsg('loginMsg', 'err', err); return; }
                 showMsg('loginMsg', 'ok', 'Welcome back, ' + esc(user.firstName) + '! Loading...');
-                setTimeout(renderPortal, 800);
+                setTimeout(renderPortal, 700);
             });
         };
     }
@@ -581,7 +614,6 @@
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showMsg('regMsg', 'err', 'Please enter a valid email.'); return; }
                 if (pwd.length < 6) { showMsg('regMsg', 'err', 'Password must be at least 6 characters.'); return; }
                 if (pwd !== pwd2) { showMsg('regMsg', 'err', 'Passwords do not match.'); return; }
-                if (Auth.findByEmail(email)) { showMsg('regMsg', 'err', 'An account with this email already exists.'); return; }
                 regData.firstName = first; regData.lastName = last;
                 regData.fullName = first + ' ' + last;
                 regData.email = email; regData.password = pwd;
@@ -600,7 +632,7 @@
                 '<button type="button" class="mp-btn ghost" id="s3Back">← Back</button>';
 
             $('s3Back').onclick = function () { showRegStep(2); };
-            $('s3Create').onclick = function () {
+            $('s3Create').onclick = async function () {
                 var branch = $('r_branch').value, dept = $('r_dept').value, joined = $('r_joined').value;
                 if (!branch || !dept || !joined) { showMsg('regMsg', 'err', 'Please fill in Branch, Department, and Date Joined.'); return; }
                 regData.phone      = ($('r_phone').value || '').trim();
@@ -609,10 +641,13 @@
                 regData.fellowship = $('r_fellow').value || '';
                 regData.dateJoined = joined;
                 regData.createdAt  = new Date().toISOString();
+                var btn = $('s3Create');
+                btn.disabled = true; btn.textContent = 'Creating account…';
                 Auth.register(regData, function (err) {
+                    btn.disabled = false; btn.textContent = 'Create Account';
                     if (err) { showMsg('regMsg', 'err', err); return; }
                     showMsg('regMsg', 'ok', 'Account created! Welcome to TPM Portal.');
-                    setTimeout(renderPortal, 900);
+                    setTimeout(renderPortal, 800);
                 });
             };
         }
@@ -703,7 +738,7 @@
         });
         $('mpToggle').onclick = function () { $('mpSidebar').classList.toggle('open'); $('mpOverlay').classList.toggle('show'); };
         $('mpOverlay').onclick = closeSidebar;
-        $('mpLogout').onclick  = function () { Auth.logout(); activeView = 'dashboard'; renderAuth(); };
+        $('mpLogout').onclick  = async function () { await Auth.logout(); activeView = 'dashboard'; renderAuth(); };
 
         showView(activeView);
     }
@@ -781,16 +816,25 @@
     function vProfile() {
         var user   = Auth.getSession();
         var fields = [
-            ['First Name',  user.firstName],
-            ['Last Name',   user.lastName],
-            ['Email',       user.email],
-            ['Phone',       user.phone      || '—'],
-            ['Branch',      user.branch     || '—'],
-            ['Department',  user.department || '—'],
-            ['Fellowship',  user.fellowship || '—'],
-            ['Date Joined', user.dateJoined || '—'],
+            ['First Name',   user.firstName],
+            ['Last Name',    user.lastName],
+            ['Email',        user.email],
+            ['Phone',        user.phone      || '—'],
+            ['Branch',       user.branch     || '—'],
+            ['Department',   user.department || '—'],
+            ['Fellowship',   user.fellowship || '—'],
+            ['Date Joined',  user.dateJoined || '—'],
             ['Account Type', user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : '—']
         ];
+
+        /* Editable fields a member can request changes to */
+        var editableFields = ['First Name','Last Name','Phone','Branch','Worker Group','Fellowship'];
+        var d = DB.mock();
+        var fieldOpts = {
+            'Branch':        d.branches    || [],
+            'Worker Group':  d.departments || [],
+            'Fellowship':    d.fellowships || []
+        };
 
         $('mpContent').innerHTML =
             '<div class="mp-card">' +
@@ -806,7 +850,64 @@
                     return '<div><div class="mp-pinfo-label">' + esc(f[0]) + '</div><div class="mp-pinfo-value">' + esc(f[1] || '—') + '</div></div>';
                 }).join('') +
                 '</div>' +
+            '</div>' +
+
+            /* Request a change card */
+            '<div class="mp-card">' +
+                '<h2 class="mp-card-title">Request a Profile Change</h2>' +
+                '<p style="font-size:.81rem;color:var(--text-dim);margin-bottom:18px;line-height:1.6">Submit a change request — a leader or admin will review and approve it.</p>' +
+                '<div class="mp-vmsg" id="reqMsg"></div>' +
+                '<form id="reqForm">' +
+                    '<div class="mp-form-grid">' +
+                        '<div class="mp-pfield"><label>Field to Change *</label>' +
+                            '<select id="req_field">' +
+                                '<option value="">Select field</option>' +
+                                editableFields.map(function (f) { return '<option value="' + esc(f) + '">' + esc(f) + '</option>'; }).join('') +
+                            '</select>' +
+                        '</div>' +
+                        '<div class="mp-pfield" id="req_new_wrap"><label>New Value *</label><input type="text" id="req_new_text" placeholder="Enter new value"></div>' +
+                    '</div>' +
+                    '<button type="submit" class="mp-submit">Submit Request</button>' +
+                '</form>' +
             '</div>';
+
+        /* Swap input ↔ select depending on chosen field */
+        $('req_field').onchange = function () {
+            var f    = this.value;
+            var wrap = $('req_new_wrap');
+            var opts = fieldOpts[f];
+            if (opts && opts.length) {
+                wrap.innerHTML = '<label>New Value *</label><select id="req_new_text"><option value="">Select</option>' +
+                    opts.map(function (o) { return '<option value="' + esc(o) + '">' + esc(o) + '</option>'; }).join('') +
+                    '</select>';
+            } else {
+                wrap.innerHTML = '<label>New Value *</label><input type="text" id="req_new_text" placeholder="Enter new value">';
+            }
+        };
+
+        $('reqForm').onsubmit = async function (e) {
+            e.preventDefault();
+            var field  = $('req_field').value;
+            var newVal = $('req_new_text').value.trim();
+            if (!field || !newVal) { showVMsg('reqMsg', 'err', 'Please select a field and enter the new value.'); return; }
+            var fieldMap = { 'First Name': user.firstName, 'Last Name': user.lastName, 'Phone': user.phone, 'Branch': user.branch, 'Worker Group': user.department, 'Fellowship': user.fellowship };
+            try {
+                await DB.addRequest({
+                    memberName:  user.fullName,
+                    memberEmail: user.email,
+                    field:       field,
+                    oldValue:    fieldMap[field] || '—',
+                    newValue:    newVal,
+                    status:      'Pending',
+                    date:        new Date().toLocaleDateString()
+                });
+                showVMsg('reqMsg', 'ok', 'Request submitted! A leader will review it shortly.');
+                $('reqForm').reset();
+                $('req_new_wrap').innerHTML = '<label>New Value *</label><input type="text" id="req_new_text" placeholder="Enter new value">';
+            } catch (err) {
+                showVMsg('reqMsg', 'err', 'Failed to submit request. Please try again.');
+            }
+        };
     }
 
     function vAnnouncements() {
@@ -830,28 +931,17 @@
             }).join('') + '</div>';
     }
 
-    function vReports() {
+    async function vReports() {
         var d = DB.mock(); var branches = d.branches || [], types = d.meetingTypes || [];
         var tabMap  = { loucs:'LOUCS', basenia:'Basenia', friday:'Friday Service', general:'General Meeting', tithe:'Tithe', souls:'Souls Won' };
         var mockSrc = { loucs:d.loucsReport, basenia:d.baseniaReport, friday:d.fridayServiceReport, general:d.generalMeetingReport, tithe:d.titheRecords, souls:d.soulsWonReport };
-        var submitted = DB.getReports().filter(function (r) { return r.meetingType === tabMap[activeReportTab]; });
-        var combined  = (mockSrc[activeReportTab] || []).concat(submitted);
         var isSouls = activeReportTab === 'souls', isTithe = activeReportTab === 'tithe';
-
-        var rows = combined.length ? combined.map(function (r) {
-            var aM = Number(r.attMale || 0), aF = Number(r.attFemale || 0);
-            var sM = Number(r.soulsMale || 0), sF = Number(r.soulsFemale || 0);
-            return '<tr><td>' + esc(r.date || '') + '</td><td>' + esc(r.branch || '') + '</td>' +
-                '<td>' + fmt(aM) + '</td><td>' + fmt(aF) + '</td><td><strong>' + fmt(aM + aF) + '</strong></td>' +
-                (isTithe ? '<td>GH₵ ' + fmt(r.tithe) + '</td>' : '') +
-                (isSouls ? '<td>' + fmt(sM) + '</td><td>' + fmt(sF) + '</td><td><strong>' + fmt(sM + sF) + '</strong></td>' : '') +
-                '<td>' + esc(r.notes || '—') + '</td></tr>';
-        }).join('') : '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:32px">No records yet</td></tr>';
 
         var tabs = Object.keys(tabMap).map(function (k) {
             return '<button class="mp-tab' + (activeReportTab === k ? ' active' : '') + '" data-rtab="' + k + '">' + tabMap[k] + '</button>';
         }).join('');
 
+        /* Render form immediately, load records async */
         $('mpContent').innerHTML =
             '<div class="mp-card">' +
                 '<h2 class="mp-card-title">Submit New Record</h2>' +
@@ -874,28 +964,46 @@
             '<div class="mp-card">' +
                 '<h2 class="mp-card-title">Records</h2>' +
                 '<div class="mp-tabs">' + tabs + '</div>' +
-                '<div class="mp-table-wrap"><table class="mp-table"><thead><tr>' +
-                '<th>Date</th><th>Branch</th><th>Male</th><th>Female</th><th>Total</th>' +
-                (isTithe ? '<th>Tithe</th>' : '') +
-                (isSouls ? '<th>Souls M</th><th>Souls F</th><th>Souls Total</th>' : '') +
-                '<th>Notes</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+                '<div id="rptTableWrap"><div class="mp-empty"><div class="mp-empty-icon">⏳</div>Loading records…</div></div>' +
             '</div>';
 
         $('mpContent').querySelectorAll('.mp-tab').forEach(function (p) {
             p.onclick = function () { activeReportTab = this.getAttribute('data-rtab'); vReports(); };
         });
-        $('rptForm').onsubmit = function (e) {
+
+        /* Load from Firestore */
+        var submitted = await DB.getReports(tabMap[activeReportTab]);
+        var combined  = (mockSrc[activeReportTab] || []).concat(submitted);
+        var rows = combined.length ? combined.map(function (r) {
+            var aM = Number(r.attMale || 0), aF = Number(r.attFemale || 0);
+            var sM = Number(r.soulsMale || 0), sF = Number(r.soulsFemale || 0);
+            return '<tr><td>' + esc(r.date || '') + '</td><td>' + esc(r.branch || '') + '</td>' +
+                '<td>' + fmt(aM) + '</td><td>' + fmt(aF) + '</td><td><strong>' + fmt(aM + aF) + '</strong></td>' +
+                (isTithe ? '<td>GH₵ ' + fmt(r.tithe) + '</td>' : '') +
+                (isSouls ? '<td>' + fmt(sM) + '</td><td>' + fmt(sF) + '</td><td><strong>' + fmt(sM + sF) + '</strong></td>' : '') +
+                '<td>' + esc(r.notes || '—') + '</td></tr>';
+        }).join('') : '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:32px">No records yet</td></tr>';
+
+        var tw = $('rptTableWrap');
+        if (tw) tw.innerHTML = '<div class="mp-table-wrap"><table class="mp-table"><thead><tr>' +
+            '<th>Date</th><th>Branch</th><th>Male</th><th>Female</th><th>Total</th>' +
+            (isTithe ? '<th>Tithe</th>' : '') + (isSouls ? '<th>Souls M</th><th>Souls F</th><th>Souls Total</th>' : '') +
+            '<th>Notes</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+
+        $('rptForm').onsubmit = async function (e) {
             e.preventDefault();
             var type = $('rType').value, branch = $('rBranch').value, date = $('rDate').value;
             if (!type || !branch || !date) { showVMsg('rptMsg', 'err', 'Please fill in Record Type, Branch, and Date.'); return; }
+            var btn = this.querySelector('button'); btn.disabled = true; btn.textContent = 'Submitting…';
             var aM = Number($('rAttM').value || 0), aF = Number($('rAttF').value || 0);
             var sM = Number($('rSoulsM').value || 0), sF = Number($('rSoulsF').value || 0);
-            var rpts = DB.getReports();
-            rpts.push({ meetingType: type, branch: branch, date: date, attMale: aM, attFemale: aF, tithe: $('rTithe').value || 0, soulsMale: sM, soulsFemale: sF, notes: $('rNotes').value || '' });
-            DB.saveReports(rpts);
-            showVMsg('rptMsg', 'ok', 'Record submitted successfully!');
-            $('rptForm').reset();
-            setTimeout(vReports, 1200);
+            try {
+                await DB.addReport({ meetingType: type, branch: branch, date: date, attMale: aM, attFemale: aF, tithe: $('rTithe').value || 0, soulsMale: sM, soulsFemale: sF, notes: $('rNotes').value || '', submittedBy: currentUser.email, submittedAt: new Date().toISOString() });
+                showVMsg('rptMsg', 'ok', 'Record submitted successfully!');
+                $('rptForm').reset();
+                setTimeout(vReports, 1000);
+            } catch (err) { showVMsg('rptMsg', 'err', 'Failed to save record. Please try again.'); }
+            btn.disabled = false; btn.textContent = 'Submit Record';
         };
     }
 
@@ -927,7 +1035,7 @@
                 '</form>' +
             '</div>';
 
-        $('memForm').onsubmit = function (e) {
+        $('memForm').onsubmit = async function (e) {
             e.preventDefault();
             var first = $('m_first').value.trim(), last = $('m_last').value.trim();
             var dob = $('m_dob').value, gender = $('m_gender').value;
@@ -938,18 +1046,24 @@
             if (!first || !last || !dob || !gender || !phone || !addr || !branch || !dept || !joined || !status || !ecname || !ecphone) {
                 showVMsg('memMsg', 'err', 'Please fill in all required fields.'); return;
             }
-            var email = ($('m_email').value || '').trim().toLowerCase();
-            var key = 'tpm_member_' + (email || phone);
-            localStorage.setItem(key, JSON.stringify({
-                firstName: first, middleName: $('m_mid').value.trim(), lastName: last,
-                dob: dob, gender: gender, phone: phone, email: email, address: addr,
-                branch: branch, department: dept, fellowship: $('m_fellow').value,
-                dateJoined: joined, membershipStatus: status,
-                emergencyContactName: ecname, emergencyContactPhone: ecphone,
-                registeredAt: new Date().toISOString()
-            }));
-            showVMsg('memMsg', 'ok', first + ' ' + last + ' registered successfully!');
-            $('memForm').reset();
+            var btn = this.querySelector('button'); btn.disabled = true; btn.textContent = 'Saving…';
+            try {
+                await DB.addMember({
+                    firstName: first, middleName: $('m_mid').value.trim(), lastName: last,
+                    fullName: first + ' ' + last,
+                    dob: dob, gender: gender, phone: phone,
+                    email: ($('m_email').value || '').trim().toLowerCase(),
+                    address: addr, branch: branch, department: dept,
+                    fellowship: $('m_fellow').value, dateJoined: joined,
+                    membershipStatus: status, emergencyContactName: ecname,
+                    emergencyContactPhone: ecphone,
+                    registeredBy: currentUser.email,
+                    registeredAt: new Date().toISOString()
+                });
+                showVMsg('memMsg', 'ok', first + ' ' + last + ' registered successfully!');
+                $('memForm').reset();
+            } catch (err) { showVMsg('memMsg', 'err', 'Failed to save member. Please try again.'); }
+            btn.disabled = false; btn.textContent = 'Register Member';
         };
     }
 
@@ -1023,8 +1137,9 @@
             : '<div class="mp-empty"><div class="mp-empty-icon">🏛️</div>No leaders found.</div>';
     }
 
-    function vRequests() {
-        var all      = DB.getRequests();
+    async function vRequests() {
+        $('mpContent').innerHTML = '<div class="mp-empty"><div class="mp-empty-icon">⏳</div>Loading requests…</div>';
+        var all      = await DB.getRequests();
         var filters  = ['all','pending','approved','rejected'];
         var filtered = activeReqFilter === 'all' ? all : all.filter(function (r) { return r.status.toLowerCase() === activeReqFilter; });
 
@@ -1042,7 +1157,7 @@
                 '<td style="color:#6ee7a0">' + esc(r.newValue || '') + '</td>' +
                 '<td><span class="mp-badge ' + r.status.toLowerCase() + '">' + r.status + '</span></td>' +
                 '<td>' + esc(r.date || '') + '</td>' +
-                '<td>' + (p ? '<button class="mp-act-btn mp-approve" data-id="' + r.id + '" data-action="Approved">Approve</button><button class="mp-act-btn mp-reject" data-id="' + r.id + '" data-action="Rejected">Reject</button>' : '—') + '</td>' +
+                '<td>' + (p ? '<button class="mp-act-btn mp-approve" data-fid="' + esc(r._id) + '" data-action="Approved">Approve</button><button class="mp-act-btn mp-reject" data-fid="' + esc(r._id) + '" data-action="Rejected">Reject</button>' : '—') + '</td>' +
             '</tr>';
         }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:32px">No requests found</td></tr>';
 
@@ -1057,17 +1172,18 @@
             b.onclick = function () { activeReqFilter = this.getAttribute('data-rf'); vRequests(); };
         });
         $('mpContent').querySelectorAll('.mp-act-btn').forEach(function (b) {
-            b.onclick = function () {
-                var id = parseInt(this.getAttribute('data-id')), action = this.getAttribute('data-action');
-                var reqs = DB.getRequests(), req = reqs.find(function (r) { return r.id === id; });
-                if (req) req.status = action;
-                DB.saveRequests(reqs); vRequests();
+            b.onclick = async function () {
+                var fid = this.getAttribute('data-fid'), action = this.getAttribute('data-action');
+                this.disabled = true;
+                await DB.updateRequest(fid, action);
+                vRequests();
             };
         });
     }
 
-    function vUsers() {
-        var users = Auth.getUsers();
+    async function vUsers() {
+        $('mpContent').innerHTML = '<div class="mp-empty"><div class="mp-empty-icon">⏳</div>Loading users…</div>';
+        var users = await Auth.getUsers();
         var rows  = users.length ? users.map(function (u) {
             return '<tr>' +
                 '<td><span class="mp-tbl-av">' + initials(u.fullName) + '</span>' + esc(u.fullName) + '</td>' +
@@ -1098,13 +1214,27 @@
     }
 
     /* ── BOOT ────────────────────────────────── */
-    document.addEventListener('DOMContentLoaded', function () {
-        var user = Auth.getSession();
-        if (user) {
+    $('mpPage').innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg,#080808);color:rgba(255,255,255,.35);font-family:sans-serif;font-size:.85rem">Loading…</div>';
+
+    onAuthStateChanged(fbAuth, async function (fbUser) {
+        if (fbUser) {
+            if (!currentUser || currentUser.uid !== fbUser.uid) {
+                try {
+                    var snap = await getDoc(doc(fbDb, 'users', fbUser.uid));
+                    if (snap.exists()) {
+                        currentUser = Object.assign({ uid: fbUser.uid }, snap.data());
+                    } else {
+                        await signOut(fbAuth);
+                        renderAuth();
+                        return;
+                    }
+                } catch (e) { renderAuth(); return; }
+            }
             var saved = sessionStorage.getItem('tpm_portal_view');
             if (saved) activeView = saved;
             renderPortal();
         } else {
+            currentUser = null;
             renderAuth();
         }
     });
@@ -1112,8 +1242,6 @@
     window.addEventListener('beforeunload', function () {
         sessionStorage.setItem('tpm_portal_view', activeView);
     });
-
-})();
 </script>
 </body>
 </html>
