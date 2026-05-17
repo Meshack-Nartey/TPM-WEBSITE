@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="assets/images/TPM LOGO ONE.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media - Transformation Project Ministries</title>
     <link rel="stylesheet" href="styles.css">
@@ -29,6 +30,35 @@
             object-fit: contain;
             object-position: center;
             background: #0b0b12;
+        }
+
+        /* Featured video carousel */
+        .vf-carousel .video-featured-layout {
+            transition: opacity 0.5s ease;
+        }
+        .vf-carousel .video-featured-layout.vf-fading {
+            opacity: 0;
+        }
+        .vf-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 28px;
+        }
+        .vf-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            background: transparent;
+            cursor: pointer;
+            padding: 0;
+            transition: background 0.3s, border-color 0.3s, transform 0.3s;
+        }
+        .vf-dot.active {
+            background: #c9a84c;
+            border-color: #c9a84c;
+            transform: scale(1.25);
         }
     </style>
 </head>
@@ -125,22 +155,81 @@
 
     <!-- ═══════════════════════════════════════
          PICTURE QUOTES
-         Images live in: assets/images/quotes/
-         Required files:
-           featured.jpg          — wide banner (featured quote)
-           faith-1.jpg           — Faith card 1
-           faith-2.jpg           — Faith card 2
-           faith-3.jpg           — Faith card 3
-           encouragement-1.jpg   — Encouragement card 1
-           encouragement-2.jpg   — Encouragement card 2
-           encouragement-3.jpg   — Encouragement card 3
-           wisdom-1.jpg          — Wisdom card 1
-           wisdom-2.jpg          — Wisdom card 2
-           wisdom-3.jpg          — Wisdom card 3
-           prayer-1.jpg          — Prayer card 1
-           prayer-2.jpg          — Prayer card 2
-           prayer-3.jpg          — Prayer card 3
+         Images live in: assets/PICTURE QUOTES/
     ═══════════════════════════════════════ -->
+    <style>
+        .pq-show {
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 520px;
+        }
+        .pq-slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.9s cubic-bezier(0.4,0,0.2,1), opacity 0.9s ease;
+        }
+        .pq-slide img {
+            max-height: 520px;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+        .pq-slide.pos-current  { transform: translateX(0);     opacity: 1; }
+        .pq-slide.pos-right    { transform: translateX(100%);  opacity: 1; }
+        .pq-slide.pos-exiting  { transform: translateX(0);     opacity: 0; }
+
+        .pq-show-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            margin-top: 20px;
+        }
+        .pq-nav-btn {
+            background: none;
+            border: 1px solid rgba(201,168,76,0.35);
+            border-radius: 50%;
+            width: 38px; height: 38px;
+            color: #c9a84c;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .pq-nav-btn:hover { background: rgba(201,168,76,0.12); }
+        .pq-counter {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.35);
+            min-width: 60px;
+            text-align: center;
+        }
+        .pq-progress {
+            height: 2px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 2px;
+            margin-top: 14px;
+            overflow: hidden;
+        }
+        .pq-progress-bar {
+            height: 100%;
+            background: #c9a84c;
+            width: 0%;
+            transition: width linear;
+        }
+    </style>
+
     <section class="media-section" id="picture-quotes">
         <div class="media-container">
 
@@ -150,129 +239,115 @@
                 <p>Visual inspiration for your faith journey. Save and share with friends and family.</p>
             </div>
 
-            <!-- Featured quote — large showcase -->
-            <div class="pq-featured">
-                <img src="assets/images/quotes/featured.jpg" alt="Featured Quote">
-                <div class="pq-featured-overlay">
-                    <div class="pq-featured-inner">
-                        <span class="pq-featured-label">Featured Quote</span>
-                        <p class="pq-featured-text">&ldquo;It is a great blessing to serve the Lord.&rdquo;</p>
-                        <span class="pq-featured-attr">&mdash; Apostle Andrews Amoh Ofori</span>
-                    </div>
-                </div>
+            <div class="pq-show" id="pqShow">
+                <div class="pq-slide pos-current" id="pqSlideA"><img id="pqImgA" src="" alt="Quote"></div>
+                <div class="pq-slide pos-right"   id="pqSlideB"><img id="pqImgB" src="" alt="Quote"></div>
             </div>
 
-            <!-- Category filters -->
-            <div class="pq-filters">
-                <button class="pq-filter active" data-cat="all">All</button>
-                <button class="pq-filter" data-cat="faith">Faith</button>
-                <button class="pq-filter" data-cat="encouragement">Encouragement</button>
-                <button class="pq-filter" data-cat="wisdom">Wisdom</button>
-                <button class="pq-filter" data-cat="prayer">Prayer</button>
+            <div class="pq-show-bar">
+                <button class="pq-nav-btn" id="pqPrev">&#8592;</button>
+                <button class="pq-nav-btn" id="pqNext">&#8594;</button>
             </div>
 
-            <!-- Quote gallery grid -->
-            <div class="pq-gallery" id="pqGallery">
-
-                <div class="pq-card" data-cat="faith">
-                    <img src="assets/images/quotes/faith-1.jpg" alt="Faith Quote">
-                    <div class="pq-card-hover">
-                        <p>&ldquo;Faith is the substance of things hoped for.&rdquo;</p>
-                        <span>Hebrews 11:1</span>
-                    </div>
-                </div>
-
-                <div class="pq-card" data-cat="encouragement">
-                    <img src="assets/images/quotes/encouragement-1.jpg" alt="Encouragement Quote">
-                    <div class="pq-card-hover">
-                        <p>&ldquo;Be strong and courageous. Do not be afraid.&rdquo;</p>
-                        <span>Joshua 1:9</span>
-                    </div>
-                </div>
-
-                <div class="pq-card" data-cat="wisdom">
-                    <img src="assets/images/quotes/wisdom-1.jpg" alt="Wisdom Quote">
-                    <div class="pq-card-hover">
-                        <p>&ldquo;The fear of the Lord is the beginning of wisdom.&rdquo;</p>
-                        <span>Proverbs 9:10</span>
-                    </div>
-                </div>
-
-                <div class="pq-card" data-cat="prayer">
-                    <img src="assets/images/quotes/prayer-1.jpg" alt="Prayer Quote">
-                    <div class="pq-card-hover">
-                        <p>&ldquo;Pray without ceasing.&rdquo;</p>
-                        <span>1 Thessalonians 5:17</span>
-                    </div>
-                </div>
-
-                <div class="pq-card" data-cat="faith">
-                    <img src="assets/images/quotes/faith-2.jpg" alt="Faith Quote">
-                    <div class="pq-card-hover">
-                        <p>&ldquo;Trust in the Lord with all your heart.&rdquo;</p>
-                        <span>Proverbs 3:5</span>
-                    </div>
-                </div>
-
-                <div class="pq-card" data-cat="encouragement">
-                    <img src="assets/images/quotes/encouragement-2.jpg" alt="Encouragement Quote">
-                    <div class="pq-card-hover">
-                        <p>&ldquo;I can do all things through Christ who strengthens me.&rdquo;</p>
-                        <span>Philippians 4:13</span>
-                    </div>
-                </div>
-
-                <div class="pq-card" data-cat="wisdom">
-                    <img src="assets/images/quotes/wisdom-2.jpg" alt="Wisdom Quote">
-                    <div class="pq-card-hover">
-                        <p>&ldquo;Your word is a lamp to my feet and a light to my path.&rdquo;</p>
-                        <span>Psalm 119:105</span>
-                    </div>
-                </div>
-
-                <div class="pq-card" data-cat="prayer">
-                    <img src="assets/images/quotes/prayer-2.jpg" alt="Prayer Quote">
-                    <div class="pq-card-hover">
-                        <p>&ldquo;Ask and it shall be given to you.&rdquo;</p>
-                        <span>Matthew 7:7</span>
-                    </div>
-                </div>
-
-                <div class="pq-card" data-cat="faith">
-                    <img src="assets/images/quotes/faith-3.jpg" alt="Faith Quote">
-                    <div class="pq-card-hover">
-                        <p>&ldquo;With God all things are possible.&rdquo;</p>
-                        <span>Matthew 19:26</span>
-                    </div>
-                </div>
-
-                <div class="pq-card" data-cat="encouragement">
-                    <img src="assets/images/quotes/encouragement-3.jpg" alt="Encouragement Quote">
-                    <div class="pq-card-hover">
-                        <p>&ldquo;Cast your cares on the Lord and He will sustain you.&rdquo;</p>
-                        <span>Psalm 55:22</span>
-                    </div>
-                </div>
-
-                <div class="pq-card" data-cat="wisdom">
-                    <img src="assets/images/quotes/wisdom-3.jpg" alt="Wisdom Quote">
-                    <div class="pq-card-hover">
-                        <p>&ldquo;Seek first the Kingdom of God and His righteousness.&rdquo;</p>
-                        <span>Matthew 6:33</span>
-                    </div>
-                </div>
-
-                <div class="pq-card" data-cat="prayer">
-                    <img src="assets/images/quotes/prayer-3.jpg" alt="Prayer Quote">
-                    <div class="pq-card-hover">
-                        <p>&ldquo;The prayer of a righteous person is powerful and effective.&rdquo;</p>
-                        <span>James 5:16</span>
-                    </div>
-                </div>
-
-            </div>
         </div>
     </section>
+
+    <script>
+        (function () {
+            var BASE  = 'assets/PICTURE QUOTES/';
+            var FILES = [
+                '1.png','2.png','3.png','4.png','5.png','6.png','7.png','8.png','9.png',
+                '10.png','11.png','12.png','13.png','14.png','15.png','16.png','17.png',
+                '18.png','19.png','20.png','21.png','23.png','24.png','25.png','26.png',
+                '27.png','28.png','30.png','31.png','33.png','34.png','35.png','36.png',
+                '37.png','38.png','39.png','40.png','41.png','42.png','43.png','44.png',
+                '45.png','45 (2).png','46.png','47.png','47 (2).png','48.png','48 (2).png',
+                '49.png','50.png','50 (2).png','51.png','52.png','53.png','54.png','55.png',
+                '56.png','57.png','58.png','59.png','60.png','61.png','62.png','63.png',
+                '66.png','68.png','70.png','80.png','83.png','84.png','85.png','86.png',
+                '87.png','109.png','112.png','114.png','116.png','120.png','122.png',
+                '124.png','126.png','128.png','130.png','132.png','136.png','140.png',
+                '142.png','146.png','151.png','152.png','154.png','155.png','156.png',
+                '184.png','185.png','186.png','187.png','191.png','192.png',
+                '635.png','651.png','652.png','653.png','654.png','655.png','656.png',
+                '657.png','658.png','659.png','660.png'
+            ];
+
+            var DURATION  = 7000;
+            var idx       = 0;
+            var current   = 0; /* 0 = SlideA is front, 1 = SlideB is front */
+            var animating = false;
+            var timer, barAnim;
+
+            var slides = [document.getElementById('pqSlideA'), document.getElementById('pqSlideB')];
+            var imgs   = [document.getElementById('pqImgA'),   document.getElementById('pqImgB')];
+            var counter = null;
+
+            /* Preload first two images */
+            imgs[0].src = BASE + FILES[0];
+            imgs[1].src = BASE + FILES[1];
+
+            function updateCounter() {}
+
+            function goTo(nextIdx, fromRight) {
+                if (animating) return;
+                animating = true;
+                clearInterval(timer);
+
+                var next = 1 - current;
+                idx = (nextIdx + FILES.length) % FILES.length;
+
+                /* Preload the image into the waiting slide */
+                imgs[next].src = BASE + FILES[idx];
+
+                /* Position it off screen (right or left) instantly — no transition */
+                slides[next].style.transition = 'none';
+                slides[next].className = 'pq-slide ' + (fromRight !== false ? 'pos-right' : 'pos-left-off');
+                if (fromRight === false) {
+                    slides[next].style.transform = 'translateX(-100%)';
+                    slides[next].style.opacity   = '1';
+                } else {
+                    slides[next].style.transform = '';
+                    slides[next].style.opacity   = '';
+                }
+
+                slides[next].offsetHeight; /* force reflow */
+
+                /* Restore transitions and slide in */
+                slides[next].style.transition = '';
+                slides[next].style.transform  = 'translateX(0)';
+                slides[next].style.opacity    = '1';
+
+                /* Fade out current */
+                slides[current].style.opacity = '0';
+
+                updateCounter();
+
+                setTimeout(function () {
+                    /* Clean up old slide */
+                    slides[current].style.transform = '';
+                    slides[current].style.opacity   = '';
+                    slides[current].className = 'pq-slide pos-right';
+
+                    /* Preload the NEXT image into the now-hidden slide */
+                    var preloadIdx = (idx + 1) % FILES.length;
+                    imgs[current].src = BASE + FILES[preloadIdx];
+
+                    current   = next;
+                    animating = false;
+                    timer = setInterval(advance, DURATION);
+                }, 950);
+            }
+
+            function advance() { goTo(idx + 1, true); }
+
+            document.getElementById('pqNext').onclick = function () { goTo(idx + 1, true); };
+            document.getElementById('pqPrev').onclick = function () { goTo(idx - 1, false); };
+
+            /* Boot */
+            timer = setInterval(advance, DURATION);
+        })();
+    </script>
 
     <!-- ═══════════════════════════════════════
          PODCAST
@@ -367,85 +442,122 @@
                 <p>Join Apostle Andrews for intimate sessions sharing wisdom, biblical insights, and powerful encounters with God — designed to grow you deeper in faith and purpose.</p>
             </div>
 
-            <!-- Featured video -->
-            <div class="video-featured-layout">
-                <div class="vf-thumb">
-                    <img src="assets/images/apostle-video-thumb.jpg" alt="Time with Apostle Andrews">
-                    <div class="vf-play-overlay">
-                        <a href="https://www.youtube.com/watch?v=lswZ6isdQhI&list=PLqqgWt04SGIxwFJz1QrfRsha77kKRQecz&index=1&pp=iAQB" target="_blank" rel="noopener" class="vf-play-btn" aria-label="Watch on YouTube">
-                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <!-- Featured video carousel -->
+            <div class="vf-carousel" id="vfCarousel">
+                <div class="video-featured-layout" id="vfSlide">
+                    <div class="vf-thumb">
+                        <img id="vfThumb" src="https://img.youtube.com/vi/lHagiZ9h09Y/hqdefault.jpg" alt="Time with Apostle Andrews">
+                        <div class="vf-play-overlay">
+                            <a id="vfPlayLink" href="https://youtu.be/lHagiZ9h09Y?si=sLC56B619aSaxvBf" target="_blank" rel="noopener" class="vf-play-btn" aria-label="Watch on YouTube">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="vf-info">
+                        <span class="media-eyebrow" id="vfEyebrow">Episode 131</span>
+                        <h3 id="vfTitle">Surround Yourself With Good People</h3>
+                        <p id="vfDesc">Apostle Andrews shares a powerful message on the importance of the company you keep. The people around you shape your growth, your faith, and your destiny — this episode will challenge you to take a closer look at your circle.</p>
+                        <a id="vfWatchBtn" href="https://youtu.be/lHagiZ9h09Y?si=sLC56B619aSaxvBf" target="_blank" rel="noopener" class="media-btn media-btn-yt">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            Watch on YouTube
                         </a>
                     </div>
-                    <span class="vf-duration">45:22</span>
                 </div>
-                <div class="vf-info">
-                    <span class="media-eyebrow">Latest Episode</span>
-                    <h3>Walking in Divine Purpose</h3>
-                    <p>Apostle Andrews shares profound revelations on discovering and walking in your God-given purpose. A life-changing teaching from our Sunday service that will challenge and inspire you.</p>
-                    <a href="https://www.youtube.com/watch?v=lswZ6isdQhI&list=PLqqgWt04SGIxwFJz1QrfRsha77kKRQecz&index=1&pp=iAQB" target="_blank" rel="noopener" class="media-btn media-btn-yt">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                        Watch on YouTube
-                    </a>
+
+                <!-- Dot indicators -->
+                <div class="vf-dots" id="vfDots">
+                    <button class="vf-dot active" data-idx="0" aria-label="Episode 1"></button>
+                    <button class="vf-dot" data-idx="1" aria-label="Episode 2"></button>
+                    <button class="vf-dot" data-idx="2" aria-label="Episode 3"></button>
+                    <button class="vf-dot" data-idx="3" aria-label="Episode 4"></button>
+                    <button class="vf-dot" data-idx="4" aria-label="Episode 5"></button>
                 </div>
-            </div>
-
-            <!-- Episode grid -->
-            <h3 class="media-sub-heading">More Episodes</h3>
-            <div class="video-grid">
-
-                <a href="https://youtube.com/@transformationprojectminis3007?si=amI-owKAh8CZW5fs" target="_blank" rel="noopener" class="video-card">
-                    <div class="video-card-thumb">
-                        <img src="assets/images/apostle-vid-1.jpg" alt="The Power of Loyalty">
-                        <div class="vc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-                        <span class="vc-duration">38:10</span>
-                    </div>
-                    <div class="video-card-body">
-                        <h4>The Power of Loyalty</h4>
-                        <span class="vc-date">Feb 14, 2026</span>
-                    </div>
-                </a>
-
-                <a href="https://youtube.com/@transformationprojectminis3007?si=amI-owKAh8CZW5fs" target="_blank" rel="noopener" class="video-card">
-                    <div class="video-card-thumb">
-                        <img src="assets/images/apostle-vid-2.jpg" alt="Faith That Moves Mountains">
-                        <div class="vc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-                        <span class="vc-duration">52:44</span>
-                    </div>
-                    <div class="video-card-body">
-                        <h4>Faith That Moves Mountains</h4>
-                        <span class="vc-date">Feb 7, 2026</span>
-                    </div>
-                </a>
-
-                <a href="https://youtube.com/@transformationprojectminis3007?si=amI-owKAh8CZW5fs" target="_blank" rel="noopener" class="video-card">
-                    <div class="video-card-thumb">
-                        <img src="assets/images/apostle-vid-3.jpg" alt="Excellence in God's Kingdom">
-                        <div class="vc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-                        <span class="vc-duration">41:05</span>
-                    </div>
-                    <div class="video-card-body">
-                        <h4>Excellence in God's Kingdom</h4>
-                        <span class="vc-date">Jan 31, 2026</span>
-                    </div>
-                </a>
-
-                <a href="https://youtube.com/@transformationprojectminis3007?si=amI-owKAh8CZW5fs" target="_blank" rel="noopener" class="video-card">
-                    <div class="video-card-thumb">
-                        <img src="assets/images/apostle-vid-4.jpg" alt="Raised to Serve">
-                        <div class="vc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-                        <span class="vc-duration">29:18</span>
-                    </div>
-                    <div class="video-card-body">
-                        <h4>Raised to Serve</h4>
-                        <span class="vc-date">Jan 24, 2026</span>
-                    </div>
-                </a>
-
             </div>
 
             <div class="video-more-cta">
-                <a href="https://youtube.com/@transformationprojectminis3007?si=amI-owKAh8CZW5fs" target="_blank" rel="noopener" class="media-btn media-btn-outline">View All Episodes on YouTube &#8594;</a>
+                <a href="https://youtube.com/playlist?list=PLqqgWt04SGIxwFJz1QrfRsha77kKRQecz&si=szc7UGJRXCZxFM37" target="_blank" rel="noopener" class="media-btn media-btn-outline">Explore on YouTube &#8594;</a>
             </div>
+
+            <script>
+                const vfVideos = [
+                    {
+                        id: 'lHagiZ9h09Y',
+                        ep: 'Episode 131',
+                        title: 'Surround Yourself With Good People',
+                        desc: 'Apostle Andrews shares a powerful message on the importance of the company you keep. The people around you shape your growth, your faith, and your destiny — this episode will challenge you to take a closer look at your circle.',
+                        url: 'https://youtu.be/lHagiZ9h09Y?si=sLC56B619aSaxvBf'
+                    },
+                    {
+                        id: 'Q02TYTpPpDc',
+                        ep: 'Episode 130',
+                        title: 'Have Good Friendships',
+                        desc: 'How the right friendships fuel your spiritual growth, protect your purpose, and keep you accountable in your walk with God. Apostle Andrews breaks down the biblical standard for meaningful relationships.',
+                        url: 'https://youtu.be/Q02TYTpPpDc?si=zKURbkWcAJ2ZDKlE'
+                    },
+                    {
+                        id: 'HTg64hYkeCw',
+                        ep: 'Episode 129',
+                        title: 'Be Full Of Worship And Prayer',
+                        desc: 'Discover how a lifestyle of worship and prayer positions you for divine encounter. Apostle Andrews breaks down why these disciplines are non-negotiable for every believer seeking to walk in God\'s fullness.',
+                        url: 'https://youtu.be/HTg64hYkeCw?si=LPkcNEPTCYAdesgf'
+                    },
+                    {
+                        id: 'dTGByNqeoXw',
+                        ep: 'Episode 128',
+                        title: 'The Secret To Having Positive Emotions',
+                        desc: 'Learn the kingdom keys to managing your emotions and maintaining a spirit of joy, peace, and faith regardless of your circumstances. A life-giving word for every season.',
+                        url: 'https://youtu.be/dTGByNqeoXw?si=n9Gb3EmIYsdDVfBF'
+                    },
+                    {
+                        id: 'lswZ6isdQhI',
+                        ep: 'Episode 126',
+                        title: 'The Power Of Positive Thinking',
+                        desc: 'Apostle Andrews reveals how renewing your mind with God\'s Word transforms your thinking, changes your outlook, and opens doors for breakthrough in every area of your life.',
+                        url: 'https://youtu.be/lswZ6isdQhI?si=QHvVaRvQDV5vUmou'
+                    }
+                ];
+
+                let vfCurrent = 0;
+                const vfSlide    = document.getElementById('vfSlide');
+                const vfThumb    = document.getElementById('vfThumb');
+                const vfPlayLink = document.getElementById('vfPlayLink');
+                const vfEyebrow  = document.getElementById('vfEyebrow');
+                const vfTitle    = document.getElementById('vfTitle');
+                const vfDesc     = document.getElementById('vfDesc');
+                const vfWatchBtn = document.getElementById('vfWatchBtn');
+                const vfDots     = document.querySelectorAll('.vf-dot');
+
+                function vfGoTo(idx) {
+                    vfSlide.classList.add('vf-fading');
+                    setTimeout(() => {
+                        const v = vfVideos[idx];
+                        vfThumb.src          = 'https://img.youtube.com/vi/' + v.id + '/hqdefault.jpg';
+                        vfThumb.alt          = v.title + ' — Time with Apostle Andrews';
+                        vfPlayLink.href      = v.url;
+                        vfEyebrow.textContent = v.ep;
+                        vfTitle.textContent  = v.title;
+                        vfDesc.textContent   = v.desc;
+                        vfWatchBtn.href      = v.url;
+                        vfDots.forEach((d, i) => d.classList.toggle('active', i === idx));
+                        vfCurrent = idx;
+                        vfSlide.classList.remove('vf-fading');
+                    }, 500);
+                }
+
+                vfDots.forEach(dot => {
+                    dot.addEventListener('click', () => {
+                        clearInterval(vfTimer);
+                        vfGoTo(parseInt(dot.dataset.idx));
+                        vfTimer = setInterval(vfNext, 5000);
+                    });
+                });
+
+                function vfNext() {
+                    vfGoTo((vfCurrent + 1) % vfVideos.length);
+                }
+
+                let vfTimer = setInterval(vfNext, 5000);
+            </script>
 
         </div>
     </section>
@@ -465,19 +577,18 @@
             <!-- Featured video -->
             <div class="video-featured-layout">
                 <div class="vf-thumb">
-                    <img src="assets/images/secrets-video-thumb.jpg" alt="Success Secrets">
+                    <img src="https://img.youtube.com/vi/-iFztkwOLnc/maxresdefault.jpg" alt="Work As Though Unto The Lord — Success Secrets">
                     <div class="vf-play-overlay">
-                        <a href="https://youtube.com/@transformationprojectminis3007?si=amI-owKAh8CZW5fs" target="_blank" rel="noopener" class="vf-play-btn" aria-label="Watch on YouTube">
+                        <a href="https://youtu.be/-iFztkwOLnc?si=Qmz2hrEL3qlbUgwJ" target="_blank" rel="noopener" class="vf-play-btn" aria-label="Watch on YouTube">
                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                         </a>
                     </div>
-                    <span class="vf-duration">33:47</span>
                 </div>
                 <div class="vf-info">
                     <span class="media-eyebrow">Featured</span>
-                    <h3>The Secret to Lasting Fruitfulness</h3>
-                    <p>Uncover the kingdom principles that unlock lasting fruitfulness in your personal life, ministry, and relationships. A transformational teaching you don't want to miss.</p>
-                    <a href="https://youtube.com/@transformationprojectminis3007?si=amI-owKAh8CZW5fs" target="_blank" rel="noopener" class="media-btn media-btn-yt">
+                    <h3>Work As Though Unto The Lord</h3>
+                    <p>Apostle Andrews Amoh Ofori unpacks the secret to true success — doing everything as unto God. This message reveals how a kingdom mindset transforms your work, your attitude, and your results.</p>
+                    <a href="https://youtu.be/-iFztkwOLnc?si=Qmz2hrEL3qlbUgwJ" target="_blank" rel="noopener" class="media-btn media-btn-yt">
                         <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                         Watch on YouTube
                     </a>
@@ -485,7 +596,7 @@
             </div>
 
             <div class="video-more-cta">
-                <a href="https://youtube.com/@transformationprojectminis3007?si=amI-owKAh8CZW5fs" target="_blank" rel="noopener" class="media-btn media-btn-outline">View All Episodes on YouTube &#8594;</a>
+                <a href="https://youtube.com/playlist?list=PLqqgWt04SGIwFg-uBlHUL0zyAkYdHqSR6&si=NXdu5s9QCIQbDPYn" target="_blank" rel="noopener" class="media-btn media-btn-outline">Explore on YouTube &#8594;</a>
             </div>
 
         </div>

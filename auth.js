@@ -98,8 +98,7 @@
         // ABOUT (dropdown)
         navHTML += buildDropdownItem('about.html', 'ABOUT', currentPage, [
             { href: 'about.html#about-us', label: 'About Us' },
-            { href: 'about.html#founder', label: 'The Founder' },
-            { href: 'leaders.html', label: 'Our Leaders' }
+            { href: 'about.html#founder', label: 'The Founder' }
         ]);
 
         // BOOKS (dropdown)
@@ -134,15 +133,6 @@
             { href: 'join-us.html#worker-groups', label: 'Worker Groups' },
             { href: 'join-us.html#branch', label: 'Visit a Branch Near You' }
         ]);
-
-        // MEMBER PORTAL (dropdown, always visible)
-        var portalItems = [
-            { href: 'member-directory.html', label: 'Member Directory' },
-            { href: 'update-profile.html', label: 'Update Profile' }
-        ];
-        navHTML += buildDropdownItem('#', 'MEMBER PORTAL', currentPage, portalItems,
-            ['member-directory.html', 'update-profile.html']);
-
 
         // PARTNER WITH US (dropdown)
         navHTML += buildDropdownItem('partner-with-us.html', 'PARTNER WITH US', currentPage, [
