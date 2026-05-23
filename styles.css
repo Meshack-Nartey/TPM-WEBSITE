@@ -248,9 +248,8 @@ section {
 }
 
 .nav-container {
-    max-width: var(--container-width);
-    margin: 0 auto;
-    padding: 0 20px 0 0;
+    width: 100%;
+    padding: 0 28px 0 60px;
     height: 100%;
     display: flex;
     justify-content: space-between;
@@ -1302,6 +1301,97 @@ section {
     position: absolute;
     left: 0;
     color: #c9a84c;
+}
+
+/* About Page - Identity Grid */
+.section-content--wide {
+    max-width: 1320px;
+    width: 96%;
+    padding-top: 60px;
+    padding-bottom: 60px;
+}
+
+.identity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem;
+    width: 100%;
+}
+
+.identity-card {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.identity-card h3 {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    color: #c9a84c;
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.identity-card p {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin: 0 0 0.6rem 0;
+}
+
+.identity-card p:last-child {
+    margin-bottom: 0;
+}
+
+.identity-card ul {
+    margin: 0 0 0.6rem 0;
+    padding: 0;
+    list-style: none;
+}
+
+.identity-card ul:last-child {
+    margin-bottom: 0;
+}
+
+.identity-card ul li {
+    padding: 3px 0 3px 18px;
+    position: relative;
+    font-size: 0.83rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.identity-card ul li::before {
+    content: '\2726';
+    position: absolute;
+    left: 0;
+    color: #c9a84c;
+    font-size: 0.55rem;
+    top: 7px;
+}
+
+.identity-card--full {
+    grid-column: 1 / -1;
+}
+
+.identity-grid--3 {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+@media (max-width: 900px) {
+    .identity-grid--3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .identity-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Visible state when scrolled into view */

@@ -5,8 +5,8 @@
 var TPM_MOCK_DATA = {
 
     branches: [
-        'Accra Central', 'Kumasi', 'Takoradi', 'Tamale',
-        'Cape Coast', 'Sunyani', 'Ho', 'Koforidua'
+        'DAYSPRING', 'GLORYSPRING', 'GOODNEWSSPRING', 'FAITHSPRING',
+        'LOYALTYSPRING', 'GRACESPRING', 'UNITYSPRING', 'PEACESPRING', 'SALVATIONSPRING'
     ],
 
     fellowships: [
@@ -21,8 +21,10 @@ var TPM_MOCK_DATA = {
     ],
 
     departments: [
-        'Choir', 'Ushers', 'Media', 'Youth', 'Children',
-        'Protocol', 'Prayer Warriors', 'Evangelism', 'Welfare'
+        'Communion Stewards', 'Ushering', 'Protocol', 'Hospitality & Welfare',
+        'Pure Word', 'Media & Publicity', 'Music', 'Theatre & Arts',
+        'Finance', 'Organizing', 'Sounds & Technical', 'Growth',
+        'Literature', 'Miscellaneous', "The Pastor's Office"
     ],
 
     membershipStatuses: [
