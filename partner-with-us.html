@@ -8,6 +8,106 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* ---- Partner Modal ---- */
+        .partner-modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.72);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .partner-modal-backdrop.open { display: flex; }
+        .partner-modal {
+            background: #111317;
+            border: 1px solid rgba(201,168,76,0.25);
+            border-radius: 16px;
+            max-width: 560px;
+            width: 100%;
+            padding: 2.5rem 2.25rem 2rem;
+            position: relative;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .partner-modal-close {
+            position: absolute;
+            top: 1rem; right: 1.25rem;
+            background: none; border: none;
+            color: rgba(255,255,255,0.5);
+            font-size: 1.5rem; cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        .partner-modal-close:hover { color: #fff; }
+        .partner-modal-icon { font-size: 2.2rem; margin-bottom: 0.75rem; }
+        .partner-modal h2 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            color: #c9a84c;
+            margin: 0 0 0.5rem;
+        }
+        .partner-modal-divider {
+            width: 48px; height: 2px;
+            background: #c9a84c;
+            margin: 0 0 1.25rem;
+            border-radius: 2px;
+        }
+        .partner-modal p {
+            font-size: 0.92rem;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.7;
+            margin: 0 0 0.85rem;
+        }
+        .partner-modal p:last-of-type { margin-bottom: 1.5rem; }
+        .partner-modal-actions {
+            display: flex;
+            gap: 0.85rem;
+            flex-wrap: wrap;
+        }
+        .partner-modal-actions a {
+            flex: 1;
+            min-width: 130px;
+            text-align: center;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-family: var(--font-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        .partner-modal-actions a:hover { opacity: 0.88; transform: translateY(-1px); }
+        .partner-modal-actions .pma-give {
+            background: #c9a84c;
+            color: #0a0a0a;
+        }
+        .partner-modal-actions .pma-contact {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* ---- Cards clickable ---- */
+        .partner-dark-card {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .partner-dark-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 36px rgba(201,168,76,0.12);
+        }
+
+        @media (max-width: 768px) {
+            .partner-modal { padding: 2rem 1.5rem 1.75rem; }
+        }
+    </style>
 </head>
 <body>
     <!-- Header with Navigation -->
@@ -19,16 +119,12 @@
                         <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
                     </div></a>
                 </div>
-
                 <div class="hamburger" id="hamburger">
                     <span></span>
                     <span></span>
                     <span></span>
                 </div>
-
-                <ul class="nav-menu" id="navMenu">
-                    <!-- Populated dynamically by auth.js -->
-                </ul>
+                <ul class="nav-menu" id="navMenu"></ul>
             </div>
         </nav>
     </header>
@@ -59,47 +155,47 @@
         <div class="dark-grid-container">
             <div class="partner-dark-grid">
 
-                <div class="partner-dark-card">
+                <div class="partner-dark-card" onclick="openPartnerModal('pastors')">
                     <div class="partner-card-icon-wrap">
                         <span class="partner-card-icon">&#10084;</span>
                     </div>
                     <div class="partner-card-glass">
                         <h3>Pastor's Office</h3>
-                        <p>Support the welfare of pastors and members, and help meet church miscellaneous needs that keep ministry work moving effectively. Your partnership strengthens care, stability, and day-to-day ministry support.</p>
-                        <a href="contact-updates.html" class="partner-card-link">Partner Here &#8594;</a>
+                        <p>Support the welfare of pastors and members, and help meet church miscellaneous needs that keep ministry work moving effectively.</p>
+                        <span class="partner-card-link">Learn More &#8594;</span>
                     </div>
                 </div>
 
-                <div class="partner-dark-card">
+                <div class="partner-dark-card" onclick="window.location.href='missions.html'">
                     <div class="partner-card-icon-wrap">
                         <span class="partner-card-icon">&#127757;</span>
                     </div>
                     <div class="partner-card-glass">
                         <h3>Missions</h3>
-                        <p>Stand with us as we reach more lives through evangelism, branch support, outreach efforts, and ministry expansion. Your giving helps take the Gospel to places and people that still need hope in Christ.</p>
-                        <a href="contact-updates.html" class="partner-card-link">Support Missions &#8594;</a>
+                        <p>Stand with us as we reach more lives through evangelism, branch support, outreach efforts, and ministry expansion.</p>
+                        <span class="partner-card-link">Learn More &#8594;</span>
                     </div>
                 </div>
 
-                <div class="partner-dark-card">
+                <div class="partner-dark-card" onclick="window.location.href='church-building.html'">
                     <div class="partner-card-icon-wrap">
                         <span class="partner-card-icon">&#127959;</span>
                     </div>
                     <div class="partner-card-glass">
                         <h3>Church Building Project</h3>
-                        <p>Help us create spaces for worship, discipleship, and ministry growth. Every contribution toward the building project supports a lasting home for services, training, prayer, and the raising of future leaders.</p>
-                        <a href="contact-updates.html" class="partner-card-link">Build With Us &#8594;</a>
+                        <p>Help us create spaces for worship, discipleship, and ministry growth — a lasting home for services, training, and prayer.</p>
+                        <span class="partner-card-link">Learn More &#8594;</span>
                     </div>
                 </div>
 
-                <div class="partner-dark-card">
+                <div class="partner-dark-card" onclick="openPartnerModal('books')">
                     <div class="partner-card-icon-wrap">
                         <span class="partner-card-icon">&#128218;</span>
                     </div>
                     <div class="partner-card-glass">
                         <h3>Books</h3>
-                        <p>Partner with us to publish, distribute, and place transformational books into the hands of believers. This support helps spread sound teaching, devotionals, and biblical resources to more people.</p>
-                        <a href="books.html" class="partner-card-link">View Books &#8594;</a>
+                        <p>Partner with us to publish, distribute, and place transformational books and devotionals into the hands of believers everywhere.</p>
+                        <span class="partner-card-link">Learn More &#8594;</span>
                     </div>
                 </div>
 
@@ -109,12 +205,30 @@
             <div class="partner-dark-cta">
                 <h3>Ready to Make an Eternal Difference?</h3>
                 <p>Reach out to us and let us know how you'd like to partner. We'd love to connect with you.</p>
-                <a href="contact-updates.html" class="btn btn-primary">Contact Us Today</a>
+                <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+                    <a href="give.html" class="btn btn-primary">Give Now</a>
+                    <a href="contact-updates.html" class="btn btn-outline">Contact Us</a>
+                </div>
             </div>
 
         </div>
     </section>
 
+    </div>
+
+    <!-- Partner Modals (Pastor's Office & Books) -->
+    <div class="partner-modal-backdrop" id="partnerModal" onclick="closeModalOnBackdrop(event)">
+        <div class="partner-modal" id="partnerModalBox">
+            <button class="partner-modal-close" onclick="closePartnerModal()" aria-label="Close">&times;</button>
+            <div class="partner-modal-icon" id="modalIcon"></div>
+            <h2 id="modalTitle"></h2>
+            <div class="partner-modal-divider"></div>
+            <div id="modalBody"></div>
+            <div class="partner-modal-actions">
+                <a href="give.html" class="pma-give"><i class="fa-solid fa-hand-holding-heart"></i>&nbsp; Give Now</a>
+                <a href="contact-updates.html" class="pma-contact"><i class="fa-solid fa-envelope"></i>&nbsp; Contact Us</a>
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -156,5 +270,44 @@
     <script src="script.js"></script>
     <script src="search-data.js"></script>
     <script src="search.js"></script>
+    <script>
+        const modalData = {
+            pastors: {
+                icon: '❤️',
+                title: "Pastor's Office",
+                body: `<p>Partnering with the Pastor's Office means standing directly behind the hands and heart of ministry leadership. This covers the personal welfare of our pastors and their families — ensuring they are cared for, stable, and free to focus entirely on serving God's people.</p>
+                       <p>It also meets the day-to-day miscellaneous needs of the church — things that may seem small but are essential to keeping ministry moving effectively. Your partnership here is a direct investment in the people God has called to lead and serve this house.</p>`
+            },
+            books: {
+                icon: '📚',
+                title: 'Books',
+                body: `<p>Partnering with the Books ministry means helping sound, life-changing teaching reach more hands and hearts. Apostle Andrews Amoh Ofori has authored transformational books and devotionals designed to ground believers in God's Word and equip them for daily Christian living.</p>
+                       <p>Your partnership helps fund printing, publishing, and distribution — making it possible for books to reach believers who may not be able to afford them, as well as churches, campuses, and outreach centres across the nation and beyond.</p>`
+            }
+        };
+
+        function openPartnerModal(key) {
+            const data = modalData[key];
+            if (!data) return;
+            document.getElementById('modalIcon').textContent = data.icon;
+            document.getElementById('modalTitle').textContent = data.title;
+            document.getElementById('modalBody').innerHTML = data.body;
+            document.getElementById('partnerModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePartnerModal() {
+            document.getElementById('partnerModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function closeModalOnBackdrop(e) {
+            if (e.target === document.getElementById('partnerModal')) closePartnerModal();
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closePartnerModal();
+        });
+    </script>
 </body>
 </html>

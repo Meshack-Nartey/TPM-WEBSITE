@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="assets/images/TPM LOGO WHITE.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Church Building Project - Transformation Project Ministries</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .building-page { background: #0a0a0a; min-height: 100vh; }
+
+        .building-hero {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        .building-hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('assets/images/hero6.jpg') center/cover no-repeat;
+            opacity: 0.35;
+        }
+        .building-hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(10,10,10,0.5) 0%, rgba(10,10,10,0.1) 50%, rgba(10,10,10,0.85) 100%);
+        }
+        .building-hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 7rem 2rem 5rem;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .building-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: rgba(255,255,255,0.55);
+            font-size: 0.8rem;
+            font-family: var(--font-primary);
+            font-weight: 500;
+            text-decoration: none;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+        .building-back:hover { color: #c9a84c; }
+        .building-hero-content h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            color: #fff;
+            margin: 0 0 0.75rem;
+            font-weight: 700;
+        }
+        .building-title-line {
+            width: 56px; height: 2px;
+            background: #c9a84c;
+            margin: 0 auto 1.25rem;
+            border-radius: 2px;
+        }
+        .building-hero-content p {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.7;
+            margin: 0 0 2rem;
+        }
+        .building-cta-row {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .building-cta-row a {
+            padding: 0.75rem 1.75rem;
+            border-radius: 8px;
+            font-family: var(--font-primary);
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        .building-cta-row a:hover { opacity: 0.88; transform: translateY(-1px); }
+        .building-cta-give {
+            background: #c9a84c;
+            color: #0a0a0a;
+        }
+        .building-cta-contact {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* What it means */
+        .building-about {
+            background: #0d0d0f;
+            padding: 4rem 2rem;
+        }
+        .building-about-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .building-about-inner h2 {
+            font-family: var(--font-display);
+            font-size: 1.7rem;
+            color: #c9a84c;
+            margin: 0 0 1rem;
+        }
+        .building-about-inner p {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.75;
+            margin: 0 0 1rem;
+        }
+        .building-about-inner p:last-child { margin-bottom: 0; }
+
+        /* Gallery */
+        .building-gallery {
+            background: #0a0a0a;
+            padding: 4rem 2rem 5rem;
+        }
+        .building-gallery-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .building-gallery-inner h2 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: #fff;
+            text-align: center;
+            margin: 0 0 2rem;
+        }
+        .building-photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .building-photo-slot {
+            aspect-ratio: 4/3;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1.5px dashed rgba(201,168,76,0.3);
+            background: rgba(255,255,255,0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.25);
+            font-size: 0.75rem;
+            font-family: var(--font-primary);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            gap: 0.5rem;
+        }
+        .building-photo-slot i {
+            font-size: 1.6rem;
+            color: rgba(201,168,76,0.3);
+        }
+        .building-photo-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .building-photo-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .building-photo-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar glass">
+            <div class="nav-container">
+                <div class="logo-section">
+                    <a href="index.html"><div class="logo-placeholder">
+                        <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
+                    </div></a>
+                </div>
+                <div class="hamburger" id="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+                <ul class="nav-menu" id="navMenu"></ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="building-page">
+
+        <!-- Hero -->
+        <section class="building-hero">
+            <div class="building-hero-bg"></div>
+            <div class="building-hero-overlay"></div>
+            <div class="building-hero-content">
+                <a href="partner-with-us.html" class="building-back">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Partner With Us
+                </a>
+                <h1>Church Building Project</h1>
+                <div class="building-title-line"></div>
+                <p>
+                    Raising a permanent, God-honouring home for worship, discipleship, and the generations to come.
+                </p>
+                <div class="building-cta-row">
+                    <a href="give.html" class="building-cta-give"><i class="fa-solid fa-hand-holding-heart"></i>&nbsp; Build With Us</a>
+                    <a href="contact-updates.html" class="building-cta-contact"><i class="fa-solid fa-envelope"></i>&nbsp; Contact Us</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- What it means -->
+        <section class="building-about">
+            <div class="building-about-inner">
+                <h2>What Partnering with the Building Project Means</h2>
+                <p>The Church Building Project is about raising a permanent, God-honouring home for Transformation Project Ministries. A dedicated building means more room for worship services, leadership training, prayer meetings, counselling, and the raising of future ministers.</p>
+                <p>This is not just bricks and mortar — it is an investment into a lasting legacy. When you partner with the building project, your name is written into the foundation of a house that will serve generations to come.</p>
+            </div>
+        </section>
+
+        <!-- Photo Gallery -->
+        <section class="building-gallery">
+            <div class="building-gallery-inner">
+                <h2>Building Progress</h2>
+                <div class="building-photo-grid">
+                    <!-- Replace each placeholder below with an <img> tag when photos are ready -->
+                    <div class="building-photo-slot">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Photo coming soon</span>
+                    </div>
+                    <div class="building-photo-slot">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Photo coming soon</span>
+                    </div>
+                    <div class="building-photo-slot">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Photo coming soon</span>
+                    </div>
+                    <div class="building-photo-slot">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Photo coming soon</span>
+                    </div>
+                    <div class="building-photo-slot">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Photo coming soon</span>
+                    </div>
+                    <div class="building-photo-slot">
+                        <i class="fa-solid fa-image"></i>
+                        <span>Photo coming soon</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Transformation Project Ministries</h3>
+                    <p>Transforming lives</p>
+                </div>
+                <div class="footer-section footer-quick-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="leaders.html">Our Leaders</a></li>
+                        <li><a href="media.html">Sermons</a></li>
+                        <li><a href="give.html">Give</a></li>
+                        <li><a href="join-us.html">Join Us</a></li>
+                        <li><a href="contact-updates.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect With Us</h4>
+                    <ul>
+                        <li><a href="mailto:tprojectministries@gmail.com"><i class="fa-solid fa-envelope"></i> tprojectministries@gmail.com</a></li>
+                        <li><a href="tel:0554476730"><i class="fa-solid fa-phone"></i> 0554476730</a></li>
+                        <li><a href="https://maps.google.com/?q=MC3V%2B2JF,+Kumasi" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot"></i> MC3V+2JF, Kumasi</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Transformation Project Ministries. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+    <script src="search-data.js"></script>
+    <script src="search.js"></script>
+</body>
+</html>

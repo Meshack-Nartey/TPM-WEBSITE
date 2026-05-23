@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="assets/images/TPM LOGO WHITE.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missions - Transformation Project Ministries</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .missions-page { background: #0a0a0a; min-height: 100vh; }
+
+        .missions-hero {
+            position: relative;
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        .missions-hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('assets/images/hero3.jpg') center/cover no-repeat;
+            opacity: 0.35;
+        }
+        .missions-hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(10,10,10,0.5) 0%, rgba(10,10,10,0.1) 50%, rgba(10,10,10,0.85) 100%);
+        }
+        .missions-hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 7rem 2rem 5rem;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .missions-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: rgba(255,255,255,0.55);
+            font-size: 0.8rem;
+            font-family: var(--font-primary);
+            font-weight: 500;
+            text-decoration: none;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            transition: color 0.2s;
+        }
+        .missions-back:hover { color: #c9a84c; }
+        .missions-hero-content h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            color: #fff;
+            margin: 0 0 0.75rem;
+            font-weight: 700;
+        }
+        .missions-title-line {
+            width: 56px; height: 2px;
+            background: #c9a84c;
+            margin: 0 auto 1.25rem;
+            border-radius: 2px;
+        }
+        .missions-hero-content p {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.7;
+            margin: 0 0 2rem;
+        }
+        .missions-cta-row {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .missions-cta-row a {
+            padding: 0.75rem 1.75rem;
+            border-radius: 8px;
+            font-family: var(--font-primary);
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        .missions-cta-row a:hover { opacity: 0.88; transform: translateY(-1px); }
+        .missions-cta-give {
+            background: #c9a84c;
+            color: #0a0a0a;
+        }
+        .missions-cta-contact {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* What missions means */
+        .missions-about {
+            background: #0d0d0f;
+            padding: 4rem 2rem;
+        }
+        .missions-about-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .missions-about-inner h2 {
+            font-family: var(--font-display);
+            font-size: 1.7rem;
+            color: #c9a84c;
+            margin: 0 0 1rem;
+        }
+        .missions-about-inner p {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.75);
+            line-height: 1.75;
+            margin: 0 0 1rem;
+        }
+        .missions-about-inner p:last-child { margin-bottom: 0; }
+
+        /* Gallery */
+        .missions-gallery {
+            background: #0a0a0a;
+            padding: 1.5rem 2rem 5rem;
+        }
+        .missions-gallery-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .missions-gallery-inner h2 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: #fff;
+            text-align: center;
+            margin: 0 0 2rem;
+        }
+        .missions-photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .missions-photo-slot {
+            aspect-ratio: 4/3;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1.5px dashed rgba(201,168,76,0.3);
+            background: rgba(255,255,255,0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.25);
+            font-size: 0.75rem;
+            font-family: var(--font-primary);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            gap: 0.5rem;
+        }
+        .missions-photo-slot i {
+            font-size: 1.6rem;
+            color: rgba(201,168,76,0.3);
+        }
+        .missions-photo-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            display: block;
+        }
+        @media (max-width: 768px) {
+            .missions-photo-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .missions-photo-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar glass">
+            <div class="nav-container">
+                <div class="logo-section">
+                    <a href="index.html"><div class="logo-placeholder">
+                        <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
+                    </div></a>
+                </div>
+                <div class="hamburger" id="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+                <ul class="nav-menu" id="navMenu"></ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="missions-page">
+
+        <!-- Hero -->
+        <section class="missions-hero">
+            <div class="missions-hero-bg"></div>
+            <div class="missions-hero-overlay"></div>
+            <div class="missions-hero-content">
+                <a href="partner-with-us.html" class="missions-back">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Partner With Us
+                </a>
+                <h1>Our Missions</h1>
+                <div class="missions-title-line"></div>
+                <p>
+                    Taking the Gospel beyond our walls — to communities, towns, and people who still need a genuine encounter with Jesus Christ.
+                </p>
+            </div>
+        </section>
+
+        <!-- Photo Gallery -->
+        <section class="missions-gallery">
+            <div class="missions-gallery-inner">
+                <h2>Mission Moments</h2>
+                <div class="missions-photo-grid">
+                    <div class="missions-photo-slot"><img src="assets/images/missions/photo_2026-05-23_22-51-06.jpg" alt="Mission photo"></div>
+                    <div class="missions-photo-slot"><img src="assets/images/missions/photo_2026-05-23_22-51-08.jpg" alt="Mission photo"></div>
+                    <div class="missions-photo-slot"><img src="assets/images/missions/photo_2026-05-23_22-51-12.jpg" alt="Mission photo"></div>
+                    <div class="missions-photo-slot"><img src="assets/images/missions/photo_2026-05-23_22-51-13.jpg" alt="Mission photo"></div>
+                    <div class="missions-photo-slot"><img src="assets/images/missions/photo_2026-05-23_22-51-15.jpg" alt="Mission photo"></div>
+                    <div class="missions-photo-slot"><img src="assets/images/missions/photo_2026-05-23_22-51-16.jpg" alt="Mission photo"></div>
+                    <div class="missions-photo-slot"><img src="assets/images/missions/photo_2026-05-23_22-51-17 (2).jpg" alt="Mission photo"></div>
+                    <div class="missions-photo-slot"><img src="assets/images/missions/photo_2026-05-23_22-51-17.jpg" alt="Mission photo"></div>
+                    <div class="missions-photo-slot"><img src="assets/images/missions/photo_2026-05-23_22-51-19.jpg" alt="Mission photo"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- What it means -->
+        <section class="missions-about">
+            <div class="missions-about-inner">
+                <h2>What Partnering with Missions Means</h2>
+                <p>Partnering with Missions means sending the Gospel beyond our local walls. TPM is committed to reaching communities, towns, and regions that still need a genuine encounter with Jesus Christ — through evangelism, branch planting, and outreach efforts.</p>
+                <p>Your support helps cover the cost of travel, resources, logistics, and ground-level ministry work. Every cedi given to Missions is a seed sown into souls — people who will encounter Christ because someone chose to give.</p>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section style="background:#0d0d0f; padding: 3rem 2rem 4rem; text-align:center;">
+            <div class="missions-cta-row">
+                <a href="give.html" class="missions-cta-give"><i class="fa-solid fa-hand-holding-heart"></i>&nbsp; Support Missions</a>
+                <a href="contact-updates.html" class="missions-cta-contact"><i class="fa-solid fa-envelope"></i>&nbsp; Contact Us</a>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Transformation Project Ministries</h3>
+                    <p>Transforming lives</p>
+                </div>
+                <div class="footer-section footer-quick-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="leaders.html">Our Leaders</a></li>
+                        <li><a href="media.html">Sermons</a></li>
+                        <li><a href="give.html">Give</a></li>
+                        <li><a href="join-us.html">Join Us</a></li>
+                        <li><a href="contact-updates.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect With Us</h4>
+                    <ul>
+                        <li><a href="mailto:tprojectministries@gmail.com"><i class="fa-solid fa-envelope"></i> tprojectministries@gmail.com</a></li>
+                        <li><a href="tel:0554476730"><i class="fa-solid fa-phone"></i> 0554476730</a></li>
+                        <li><a href="https://maps.google.com/?q=MC3V%2B2JF,+Kumasi" target="_blank" rel="noopener"><i class="fa-solid fa-location-dot"></i> MC3V+2JF, Kumasi</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Transformation Project Ministries. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+    <script src="search-data.js"></script>
+    <script src="search.js"></script>
+</body>
+</html>
