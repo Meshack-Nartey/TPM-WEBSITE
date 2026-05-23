@@ -50,7 +50,7 @@
 
                 <!-- Contact Form -->
                 <div class="contact-dark-form">
-                    <form>
+                    <form id="contactForm">
                         <div class="contact-form-group">
                             <label for="name">Full Name</label>
                             <input type="text" id="name" name="name" placeholder="Your full name" required>
@@ -71,7 +71,8 @@
                             <label for="message">Message</label>
                             <textarea id="message" name="message" rows="5" placeholder="Write your message here..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary contact-submit-btn">Send Message</button>
+                        <button type="submit" class="btn btn-primary contact-submit-btn" id="contactSubmitBtn">Send Message</button>
+                        <p id="contactFormMsg" style="margin-top:1rem;font-size:0.9rem;display:none;"></p>
                     </form>
                 </div>
 
@@ -147,5 +148,53 @@
     <script src="script.js"></script>
     <script src="search-data.js"></script>
     <script src="search.js"></script>
+
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        // ── Replace these three values with your EmailJS credentials ──
+        const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
+        const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
+        const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
+        // ─────────────────────────────────────────────────────────────
+
+        emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('contactSubmitBtn');
+            const msg = document.getElementById('contactFormMsg');
+
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+            msg.style.display = 'none';
+
+            const params = {
+                name:    document.getElementById('name').value,
+                email:   document.getElementById('email').value,
+                phone:   document.getElementById('phone').value || 'Not provided',
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value
+            };
+
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params)
+                .then(() => {
+                    msg.style.color = '#6fcf97';
+                    msg.textContent = '✓ Message sent! We\'ll get back to you shortly.';
+                    msg.style.display = 'block';
+                    document.getElementById('contactForm').reset();
+                })
+                .catch(() => {
+                    msg.style.color = '#eb5757';
+                    msg.textContent = '✗ Something went wrong. Please try again or email us directly.';
+                    msg.style.display = 'block';
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.textContent = 'Send Message';
+                });
+        });
+    </script>
 </body>
 </html>
