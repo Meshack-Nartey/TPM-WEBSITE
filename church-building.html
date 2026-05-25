@@ -137,7 +137,28 @@
             font-size: 1.5rem;
             color: #fff;
             text-align: center;
-            margin: 0 0 2rem;
+            margin: 0 0 0.75rem;
+        }
+        .building-video-desc {
+            text-align: center;
+            font-size: 0.92rem;
+            color: rgba(255,255,255,0.6);
+            font-style: italic;
+            margin: 0 auto 1.75rem;
+            max-width: 600px;
+            line-height: 1.65;
+        }
+        .building-video-wrap {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(201,168,76,0.2);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+        }
+        .building-video-wrap video {
+            width: 100%;
+            display: block;
+            max-height: 70vh;
+            background: #000;
         }
         .building-photo-grid {
             display: grid;
@@ -229,36 +250,16 @@
             </div>
         </section>
 
-        <!-- Photo Gallery -->
+        <!-- Video -->
         <section class="building-gallery">
             <div class="building-gallery-inner">
                 <h2>Building Progress</h2>
-                <div class="building-photo-grid">
-                    <!-- Replace each placeholder below with an <img> tag when photos are ready -->
-                    <div class="building-photo-slot">
-                        <i class="fa-solid fa-image"></i>
-                        <span>Photo coming soon</span>
-                    </div>
-                    <div class="building-photo-slot">
-                        <i class="fa-solid fa-image"></i>
-                        <span>Photo coming soon</span>
-                    </div>
-                    <div class="building-photo-slot">
-                        <i class="fa-solid fa-image"></i>
-                        <span>Photo coming soon</span>
-                    </div>
-                    <div class="building-photo-slot">
-                        <i class="fa-solid fa-image"></i>
-                        <span>Photo coming soon</span>
-                    </div>
-                    <div class="building-photo-slot">
-                        <i class="fa-solid fa-image"></i>
-                        <span>Photo coming soon</span>
-                    </div>
-                    <div class="building-photo-slot">
-                        <i class="fa-solid fa-image"></i>
-                        <span>Photo coming soon</span>
-                    </div>
+                <p class="building-video-desc">Before December 2025 ended, we took a drone shot of the building and it was incredible. God be praised.</p>
+                <div class="building-video-wrap">
+                    <video controls playsinline preload="metadata">
+                        <source src="assets/videos/building.mp4" type="video/mp4">
+                        Your browser does not support video playback.
+                    </video>
                 </div>
             </div>
         </section>
