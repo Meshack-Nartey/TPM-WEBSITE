@@ -2837,24 +2837,40 @@ body:not(.dark-portal-page) .form-group select:focus {
     }
 
     .hero-content {
-        left: 20px;
+        left: 16px;
+        right: 16px;
         top: auto;
-        bottom: 60px;
+        bottom: 48px;
         transform: none;
-        max-width: calc(100% - 40px);
-        padding: 20px 15px;
-        background: rgba(255, 255, 255, 0.12);
+        max-width: 300px;
+        padding: 14px 16px;
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .hero-title {
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+    }
+
+    .hero-subtitle {
+        font-size: 0.78rem;
+        margin-bottom: 14px;
     }
 
     .hero-buttons {
-        flex-direction: column;
-        gap: 10px;
+        flex-direction: row;
+        gap: 8px;
         align-items: flex-start;
+        flex-wrap: wrap;
     }
 
     .hero-buttons .btn {
-        padding: 10px 20px;
-        font-size: 0.85rem;
+        padding: 8px 14px;
+        font-size: 0.75rem;
     }
     
     .slider-controls {
@@ -2956,11 +2972,11 @@ body:not(.dark-portal-page) .form-group select:focus {
 
 @media (max-width: 480px) {
     .hero-title {
-        font-size: 1.6rem;
+        font-size: 1rem;
     }
 
     .hero-subtitle {
-        font-size: 1rem;
+        font-size: 0.75rem;
     }
 
     .about-section .section-content h2 {
@@ -2973,7 +2989,9 @@ body:not(.dark-portal-page) .form-group select:focus {
     }
 
     .hero-content {
-        padding: 40px 20px;
+        padding: 12px 14px;
+        max-width: 260px;
+        bottom: 40px;
     }
     
     .section-title {
