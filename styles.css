@@ -305,22 +305,15 @@ section {
     align-items: center;
     cursor: pointer;
     z-index: 2100;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
     gap: 5px;
-    transition: background 0.2s;
-}
-
-.hamburger:hover {
-    background: rgba(201,168,76,0.15);
-    border-color: rgba(201,168,76,0.4);
 }
 
 .hamburger span {
-    width: 20px;
+    width: 22px;
     height: 2px;
     background: #fff;
     border-radius: 2px;
@@ -328,10 +321,7 @@ section {
     display: block;
 }
 
-.hamburger.active {
-    background: rgba(201,168,76,0.15);
-    border-color: rgba(201,168,76,0.4);
-}
+.hamburger.active {}
 
 .hamburger.active span:nth-child(1) {
     transform: rotate(45deg) translate(5px, 5px);
@@ -2838,11 +2828,10 @@ body:not(.dark-portal-page) .form-group select:focus {
 
     .hero-content {
         left: 16px;
-        right: 16px;
         top: auto;
-        bottom: 48px;
+        bottom: 230px;
         transform: none;
-        max-width: 300px;
+        max-width: 280px;
         padding: 14px 16px;
         background: rgba(0, 0, 0, 0.45);
         backdrop-filter: blur(8px);
@@ -2990,8 +2979,8 @@ body:not(.dark-portal-page) .form-group select:focus {
 
     .hero-content {
         padding: 12px 14px;
-        max-width: 260px;
-        bottom: 40px;
+        max-width: 240px;
+        bottom: 240px;
     }
     
     .section-title {
