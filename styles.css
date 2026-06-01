@@ -908,9 +908,10 @@ section {
 
 @media (max-width: 768px) {
     .hero-announcements {
-        width: 260px;
-        right: 16px;
-        bottom: 50px;
+        width: calc(100% - 40px);
+        left: 20px;
+        right: 20px;
+        bottom: 30px;
     }
 
     .announce-track {
@@ -2829,40 +2830,56 @@ body:not(.dark-portal-page) .form-group select:focus {
         font-size: 0.85rem;
     }
 
+    /* Strong bottom gradient over the hero photo */
+    .hero-slider::after {
+        content: '';
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 70%;
+        background: linear-gradient(to bottom, transparent 0%, rgba(5,5,15,0.6) 40%, rgba(5,5,15,0.95) 100%);
+        z-index: 6;
+        pointer-events: none;
+    }
+
+    /* Hero content: text directly on gradient, no floating box */
     .hero-content {
-        left: 16px;
+        left: 20px;
+        right: 20px;
+        max-width: none;
         top: auto;
-        bottom: 230px;
+        bottom: 270px;
         transform: none;
-        max-width: 280px;
-        padding: 14px 16px;
-        background: rgba(0, 0, 0, 0.45);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0;
+        background: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border: none !important;
+        border-radius: 0;
+        z-index: 10;
     }
 
     .hero-title {
-        font-size: 1.05rem;
+        font-size: 1.15rem;
         margin-bottom: 6px;
+        line-height: 1.25;
     }
 
     .hero-subtitle {
-        font-size: 0.78rem;
-        margin-bottom: 14px;
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+        opacity: 0.85;
     }
 
     .hero-buttons {
         flex-direction: row;
-        gap: 8px;
-        align-items: flex-start;
+        gap: 10px;
+        align-items: center;
         flex-wrap: wrap;
     }
 
     .hero-buttons .btn {
-        padding: 8px 14px;
-        font-size: 0.75rem;
+        padding: 10px 18px;
+        font-size: 0.8rem;
     }
     
     .slider-controls {
@@ -2981,9 +2998,9 @@ body:not(.dark-portal-page) .form-group select:focus {
     }
 
     .hero-content {
-        padding: 12px 14px;
-        max-width: 240px;
-        bottom: 240px;
+        left: 16px;
+        right: 16px;
+        bottom: 258px;
     }
     
     .section-title {
