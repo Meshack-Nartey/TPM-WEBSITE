@@ -9,7 +9,10 @@
       "Bash(node /tmp/node_modules/.bin/playwright --version)",
       "Bash(node -e \"require\\('/tmp/node_modules/playwright'\\)\")",
       "Read(//tmp/**)",
-      "mcp__claude_ai_Google_Drive__get_file_metadata"
+      "mcp__claude_ai_Google_Drive__get_file_metadata",
+      "Bash(sed -n '2679,2685p' /Users/m1pro/projects/TPM-WEBSITE/styles.css)",
+      "Bash(sed -n '2825,2895p' /Users/m1pro/projects/TPM-WEBSITE/styles.css)",
+      "Bash(sed -n '2983,3010p' /Users/m1pro/projects/TPM-WEBSITE/styles.css)"
     ]
   }
 }
