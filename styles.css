@@ -229,7 +229,7 @@ section {
     height: 70px;
     box-sizing: border-box;
     overflow: visible;
-    z-index: 1000;
+    z-index: 2100;
     background: var(--primary-blue) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -304,7 +304,7 @@ section {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    z-index: 2100;
+    z-index: 2200;
     width: 36px;
     height: 36px;
     background: none;
@@ -2710,60 +2710,51 @@ body:not(.dark-portal-page) .form-group select:focus {
 
     .nav-menu {
         position: fixed;
-        top: 0;
-        right: -100%;
-        width: min(320px, 85vw);
-        height: 100vh;
+        inset: 0;
         flex-direction: column;
-        background: #0d0d0f;
-        border-left: 1px solid rgba(201,168,76,0.18);
-        box-shadow: -8px 0 40px rgba(0,0,0,0.6);
-        padding: 90px 0 40px;
+        background: rgba(5, 5, 15, 0.97);
+        padding: 100px 32px 40px;
         gap: 0;
         overflow-y: auto;
-        transition: right 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
         z-index: 2000;
         text-align: left;
+        justify-content: flex-start;
+        align-items: flex-start;
     }
 
     .nav-menu.active {
-        right: 0;
+        opacity: 1;
+        pointer-events: all;
     }
 
-    /* Dim backdrop when menu open */
-    .nav-menu-backdrop {
-        display: none;
-        position: fixed;
-        top: 70px;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.6);
-        z-index: 1999;
-        backdrop-filter: blur(2px);
-    }
-    .nav-menu-backdrop.active { display: block; }
+    /* No separate backdrop needed — menu itself is the overlay */
+    .nav-menu-backdrop { display: none !important; }
 
     .nav-item {
         margin: 0;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
+        width: 100%;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
     }
 
     .nav-link {
         display: block;
-        padding: 14px 28px;
-        font-size: 0.82rem;
-        letter-spacing: 0.1em;
-        color: rgba(255,255,255,0.75) !important;
+        padding: 16px 0;
+        font-size: 0.95rem;
+        letter-spacing: 0.12em;
+        color: #fff !important;
         border-radius: 0;
         border: none !important;
-        transition: color 0.2s, background 0.2s;
+        transition: color 0.2s;
+        font-weight: 600;
     }
 
     .nav-link:hover,
     .nav-link.active {
         color: #c9a84c !important;
-        background: rgba(201,168,76,0.06);
+        background: none;
         border: none !important;
         border-radius: 0;
     }
@@ -2773,11 +2764,7 @@ body:not(.dark-portal-page) .form-group select:focus {
         color: #c9a84c !important;
         border-radius: 0;
         margin: 0;
-        padding: 14px 28px;
-    }
-
-    .nav-link[href="partner-with-us.html"]:hover {
-        background: rgba(201,168,76,0.1);
+        padding: 16px 0;
     }
 
     .dropdown-menu {
@@ -2786,39 +2773,35 @@ body:not(.dark-portal-page) .form-group select:focus {
         visibility: visible;
         transform: none;
         box-shadow: none;
-        background: rgba(0,0,0,0.3);
+        background: transparent;
         border-radius: 0;
         border: none;
-        padding: 0;
+        padding: 0 0 8px 0;
         min-width: unset;
         margin: 0;
     }
 
     .dropdown-menu li a {
         display: block;
-        padding: 10px 28px 10px 44px;
-        font-size: 0.78rem;
-        color: rgba(255,255,255,0.5);
-        border-bottom: 1px solid rgba(255,255,255,0.04);
+        padding: 8px 0 8px 16px;
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.55);
+        border-bottom: none;
         transition: color 0.2s;
+        letter-spacing: 0.05em;
     }
 
     .dropdown-menu li a:hover {
         color: #c9a84c;
-        background: rgba(201,168,76,0.05);
-    }
-
-    .dropdown-menu li:last-child a {
-        border-bottom: none;
     }
 
     .nav-search-trigger {
         border-bottom: none;
-        padding: 14px 28px;
+        padding: 16px 0;
     }
 
     .search-nav-btn {
-        color: rgba(255,255,255,0.5);
+        color: rgba(255,255,255,0.6);
     }
     
     /* Hero */
