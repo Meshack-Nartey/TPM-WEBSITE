@@ -1,13 +1,19 @@
 [build]
   publish = "."
 
-# Security headers for all pages
+# Security headers for all pages.
+# Also revalidate every request by default so clean URLs (the site root "/" and
+# extensionless pretty URLs like "/about") always fetch the latest HTML. The
+# "/*.html" rule below never matches those paths, so without this the CDN/browser
+# could keep serving a stale page after a deploy. More specific rules for images
+# and videos override this to keep their long-term caching.
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 # CSS and JS are referenced by fixed, un-fingerprinted filenames (e.g. styles.css,
 # script.js), so they must be revalidated on every request. Otherwise browsers keep
