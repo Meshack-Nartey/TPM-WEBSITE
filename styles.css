@@ -486,7 +486,7 @@ section {
     width: 100%;
     height: 100%;
     background-size: cover;
-    background-position: center top;
+    background-position: center 30%;
 }
 
 /* Hero Slide Backgrounds */
@@ -514,44 +514,59 @@ section {
     background-image: url('assets/images/hero6.jpg');
 }
 
-/* Light Blue Overlay */
+/* Cinematic scrim: darkens overall for legibility, heavier at the
+   bottom-left where the hero content sits, and along the top so the
+   navbar reads cleanly over the photo. */
 .overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: transparent;
+    background:
+        linear-gradient(180deg, rgba(10, 10, 10, 0.55) 0%, rgba(10, 10, 10, 0) 22%),
+        linear-gradient(90deg, rgba(10, 10, 10, 0.70) 0%, rgba(10, 10, 10, 0.15) 55%, rgba(10, 10, 10, 0) 100%),
+        linear-gradient(0deg, rgba(10, 10, 10, 0.78) 0%, rgba(10, 10, 10, 0) 45%);
 }
 
 /* Hero Content */
 .hero-content {
     position: absolute;
-    left: 40px;
-    bottom: 60px;
+    left: 5%;
+    bottom: 12%;
     z-index: 10;
     text-align: left;
-    padding: 24px 22px;
-    border-radius: 16px;
-    max-width: 440px;
+    padding: 0;
+    max-width: 620px;
+    /* The scrim now carries the contrast, so the hero copy sits directly
+       on the photo instead of inside a frosted box. */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 .hero-title {
     font-family: var(--font-display);
-    font-size: 1.35rem;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
     font-weight: 700;
     color: var(--white);
-    margin-bottom: 10px;
-    line-height: 1.2;
-    text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+    margin-bottom: 16px;
+    line-height: 1.1;
+    letter-spacing: 0.5px;
+    overflow-wrap: break-word;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
 }
 
 .hero-subtitle {
-    font-size: 1rem;
-    color: var(--white);
-    margin-bottom: 25px;
+    font-size: clamp(1.05rem, 2vw, 1.45rem);
+    color: rgba(255, 255, 255, 0.92);
+    margin-bottom: 32px;
     font-weight: 400;
-    text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
 
 .hero-buttons {
@@ -2834,15 +2849,16 @@ body:not(.dark-portal-page) .form-group select:focus {
     }
 
     .hero-title {
-        font-size: 0.95rem !important;
-        margin-bottom: 5px;
-        line-height: 1.3;
+        font-size: 1.6rem !important;
+        margin-bottom: 10px;
+        line-height: 1.15;
+        letter-spacing: 0;
     }
 
     .hero-subtitle {
-        font-size: 0.78rem !important;
-        margin-bottom: 12px;
-        opacity: 0.85;
+        font-size: 0.9rem !important;
+        margin-bottom: 18px;
+        opacity: 0.9;
     }
 
     .hero-buttons {
@@ -2956,11 +2972,12 @@ body:not(.dark-portal-page) .form-group select:focus {
 
 @media (max-width: 480px) {
     .hero-title {
-        font-size: 0.9rem !important;
+        font-size: 1.3rem !important;
+        letter-spacing: 0;
     }
 
     .hero-subtitle {
-        font-size: 0.75rem !important;
+        font-size: 0.78rem !important;
     }
 
     .about-section .section-content h2 {
