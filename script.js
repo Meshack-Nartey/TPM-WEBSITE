@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Mobile Navigation
     initMobileNav();
 
+    // Initialize transparent-over-hero navbar
+    initHeaderScroll();
+
     // Initialize Smooth Scrolling
     initSmoothScroll();
 
@@ -234,6 +237,21 @@ function initAboutScrollReveal() {
 // ===================================
 // Mobile Navigation
 // ===================================
+// Transparent navbar over the hero, solid dark glass once scrolled.
+// Only pages with a hero start transparent; other pages stay solid.
+function initHeaderScroll() {
+    const header = document.querySelector('.header');
+    const hero = document.querySelector('.hero-section');
+    if (!header || !hero) return;
+
+    const THRESHOLD = 40;
+    const sync = () => {
+        header.classList.toggle('nav-transparent', window.scrollY < THRESHOLD);
+    };
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+}
+
 function initMobileNav() {
     const hamburger = document.getElementById('hamburger');
     const navMenu = document.getElementById('navMenu');
@@ -553,27 +571,7 @@ window.addEventListener('load', () => {
 const skipLink = document.createElement('a');
 skipLink.href = '#main-content';
 skipLink.textContent = 'Skip to main content';
-skipLink.className = 'skip-link';
-
-Object.assign(skipLink.style, {
-    position: 'absolute',
-    top: '-40px',
-    left: '0',
-    background: '#1e3a8a',
-    color: 'white',
-    padding: '8px',
-    textDecoration: 'none',
-    zIndex: '10000'
-});
-
-skipLink.addEventListener('focus', () => {
-    skipLink.style.top = '0';
-});
-
-skipLink.addEventListener('blur', () => {
-    skipLink.style.top = '-40px';
-});
-
+skipLink.className = 'skip-link';   // hidden until focused — styled in styles.css
 document.body.insertBefore(skipLink, document.body.firstChild);
 
 // ===================================
