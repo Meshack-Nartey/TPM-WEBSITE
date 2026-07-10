@@ -45,6 +45,10 @@ body {
     background-color: var(--off-white);
     line-height: 1.6;
     overflow-x: hidden;
+    /* Crisper light-on-dark text throughout the dark theme */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 /* ===================================
@@ -677,24 +681,29 @@ section {
     padding: 14px 35px;
     border-radius: 50px;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1rem;
-    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease,
+                background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
     border: 2px solid transparent;
     cursor: pointer;
 }
 
 .btn-primary {
-    background: var(--gold);
-    color: var(--white);
-    border-color: var(--gold);
+    /* Dark ink on gold — gold-on-white failed contrast (WCAG) */
+    background: linear-gradient(135deg, #e8c96a 0%, #c9a84c 100%);
+    color: #1a1200;
+    border-color: transparent;
+    box-shadow: 0 6px 18px rgba(201, 168, 76, 0.28);
 }
 
 .btn-primary:hover {
-    background: var(--dark-gold);
-    border-color: var(--dark-gold);
+    background: linear-gradient(135deg, #f0d47e 0%, #d8b756 100%);
+    border-color: transparent;
+    color: #1a1200;
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 12px 28px rgba(201, 168, 76, 0.42);
 }
 
 .btn-secondary {
