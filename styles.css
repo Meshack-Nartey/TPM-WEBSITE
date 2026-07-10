@@ -318,9 +318,12 @@ section {
 
 .logo-placeholder svg,
 .logo-placeholder img {
-    height: 100%;
+    /* Rendered much taller than the 70px bar; the logo PNG's transparent
+       padding (~72% of its height) overflows invisibly, so the visible
+       emblem+text grows without clipping or changing the header height. */
+    height: 200px;
     width: auto;
-    max-width: 260px;
+    max-width: 640px;
     object-fit: contain;
     display: block;
 }
@@ -2775,8 +2778,9 @@ body:not(.dark-portal-page) .form-group select:focus {
     }
 
     .logo-placeholder img {
-        max-height: 48px;
-        max-width: 180px;
+        height: 130px;
+        max-height: 130px;
+        max-width: 340px;
     }
 
     .nav-menu {
