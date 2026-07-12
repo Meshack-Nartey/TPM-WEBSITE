@@ -269,6 +269,7 @@ function initMobileNav() {
         hamburger.classList.add('active');
         navMenu.classList.add('active');
         backdrop.classList.add('active');
+        document.body.classList.add('menu-open');
         document.body.style.overflow = 'hidden';
     }
 
@@ -276,6 +277,7 @@ function initMobileNav() {
         hamburger.classList.remove('active');
         navMenu.classList.remove('active');
         backdrop.classList.remove('active');
+        document.body.classList.remove('menu-open');
         document.body.style.overflow = '';
     }
 
@@ -346,8 +348,9 @@ function initScrollAnimations() {
         });
     }, observerOptions);
     
-    // Observe elements
-    const animateElements = document.querySelectorAll('.glass, .section-header, .content-text');
+    // Observe elements — exclude the navbar: its fadeInUp transform would make
+    // it the containing block for the fixed mobile menu, collapsing the overlay.
+    const animateElements = document.querySelectorAll('.glass:not(.navbar), .section-header, .content-text');
     animateElements.forEach(el => observer.observe(el));
 }
 
