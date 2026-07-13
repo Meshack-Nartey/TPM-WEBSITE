@@ -369,102 +369,165 @@
 </head>
 <body>
 <div id="mpPage"></div>
-<script src="mockData.js"></script>
-<script type="module">
-    import { initializeApp }                                          from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js';
-    import { getAuth, createUserWithEmailAndPassword,
-             signInWithEmailAndPassword, signOut,
-             onAuthStateChanged }                                     from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js';
-    import { getFirestore, collection, doc, setDoc, getDoc,
-             getDocs, addDoc, updateDoc, query, where }               from 'https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js';
+<script>
+    /* ═══════════════════════════════════════════════════════════════════
+       TPM PORTAL — API CLIENT
+       Talks to the custom Node/Express + Postgres backend (tpm-api).
+       Replaces the previous Firebase Auth/Firestore integration.
+       ───────────────────────────────────────────────────────────────────
+       CONFIG: after deploying tpm-api to Railway, set the production URL
+       below (or define window.TPM_API_BASE before this script runs).
+       ═══════════════════════════════════════════════════════════════════ */
+    var API_BASE = (function () {
+        if (window.TPM_API_BASE) return String(window.TPM_API_BASE).replace(/\/+$/, '');
+        var host = location.hostname;
+        if (host === 'localhost' || host === '127.0.0.1' || host === '') return 'http://localhost:4000';
+        /* ⬇️ REPLACE with your Railway API URL after deploying tpm-api */
+        return 'https://tpm-api-production.up.railway.app';
+    })();
 
-    /* ── FIREBASE INIT ───────────────────────── */
-    const fbApp  = initializeApp({
-        apiKey:            'AIzaSyD4Dv9hTaUd0x1rvlz8yYdhBnJj6QrBpVU',
-        authDomain:        'tpm-website-60905.firebaseapp.com',
-        projectId:         'tpm-website-60905',
-        storageBucket:     'tpm-website-60905.firebasestorage.app',
-        messagingSenderId: '1082315300826',
-        appId:             '1:1082315300826:web:eb42a3f324fc4364862ae3'
-    });
-    const fbAuth = getAuth(fbApp);
-    const fbDb   = getFirestore(fbApp);
+    var TOKEN_KEY = 'tpm_token';
+    function getToken()  { return localStorage.getItem(TOKEN_KEY) || ''; }
+    function setToken(t) { if (t) localStorage.setItem(TOKEN_KEY, t); }
+    function clearToken() { localStorage.removeItem(TOKEN_KEY); }
 
-    /* ── CONSTANTS ───────────────────────────── */
-    var CODES = { leader: 'TPM-LEADER-2026', admin: 'TPM-ADMIN-2026' };
+    /* Core fetch wrapper: attaches the JWT, parses JSON, throws on error. */
+    async function api(path, opts) {
+        opts = opts || {};
+        var headers = Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {});
+        var token = getToken();
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        var res;
+        try {
+            res = await fetch(API_BASE + path, {
+                method: opts.method || 'GET',
+                headers: headers,
+                body: opts.body ? JSON.stringify(opts.body) : undefined
+            });
+        } catch (e) {
+            throw new Error('Cannot reach the server. Please check your connection and try again.');
+        }
+        var data = null;
+        try { data = await res.json(); } catch (e) {}
+        if (!res.ok) {
+            if (res.status === 401) { clearToken(); currentUser = null; }
+            throw new Error((data && data.error) || ('Request failed (' + res.status + ')'));
+        }
+        return data;
+    }
 
-    /* ── AUTH LAYER (Firebase) ───────────────── */
-    var currentUser = null; // set by onAuthStateChanged
+    /* ── REFERENCE DATA CACHE ─────────────────
+       Loaded once from the public /lookups endpoint so the existing
+       synchronous DB.mock() call sites (dropdowns) keep working. */
+    var CACHE = { branches: [], departments: [], fellowships: [], basenias: [], membershipStatuses: [], meetingTypes: [], genders: [] };
+
+    async function loadLookups() {
+        try {
+            var d = await api('/api/lookups');
+            CACHE.branches           = d.branches           || [];
+            CACHE.departments        = d.departments        || [];
+            CACHE.fellowships        = d.fellowships         || [];
+            CACHE.basenias           = d.basenias            || [];
+            CACHE.membershipStatuses = d.membershipStatuses  || [];
+            CACHE.meetingTypes       = d.meetingTypes        || [];
+            CACHE.genders            = d.genders             || [];
+        } catch (e) { /* keep empty lists if the server is unreachable */ }
+    }
+
+    // Backend stores role as an UPPERCASE enum; the UI uses lowercase.
+    function normalizeUser(u) {
+        if (u && u.role) u.role = String(u.role).toLowerCase();
+        return u;
+    }
+    function titleCase(s) { s = String(s || ''); return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase(); }
+
+    /* ── AUTH LAYER (API) ─────────────────────── */
+    var currentUser = null; // set on login / session restore
 
     var Auth = {
         login: async function (email, password, cb) {
             try {
-                var cred = await signInWithEmailAndPassword(fbAuth, email, password);
-                var snap = await getDoc(doc(fbDb, 'users', cred.user.uid));
-                if (snap.exists()) {
-                    currentUser = Object.assign({ uid: cred.user.uid }, snap.data());
-                    cb(null, currentUser);
-                } else {
-                    await signOut(fbAuth);
-                    cb('Account profile not found. Please contact admin.');
-                }
-            } catch (e) {
-                var msg = 'Invalid email or password.';
-                if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') msg = 'No account found with this email.';
-                if (e.code === 'auth/too-many-requests') msg = 'Too many attempts. Please try again later.';
-                cb(msg);
-            }
+                var d = await api('/api/auth/login', { method: 'POST', body: { email: email, password: password } });
+                setToken(d.token);
+                currentUser = normalizeUser(d.user);
+                cb(null, currentUser);
+            } catch (e) { cb(e.message); }
         },
         register: async function (data, cb) {
             try {
-                var cred = await createUserWithEmailAndPassword(fbAuth, data.email, data.password);
-                var profile = {
-                    firstName: data.firstName, lastName: data.lastName, fullName: data.fullName,
-                    email: data.email, phone: data.phone || '', role: data.role,
-                    branch: data.branch, department: data.department, fellowship: data.fellowship || '',
-                    dateJoined: data.dateJoined, createdAt: data.createdAt
-                };
-                await setDoc(doc(fbDb, 'users', cred.user.uid), profile);
-                currentUser = Object.assign({ uid: cred.user.uid }, profile);
+                var d = await api('/api/auth/register', { method: 'POST', body: {
+                    firstName: data.firstName, lastName: data.lastName,
+                    email: data.email, password: data.password,
+                    role: String(data.role || 'member').toUpperCase(),
+                    inviteCode: data.inviteCode || '',
+                    phone: data.phone || '', branch: data.branch || '',
+                    department: data.department || '', fellowship: data.fellowship || '',
+                    dateJoined: data.dateJoined || ''
+                } });
+                setToken(d.token);
+                currentUser = normalizeUser(d.user);
                 cb(null, currentUser);
-            } catch (e) {
-                var msg = 'Registration failed. Please try again.';
-                if (e.code === 'auth/email-already-in-use') msg = 'An account with this email already exists.';
-                if (e.code === 'auth/weak-password') msg = 'Password must be at least 6 characters.';
-                cb(msg);
-            }
+            } catch (e) { cb(e.message); }
         },
         logout: async function () {
             currentUser = null;
-            await signOut(fbAuth);
+            clearToken();
         },
         getSession: function () { return currentUser; },
+        loadSession: async function () {
+            if (!getToken()) return false;
+            try {
+                var d = await api('/api/auth/me');
+                currentUser = normalizeUser(d.user);
+                return true;
+            } catch (e) { clearToken(); currentUser = null; return false; }
+        },
         getUsers: async function () {
-            var snap = await getDocs(collection(fbDb, 'users'));
-            return snap.docs.map(function (d) { return Object.assign({ uid: d.id }, d.data()); });
+            var d = await api('/api/users');
+            return (d.users || []).map(normalizeUser);
         }
     };
 
-    /* ── DATA LAYER (Firestore) ──────────────── */
+    /* ── DATA LAYER (API) ─────────────────────── */
     var DB = {
         getReports: async function (meetingType) {
-            var q    = meetingType
-                ? query(collection(fbDb, 'reports'), where('meetingType', '==', meetingType))
-                : collection(fbDb, 'reports');
-            var snap = await getDocs(q);
-            return snap.docs.map(function (d) { return Object.assign({ _id: d.id }, d.data()); });
+            var qs = meetingType ? ('?type=' + encodeURIComponent(meetingType)) : '';
+            var d = await api('/api/reports' + qs);
+            return d.reports || [];
         },
-        addReport: async function (r) { await addDoc(collection(fbDb, 'reports'), r); },
+        addReport: async function (r) { await api('/api/reports', { method: 'POST', body: r }); },
         getRequests: async function () {
-            var snap = await getDocs(collection(fbDb, 'profileRequests'));
-            return snap.docs.map(function (d) { return Object.assign({ _id: d.id }, d.data()); });
+            var d = await api('/api/profile-requests');
+            return (d.requests || []).map(function (r) {
+                r._id    = r.id;
+                r.status = titleCase(r.status); // PENDING -> Pending
+                r.date   = r.createdAt ? new Date(r.createdAt).toLocaleDateString() : (r.date || '');
+                return r;
+            });
         },
-        addRequest: async function (r) { await addDoc(collection(fbDb, 'profileRequests'), r); },
+        addRequest: async function (r) {
+            await api('/api/profile-requests', { method: 'POST', body: { field: r.field, newValue: r.newValue } });
+        },
         updateRequest: async function (id, status) {
-            await updateDoc(doc(fbDb, 'profileRequests', id), { status: status });
+            await api('/api/profile-requests/' + id, { method: 'PATCH', body: { status: String(status).toUpperCase() } });
         },
-        addMember: async function (m) { await addDoc(collection(fbDb, 'members'), m); },
-        mock: function () { return window.TPM_MOCK_DATA || {}; }
+        addMember: async function (m) { await api('/api/members', { method: 'POST', body: m }); },
+        getMembers: async function () { var d = await api('/api/members'); return d.members || []; },
+        deleteMember: async function (id) { await api('/api/members/' + id, { method: 'DELETE' }); },
+        getStatistics: async function () { return await api('/api/statistics'); },
+        getLeaders: async function () { var d = await api('/api/leaders'); return d.leaders || []; },
+        createLeader: async function (l) { await api('/api/leaders', { method: 'POST', body: l }); },
+        updateLeader: async function (id, l) { await api('/api/leaders/' + id, { method: 'PATCH', body: l }); },
+        deleteLeader: async function (id) { await api('/api/leaders/' + id, { method: 'DELETE' }); },
+        getAnnouncements: async function () { var d = await api('/api/announcements'); return d.announcements || []; },
+        createAnnouncement: async function (a) { await api('/api/announcements', { method: 'POST', body: a }); },
+        updateAnnouncement: async function (id, a) { await api('/api/announcements/' + id, { method: 'PATCH', body: a }); },
+        deleteAnnouncement: async function (id) { await api('/api/announcements/' + id, { method: 'DELETE' }); },
+        getLookupsManage: async function () { return await api('/api/lookups/manage'); },
+        addLookup: async function (category, value) { await api('/api/lookups', { method: 'POST', body: { category: category, value: value } }); },
+        deleteLookup: async function (id) { await api('/api/lookups/' + id, { method: 'DELETE' }); },
+        reloadLookups: loadLookups,
+        mock: function () { return CACHE; }
     };
 
     /* ── HELPERS ─────────────────────────────── */
@@ -482,6 +545,21 @@
     var activeReqFilter = 'all';
     var chartInsts      = [];
     var selectedRole    = null;
+    var leaderFormOpen  = false, editingLeader = null;
+    var annFormOpen     = false, editingAnn    = null;
+    var memberFormOpen  = false, membersList   = [];
+
+    /* Small form-field builders for the admin management screens. */
+    function pField(label, id, val, type) {
+        return '<div class="mp-pfield"><label>' + esc(label) + '</label><input type="' + (type || 'text') + '" id="' + id + '" value="' + esc(val == null ? '' : String(val)) + '"></div>';
+    }
+    function pSelect(label, id, opts, val) {
+        return '<div class="mp-pfield"><label>' + esc(label) + '</label><select id="' + id + '"><option value="">Select</option>' +
+            (opts || []).map(function (o) { return '<option' + (o === val ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select></div>';
+    }
+    function pArea(label, id, val) {
+        return '<div class="mp-pfield full"><label>' + esc(label) + '</label><textarea id="' + id + '" rows="2">' + esc(val == null ? '' : String(val)) + '</textarea></div>';
+    }
 
     function destroyCharts() { chartInsts.forEach(function (c) { try { c.destroy(); } catch (e) {} }); chartInsts = []; }
 
@@ -585,8 +663,8 @@
                 if (!selectedRole) { showMsg('regMsg', 'err', 'Please choose an account type.'); return; }
                 if (selectedRole !== 'member') {
                     var code = ($('r_code').value || '').trim().toUpperCase();
-                    var expected = CODES[selectedRole];
-                    if (!expected || code !== expected) { showMsg('regMsg', 'err', 'Invalid invite code. Contact TPM administration.'); return; }
+                    if (!code) { showMsg('regMsg', 'err', 'Please enter your invite code.'); return; }
+                    regData.inviteCode = code; // validated server-side at registration
                 }
                 regData.role = selectedRole;
                 showRegStep(2);
@@ -625,7 +703,7 @@
                 regDots(3) +
                 '<div class="mp-field"><label>Phone Number</label><input type="tel" id="r_phone" placeholder="+233 XX XXX XXXX"></div>' +
                 '<div class="mp-field"><label>Branch *</label><select id="r_branch">' + selectOpts(d.branches || [], 'Select your branch') + '</select></div>' +
-                '<div class="mp-field"><label>Department *</label><select id="r_dept">' + selectOpts(d.departments || [], 'Select your department') + '</select></div>' +
+                '<div class="mp-field"><label>Worker Group *</label><select id="r_dept">' + selectOpts(d.departments || [], 'Select your worker group') + '</select></div>' +
                 '<div class="mp-field"><label>Fellowship</label><select id="r_fellow">' + selectOpts(d.fellowships || [], 'Optional') + '</select></div>' +
                 '<div class="mp-field"><label>Date Joined *</label><input type="date" id="r_joined"></div>' +
                 '<button type="button" class="mp-btn" id="s3Create">Create Account</button>' +
@@ -634,7 +712,7 @@
             $('s3Back').onclick = function () { showRegStep(2); };
             $('s3Create').onclick = async function () {
                 var branch = $('r_branch').value, dept = $('r_dept').value, joined = $('r_joined').value;
-                if (!branch || !dept || !joined) { showMsg('regMsg', 'err', 'Please fill in Branch, Department, and Date Joined.'); return; }
+                if (!branch || !dept || !joined) { showMsg('regMsg', 'err', 'Please fill in Branch, Worker Group, and Date Joined.'); return; }
                 regData.phone      = ($('r_phone').value || '').trim();
                 regData.branch     = branch;
                 regData.department = dept;
@@ -671,16 +749,17 @@
         { id: 'statistics',   icon: '📊', label: 'Statistics',       roles: ['leader','admin'] },
         { id: 'leaders',      icon: '🏛️', label: 'Leaders',          roles: ['leader','admin'] },
         { id: 'requests',     icon: '✏️', label: 'Profile Requests', roles: ['admin'] },
-        { id: 'users',        icon: '🔑', label: 'User Management',  roles: ['admin'] }
+        { id: 'users',        icon: '🔑', label: 'User Management',  roles: ['admin'] },
+        { id: 'reference',    icon: '🗂️', label: 'Reference Lists',  roles: ['admin'] }
     ];
 
     var NAV_GROUPS = {
         member: { '': ['dashboard','profile','announcements'] },
         leader: { 'General': ['dashboard','profile','announcements'], 'Leadership': ['reports','registry','statistics','leaders'] },
-        admin:  { 'General': ['dashboard','profile','announcements'], 'Leadership': ['reports','registry','statistics','leaders'], 'Admin': ['requests','users'] }
+        admin:  { 'General': ['dashboard','profile','announcements'], 'Leadership': ['reports','registry','statistics','leaders'], 'Admin': ['requests','users','reference'] }
     };
 
-    var VIEW_TITLES = { dashboard:'Dashboard', profile:'My Profile', announcements:'Announcements', reports:'Submit Reports', registry:'Member Registry', statistics:'Statistics', leaders:'Leaders', requests:'Profile Requests', users:'User Management' };
+    var VIEW_TITLES = { dashboard:'Dashboard', profile:'My Profile', announcements:'Announcements', reports:'Submit Reports', registry:'Member Registry', statistics:'Statistics', leaders:'Leaders', requests:'Profile Requests', users:'User Management', reference:'Reference Lists' };
 
     function renderPortal() {
         var user = Auth.getSession();
@@ -757,17 +836,22 @@
         destroyCharts();
         document.querySelectorAll('.mp-nav-btn').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-view') === name); });
         var t = $('mpTopTitle'); if (t) t.textContent = VIEW_TITLES[name] || '';
-        var views = { dashboard: vDashboard, profile: vProfile, announcements: vAnnouncements, reports: vReports, registry: vRegistry, statistics: vStatistics, leaders: vLeaders, requests: vRequests, users: vUsers };
+        var views = { dashboard: vDashboard, profile: vProfile, announcements: vAnnouncements, reports: vReports, registry: vRegistry, statistics: vStatistics, leaders: vLeaders, requests: vRequests, users: vUsers, reference: vReference };
         if (views[name]) views[name]();
     }
 
     /* ── VIEWS ───────────────────────────────── */
 
-    function vDashboard() {
-        var user  = Auth.getSession();
-        var d     = DB.mock(); var stats = d.statistics || {};
-        var role  = user.role;
-        var pending = DB.getRequests().filter(function (r) { return r.status === 'Pending'; }).length;
+    async function vDashboard() {
+        var user = Auth.getSession();
+        var role = user.role;
+        var stats = {}, pending = 0;
+        if (role === 'leader' || role === 'admin') {
+            try { stats = (await DB.getStatistics()).statistics || {}; } catch (e) {}
+        }
+        if (role === 'admin') {
+            try { pending = (await DB.getRequests()).filter(function (r) { return r.status === 'Pending'; }).length; } catch (e) {}
+        }
 
         var actions = [
             { id:'profile',       icon:'👤', name:'My Profile',       desc:'View your personal and church details.' },
@@ -775,7 +859,7 @@
         ];
         if (role === 'leader' || role === 'admin') actions = actions.concat([
             { id:'reports',    icon:'📋', name:'Submit Reports',   desc:'LOUCS, Basenia, Tithe, Souls Won and more.' },
-            { id:'registry',   icon:'👥', name:'Member Registry',  desc:'Register new members into the database.' },
+            { id:'registry',   icon:'👥', name:'Member Registry',  desc:'Register and browse church members.' },
             { id:'statistics', icon:'📊', name:'Statistics',       desc:'Attendance charts and branch comparisons.' },
             { id:'leaders',    icon:'🏛️', name:'Leaders',          desc:'Full church leadership directory.' }
         ]);
@@ -821,7 +905,7 @@
             ['Email',        user.email],
             ['Phone',        user.phone      || '—'],
             ['Branch',       user.branch     || '—'],
-            ['Department',   user.department || '—'],
+            ['Worker Group', user.department || '—'],
             ['Fellowship',   user.fellowship || '—'],
             ['Date Joined',  user.dateJoined || '—'],
             ['Account Type', user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : '—']
@@ -910,31 +994,84 @@
         };
     }
 
-    function vAnnouncements() {
-        var anns = [
-            { tag:'Upcoming Event',  title:'Holy Ghost Festival 2026',   body:'Mark your calendars for our annual Spirit-filled gathering. Experience God\'s power like never before.',        date:'Date: TBA' },
-            { tag:'Camp',            title:'Sharpening Camp',            body:'Join us for intensive leadership training and spiritual equipping for effective ministry.',                    date:'Date: TBA' },
-            { tag:'Weekly Service',  title:'Love Therapy — Fridays',     body:'Join us every Friday evening for powerful teaching on love and relationships.',                               date:'Every Friday, 6:00 PM' },
-            { tag:'Conference',      title:'Transformation Conference',  body:'A powerful gathering of worship, faith, and prophetic teaching. All are welcome.',                           date:'Date: TBA' },
-            { tag:'Weekly Service',  title:'Sunday Celebration Service', body:'Join us every Sunday for worship, the Word, and fellowship with the family of God.',                        date:'Every Sunday, 9:00 AM' },
-            { tag:'Prayer',          title:'Corporate Prayer Night',     body:'Come together as one body to seek God\'s face. Monthly corporate prayer night.',                             date:'Last Friday of every month' }
-        ];
-        $('mpContent').innerHTML =
-            '<div class="mp-ann-grid">' +
-            anns.map(function (a) {
+    async function vAnnouncements() {
+        var isAdmin = Auth.getSession().role === 'admin';
+        $('mpContent').innerHTML = '<div class="mp-empty"><div class="mp-empty-icon">⏳</div>Loading announcements…</div>';
+        var anns = [];
+        try { anns = await DB.getAnnouncements(); }
+        catch (e) { $('mpContent').innerHTML = '<div class="mp-empty"><div class="mp-empty-icon">⚠️</div>' + esc(e.message) + '</div>'; return; }
+
+        var html = '';
+        if (isAdmin) {
+            html += '<div style="display:flex;justify-content:flex-end;margin-bottom:16px"><button class="mp-submit" style="margin-top:0" id="anAddBtn">+ Add Announcement</button></div>';
+            if (annFormOpen) {
+                var A = editingAnn || {};
+                html += '<div class="mp-card"><h2 class="mp-card-title">' + (editingAnn ? 'Edit Announcement' : 'New Announcement') + '</h2>' +
+                    '<div class="mp-vmsg" id="anMsg"></div>' +
+                    '<div class="mp-form-grid">' +
+                        pField('Tag * (e.g. Upcoming Event)', 'an_tag', A.tag) +
+                        pField('Date (e.g. Every Sunday, 9:00 AM)', 'an_date', A.date) +
+                        pField('Title *', 'an_title', A.title) +
+                        pField('Sort Order', 'an_sort', (A.sortOrder != null ? A.sortOrder : ''), 'number') +
+                        pArea('Body *', 'an_body', A.body) +
+                    '</div>' +
+                    '<button class="mp-submit" id="anSave">' + (editingAnn ? 'Save Changes' : 'Create Announcement') + '</button>' +
+                    '<button class="mp-submit" id="anCancel" style="background:transparent;border:1px solid rgba(255,255,255,0.12);margin-left:8px">Cancel</button>' +
+                '</div>';
+            }
+        }
+
+        html += anns.length
+            ? '<div class="mp-ann-grid">' + anns.map(function (a) {
                 return '<div class="mp-ann-card">' +
                     '<div class="mp-ann-tag">' + esc(a.tag) + '</div>' +
                     '<div class="mp-ann-title">' + esc(a.title) + '</div>' +
                     '<div class="mp-ann-body">' + esc(a.body) + '</div>' +
-                    '<div class="mp-ann-date">🕐 ' + esc(a.date) + '</div>' +
+                    '<div class="mp-ann-date">🕐 ' + esc(a.date || '') + '</div>' +
+                    (isAdmin ? '<div style="margin-top:4px"><button class="mp-act-btn mp-approve" data-anedit="' + esc(a.id) + '">Edit</button><button class="mp-act-btn mp-reject" data-andel="' + esc(a.id) + '">Delete</button></div>' : '') +
                     '</div>';
-            }).join('') + '</div>';
+            }).join('') + '</div>'
+            : '<div class="mp-empty"><div class="mp-empty-icon">📢</div>No announcements yet.' + (isAdmin ? ' Click “Add Announcement” to create one.' : '') + '</div>';
+
+        $('mpContent').innerHTML = html;
+        if (!isAdmin) return;
+
+        $('anAddBtn').onclick = function () { annFormOpen = true; editingAnn = null; vAnnouncements(); };
+        if (annFormOpen) {
+            $('anCancel').onclick = function () { annFormOpen = false; editingAnn = null; vAnnouncements(); };
+            $('anSave').onclick = async function () {
+                var tag = $('an_tag').value.trim(), title = $('an_title').value.trim(), body = $('an_body').value.trim();
+                if (!tag || !title || !body) { showVMsg('anMsg', 'err', 'Tag, Title, and Body are required.'); return; }
+                var payload = { tag: tag, title: title, body: body, date: $('an_date').value.trim(), sortOrder: Number($('an_sort').value || 0) };
+                this.disabled = true;
+                try {
+                    if (editingAnn) await DB.updateAnnouncement(editingAnn.id, payload); else await DB.createAnnouncement(payload);
+                    annFormOpen = false; editingAnn = null; vAnnouncements();
+                } catch (e) { showVMsg('anMsg', 'err', e.message); this.disabled = false; }
+            };
+        }
+        $('mpContent').querySelectorAll('[data-anedit]').forEach(function (b) {
+            b.onclick = function () {
+                var id = this.getAttribute('data-anedit');
+                editingAnn = anns.find(function (x) { return x.id === id; });
+                annFormOpen = true; vAnnouncements();
+            };
+        });
+        $('mpContent').querySelectorAll('[data-andel]').forEach(function (b) {
+            b.onclick = async function () {
+                if (!window.confirm('Delete this announcement?')) return;
+                try { await DB.deleteAnnouncement(this.getAttribute('data-andel')); vAnnouncements(); } catch (e) { window.alert(e.message); }
+            };
+        });
     }
 
     async function vReports() {
-        var d = DB.mock(); var branches = d.branches || [], types = d.meetingTypes || [];
+        var user = Auth.getSession();
+        // Branch-scoped leaders can only file records for their own branch.
+        var branches = (user.role === 'leader') ? (user.branch ? [user.branch] : []) : (DB.mock().branches || []);
         var tabMap  = { loucs:'LOUCS', basenia:'Basenia', friday:'Friday Service', general:'General Meeting', tithe:'Tithe', souls:'Souls Won' };
-        var mockSrc = { loucs:d.loucsReport, basenia:d.baseniaReport, friday:d.fridayServiceReport, general:d.generalMeetingReport, tithe:d.titheRecords, souls:d.soulsWonReport };
+        // Record-type options mirror the tabs so a submitted record shows under its tab.
+        var types   = Object.keys(tabMap).map(function (k) { return tabMap[k]; });
         var isSouls = activeReportTab === 'souls', isTithe = activeReportTab === 'tithe';
 
         var tabs = Object.keys(tabMap).map(function (k) {
@@ -971,10 +1108,10 @@
             p.onclick = function () { activeReportTab = this.getAttribute('data-rtab'); vReports(); };
         });
 
-        /* Load from Firestore */
-        var submitted = await DB.getReports(tabMap[activeReportTab]);
-        var combined  = (mockSrc[activeReportTab] || []).concat(submitted);
-        var rows = combined.length ? combined.map(function (r) {
+        /* Load records from the API */
+        var submitted = [];
+        try { submitted = await DB.getReports(tabMap[activeReportTab]); } catch (e) {}
+        var rows = submitted.length ? submitted.map(function (r) {
             var aM = Number(r.attMale || 0), aF = Number(r.attFemale || 0);
             var sM = Number(r.soulsMale || 0), sF = Number(r.soulsFemale || 0);
             return '<tr><td>' + esc(r.date || '') + '</td><td>' + esc(r.branch || '') + '</td>' +
@@ -1007,9 +1144,14 @@
         };
     }
 
-    function vRegistry() {
+    async function vRegistry() {
         var d = DB.mock();
-        $('mpContent').innerHTML =
+        var user = Auth.getSession();
+        var isAdmin = user.role === 'admin';
+        // Branch-scoped leaders can only register members into their own branch.
+        var branchOpts = (user.role === 'leader') ? (user.branch ? [user.branch] : []) : (d.branches || []);
+
+        var formHtml = !memberFormOpen ? '' :
             '<div class="mp-card">' +
                 '<h2 class="mp-card-title">Register New Member</h2>' +
                 '<div class="mp-vmsg" id="memMsg"></div>' +
@@ -1023,8 +1165,8 @@
                         '<div class="mp-pfield"><label>Phone *</label><input type="tel" id="m_phone" placeholder="+233 XX XXX XXXX"></div>' +
                         '<div class="mp-pfield"><label>Email</label><input type="email" id="m_email" placeholder="email@example.com"></div>' +
                         '<div class="mp-pfield full"><label>Home Address *</label><input type="text" id="m_addr" placeholder="Home address"></div>' +
-                        '<div class="mp-pfield"><label>Branch *</label><select id="m_branch"><option value="">Select branch</option>' + (d.branches || []).map(function (b) { return '<option>' + esc(b) + '</option>'; }).join('') + '</select></div>' +
-                        '<div class="mp-pfield"><label>Department *</label><select id="m_dept"><option value="">Select department</option>' + (d.departments || []).map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select></div>' +
+                        '<div class="mp-pfield"><label>Branch *</label><select id="m_branch"><option value="">Select branch</option>' + branchOpts.map(function (b) { return '<option>' + esc(b) + '</option>'; }).join('') + '</select></div>' +
+                        '<div class="mp-pfield"><label>Worker Group *</label><select id="m_dept"><option value="">Select worker group</option>' + (d.departments || []).map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select></div>' +
                         '<div class="mp-pfield"><label>Fellowship</label><select id="m_fellow"><option value="">Optional</option>' + (d.fellowships || []).map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select></div>' +
                         '<div class="mp-pfield"><label>Date Joined *</label><input type="date" id="m_joined"></div>' +
                         '<div class="mp-pfield"><label>Membership Status *</label><select id="m_status"><option value="">Select status</option>' + (d.membershipStatuses || []).map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select></div>' +
@@ -1032,52 +1174,125 @@
                         '<div class="mp-pfield"><label>Emergency Contact Phone *</label><input type="tel" id="m_ecphone" placeholder="+233 XX XXX XXXX"></div>' +
                     '</div>' +
                     '<button type="submit" class="mp-submit">Register Member</button>' +
+                    '<button type="button" class="mp-submit" id="memCancel" style="background:transparent;border:1px solid rgba(255,255,255,0.12);margin-left:8px">Cancel</button>' +
                 '</form>' +
             '</div>';
 
-        $('memForm').onsubmit = async function (e) {
-            e.preventDefault();
-            var first = $('m_first').value.trim(), last = $('m_last').value.trim();
-            var dob = $('m_dob').value, gender = $('m_gender').value;
-            var phone = $('m_phone').value.trim(), addr = $('m_addr').value.trim();
-            var branch = $('m_branch').value, dept = $('m_dept').value;
-            var joined = $('m_joined').value, status = $('m_status').value;
-            var ecname = $('m_ecname').value.trim(), ecphone = $('m_ecphone').value.trim();
-            if (!first || !last || !dob || !gender || !phone || !addr || !branch || !dept || !joined || !status || !ecname || !ecphone) {
-                showVMsg('memMsg', 'err', 'Please fill in all required fields.'); return;
+        $('mpContent').innerHTML =
+            '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">' +
+                '<input id="memSearch" placeholder="Search name, phone, email…" style="flex:1;min-width:180px;background:var(--surface2);border:1px solid rgba(255,255,255,0.09);border-radius:var(--r);padding:9px 12px;color:var(--text);font-family:var(--font-body);outline:none">' +
+                '<select id="memStatusFilter" style="background:var(--surface2);border:1px solid rgba(255,255,255,0.09);border-radius:var(--r);padding:9px 12px;color:var(--text);font-family:var(--font-body)"><option value="">All statuses</option>' + (d.membershipStatuses || []).map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select>' +
+                '<button class="mp-submit" style="margin-top:0" id="memAddBtn">' + (memberFormOpen ? 'Close Form' : '+ Register Member') + '</button>' +
+            '</div>' +
+            formHtml +
+            '<div class="mp-card">' +
+                '<h2 class="mp-card-title">Members' + (!isAdmin && user.branch ? ' — ' + esc(user.branch) : '') + '</h2>' +
+                '<div id="memTableWrap"><div class="mp-empty"><div class="mp-empty-icon">⏳</div>Loading members…</div></div>' +
+            '</div>';
+
+        $('memAddBtn').onclick = function () { memberFormOpen = !memberFormOpen; vRegistry(); };
+        $('memSearch').oninput = renderMemberTable;
+        $('memStatusFilter').onchange = renderMemberTable;
+
+        if (memberFormOpen) {
+            $('memCancel').onclick = function () { memberFormOpen = false; vRegistry(); };
+            $('memForm').onsubmit = async function (e) {
+                e.preventDefault();
+                var first = $('m_first').value.trim(), last = $('m_last').value.trim();
+                var dob = $('m_dob').value, gender = $('m_gender').value;
+                var phone = $('m_phone').value.trim(), addr = $('m_addr').value.trim();
+                var branch = $('m_branch').value, dept = $('m_dept').value;
+                var joined = $('m_joined').value, status = $('m_status').value;
+                var ecname = $('m_ecname').value.trim(), ecphone = $('m_ecphone').value.trim();
+                if (!first || !last || !dob || !gender || !phone || !addr || !branch || !dept || !joined || !status || !ecname || !ecphone) {
+                    showVMsg('memMsg', 'err', 'Please fill in all required fields.'); return;
+                }
+                var btn = this.querySelector('button'); btn.disabled = true; btn.textContent = 'Saving…';
+                try {
+                    await DB.addMember({
+                        firstName: first, middleName: $('m_mid').value.trim(), lastName: last,
+                        fullName: first + ' ' + last,
+                        dob: dob, gender: gender, phone: phone,
+                        email: ($('m_email').value || '').trim().toLowerCase(),
+                        address: addr, branch: branch, department: dept,
+                        fellowship: $('m_fellow').value, dateJoined: joined,
+                        membershipStatus: status, emergencyContactName: ecname,
+                        emergencyContactPhone: ecphone
+                    });
+                    showVMsg('memMsg', 'ok', first + ' ' + last + ' registered successfully!');
+                    $('memForm').reset();
+                    try { membersList = await DB.getMembers(); renderMemberTable(); } catch (e2) {}
+                } catch (err) { showVMsg('memMsg', 'err', err.message || 'Failed to save member.'); }
+                btn.disabled = false; btn.textContent = 'Register Member';
+            };
+        }
+
+        try { membersList = await DB.getMembers(); } catch (e) { membersList = []; }
+        renderMemberTable();
+
+        function renderMemberTable() {
+            var wrap = $('memTableWrap'); if (!wrap) return;
+            var q  = ($('memSearch') ? $('memSearch').value : '').trim().toLowerCase();
+            var sf = $('memStatusFilter') ? $('memStatusFilter').value : '';
+            var list = membersList.filter(function (m) {
+                if (sf && m.membershipStatus !== sf) return false;
+                if (q) {
+                    var hay = ((m.fullName || '') + ' ' + (m.phone || '') + ' ' + (m.email || '')).toLowerCase();
+                    if (hay.indexOf(q) === -1) return false;
+                }
+                return true;
+            });
+            if (!list.length) {
+                wrap.innerHTML = '<div class="mp-empty"><div class="mp-empty-icon">👥</div>' +
+                    (membersList.length ? 'No members match your search.' : 'No members yet. Click “Register Member” to add one.') + '</div>';
+                return;
             }
-            var btn = this.querySelector('button'); btn.disabled = true; btn.textContent = 'Saving…';
-            try {
-                await DB.addMember({
-                    firstName: first, middleName: $('m_mid').value.trim(), lastName: last,
-                    fullName: first + ' ' + last,
-                    dob: dob, gender: gender, phone: phone,
-                    email: ($('m_email').value || '').trim().toLowerCase(),
-                    address: addr, branch: branch, department: dept,
-                    fellowship: $('m_fellow').value, dateJoined: joined,
-                    membershipStatus: status, emergencyContactName: ecname,
-                    emergencyContactPhone: ecphone,
-                    registeredBy: currentUser.email,
-                    registeredAt: new Date().toISOString()
-                });
-                showVMsg('memMsg', 'ok', first + ' ' + last + ' registered successfully!');
-                $('memForm').reset();
-            } catch (err) { showVMsg('memMsg', 'err', 'Failed to save member. Please try again.'); }
-            btn.disabled = false; btn.textContent = 'Register Member';
-        };
+            var rows = list.map(function (m) {
+                return '<tr>' +
+                    '<td><span class="mp-tbl-av">' + initials(m.fullName) + '</span>' + esc(m.fullName) + '</td>' +
+                    '<td>' + esc(m.gender || '—') + '</td>' +
+                    '<td>' + esc(m.phone || '—') + '</td>' +
+                    (isAdmin ? '<td>' + esc(m.branch || '—') + '</td>' : '') +
+                    '<td>' + esc(m.department || '—') + '</td>' +
+                    '<td>' + esc(m.membershipStatus || '—') + '</td>' +
+                    '<td>' + esc(m.dateJoined || '—') + '</td>' +
+                    '<td><button class="mp-act-btn mp-reject" data-memdel="' + esc(m.id) + '">Delete</button></td>' +
+                    '</tr>';
+            }).join('');
+            wrap.innerHTML = '<div style="font-size:.72rem;color:var(--text-muted);margin-bottom:10px">' + list.length + ' member' + (list.length === 1 ? '' : 's') + '</div>' +
+                '<div class="mp-table-wrap"><table class="mp-table"><thead><tr>' +
+                '<th>Name</th><th>Gender</th><th>Phone</th>' + (isAdmin ? '<th>Branch</th>' : '') + '<th>Worker Group</th><th>Status</th><th>Joined</th><th></th>' +
+                '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+            wrap.querySelectorAll('[data-memdel]').forEach(function (b) {
+                b.onclick = async function () {
+                    if (!window.confirm('Delete this member?')) return;
+                    try { await DB.deleteMember(this.getAttribute('data-memdel')); membersList = await DB.getMembers(); renderMemberTable(); }
+                    catch (e) { window.alert(e.message); }
+                };
+            });
+        }
     }
 
-    function vStatistics() {
-        var d = DB.mock(); var stats = d.statistics || {}, trends = d.attendanceTrends || {}, bc = d.branchComparisons || {};
+    async function vStatistics() {
+        $('mpContent').innerHTML = '<div class="mp-empty"><div class="mp-empty-icon">⏳</div>Loading statistics…</div>';
+        var stats = {}, trends = { labels: [], data: [] }, bc = { labels: [], attendance: [] };
+        try {
+            var s = await DB.getStatistics();
+            stats  = s.statistics || {};
+            trends = s.attendanceTrends || trends;
+            bc     = s.branchComparisons || bc;
+        } catch (e) { $('mpContent').innerHTML = '<div class="mp-empty"><div class="mp-empty-icon">⚠️</div>' + esc(e.message) + '</div>'; return; }
+
         var tabMap  = { loucs:'LOUCS', basenia:'Basenia', friday:'Friday Service', general:'General Meeting', tithe:'Tithe', souls:'Souls Won' };
-        var mockSrc = { loucs:d.loucsReport, basenia:d.baseniaReport, friday:d.fridayServiceReport, general:d.generalMeetingReport, tithe:d.titheRecords, souls:d.soulsWonReport };
         var isSouls = activeReportTab === 'souls', isTithe = activeReportTab === 'tithe';
 
         var tabs = Object.keys(tabMap).map(function (k) {
             return '<button class="mp-tab' + (activeReportTab === k ? ' active' : '') + '" data-stab="' + k + '">' + tabMap[k] + '</button>';
         }).join('');
 
-        var rows = (mockSrc[activeReportTab] || []).map(function (r) {
+        var records = [];
+        try { records = await DB.getReports(tabMap[activeReportTab]); } catch (e) {}
+        var rows = records.length ? records.map(function (r) {
             var aM = Number(r.attMale || 0), aF = Number(r.attFemale || 0);
             var sM = Number(r.soulsMale || 0), sF = Number(r.soulsFemale || 0);
             return '<tr><td>' + esc(r.date || '') + '</td><td>' + esc(r.branch || '') + '</td>' +
@@ -1085,7 +1300,7 @@
                 (isTithe ? '<td>GH₵ ' + fmt(r.tithe) + '</td>' : '') +
                 (isSouls ? '<td>' + fmt(sM) + '</td><td>' + fmt(sF) + '</td><td><strong>' + fmt(sM + sF) + '</strong></td>' : '') +
                 '<td>' + esc(r.notes || '—') + '</td></tr>';
-        }).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:32px">No data</td></tr>';
+        }).join('') : '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:32px">No data</td></tr>';
 
         $('mpContent').innerHTML =
             '<div class="mp-stats" style="margin-bottom:24px">' +
@@ -1124,17 +1339,90 @@
         }, 60);
     }
 
-    function vLeaders() {
-        var leaders = DB.mock().leaders || [];
-        $('mpContent').innerHTML = leaders.length
+    async function vLeaders() {
+        var isAdmin = Auth.getSession().role === 'admin';
+        $('mpContent').innerHTML = '<div class="mp-empty"><div class="mp-empty-icon">⏳</div>Loading leaders…</div>';
+        var leaders = [];
+        try { leaders = await DB.getLeaders(); }
+        catch (e) { $('mpContent').innerHTML = '<div class="mp-empty"><div class="mp-empty-icon">⚠️</div>' + esc(e.message) + '</div>'; return; }
+
+        var d = DB.mock();
+        var html = '';
+
+        if (isAdmin) {
+            html += '<div style="display:flex;justify-content:flex-end;margin-bottom:16px"><button class="mp-submit" style="margin-top:0" id="ldAddBtn">+ Add Leader</button></div>';
+            if (leaderFormOpen) {
+                var L = editingLeader || {};
+                html += '<div class="mp-card"><h2 class="mp-card-title">' + (editingLeader ? 'Edit Leader' : 'New Leader') + '</h2>' +
+                    '<div class="mp-vmsg" id="ldMsg"></div>' +
+                    '<div class="mp-form-grid">' +
+                        pField('Name *', 'ld_name', L.name) +
+                        pField('Title', 'ld_title', L.title) +
+                        pSelect('Branch', 'ld_branch', d.branches, L.branch) +
+                        pSelect('Fellowship', 'ld_fellow', d.fellowships, L.fellowship) +
+                        pField('Photo URL', 'ld_photo', L.photo) +
+                        pField('Sort Order', 'ld_sort', (L.sortOrder != null ? L.sortOrder : ''), 'number') +
+                        pField('Email', 'ld_email', L.email) +
+                        pField('Phone', 'ld_phone', L.phone) +
+                        pArea('Quote', 'ld_quote', L.quote) +
+                        pArea('Bio', 'ld_bio', L.bio) +
+                        pArea('Highlights (one per line)', 'ld_high', (L.highlights || []).join('\n')) +
+                    '</div>' +
+                    '<button class="mp-submit" id="ldSave">' + (editingLeader ? 'Save Changes' : 'Create Leader') + '</button>' +
+                    '<button class="mp-submit" id="ldCancel" style="background:transparent;border:1px solid rgba(255,255,255,0.12);margin-left:8px">Cancel</button>' +
+                '</div>';
+            }
+        }
+
+        html += leaders.length
             ? '<div class="mp-leaders-grid">' + leaders.map(function (l) {
                 var av = l.photo ? '<img src="' + esc(l.photo) + '" alt="' + esc(l.name) + '">' : initials(l.name);
                 return '<div class="mp-leader-card"><div class="mp-leader-av">' + av + '</div>' +
-                    '<div><div class="mp-leader-name">' + esc(l.name) + '</div>' +
-                    '<div class="mp-leader-title">' + esc(l.title) + '</div>' +
-                    '<div class="mp-leader-branch">📍 ' + esc(l.branch) + '</div></div></div>';
+                    '<div style="flex:1;min-width:0"><div class="mp-leader-name">' + esc(l.name) + '</div>' +
+                    '<div class="mp-leader-title">' + esc(l.title || '') + '</div>' +
+                    '<div class="mp-leader-branch">📍 ' + esc(l.branch || '—') + '</div>' +
+                    (isAdmin ? '<div style="margin-top:9px"><button class="mp-act-btn mp-approve" data-edit="' + esc(l.id) + '">Edit</button><button class="mp-act-btn mp-reject" data-del="' + esc(l.id) + '">Delete</button></div>' : '') +
+                    '</div></div>';
             }).join('') + '</div>'
-            : '<div class="mp-empty"><div class="mp-empty-icon">🏛️</div>No leaders found.</div>';
+            : '<div class="mp-empty"><div class="mp-empty-icon">🏛️</div>No leaders yet.' + (isAdmin ? ' Click “Add Leader” to create one.' : '') + '</div>';
+
+        $('mpContent').innerHTML = html;
+        if (!isAdmin) return;
+
+        $('ldAddBtn').onclick = function () { leaderFormOpen = true; editingLeader = null; vLeaders(); };
+        if (leaderFormOpen) {
+            $('ldCancel').onclick = function () { leaderFormOpen = false; editingLeader = null; vLeaders(); };
+            $('ldSave').onclick = async function () {
+                var name = $('ld_name').value.trim();
+                if (!name) { showVMsg('ldMsg', 'err', 'Name is required.'); return; }
+                var body = {
+                    name: name, title: $('ld_title').value.trim(), branch: $('ld_branch').value,
+                    fellowship: $('ld_fellow').value, photo: $('ld_photo').value.trim(),
+                    email: $('ld_email').value.trim(), phone: $('ld_phone').value.trim(),
+                    quote: $('ld_quote').value.trim(), bio: $('ld_bio').value.trim(),
+                    highlights: $('ld_high').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean),
+                    sortOrder: Number($('ld_sort').value || 0)
+                };
+                this.disabled = true;
+                try {
+                    if (editingLeader) await DB.updateLeader(editingLeader.id, body); else await DB.createLeader(body);
+                    leaderFormOpen = false; editingLeader = null; vLeaders();
+                } catch (e) { showVMsg('ldMsg', 'err', e.message); this.disabled = false; }
+            };
+        }
+        $('mpContent').querySelectorAll('[data-edit]').forEach(function (b) {
+            b.onclick = function () {
+                var id = this.getAttribute('data-edit');
+                editingLeader = leaders.find(function (x) { return x.id === id; });
+                leaderFormOpen = true; vLeaders();
+            };
+        });
+        $('mpContent').querySelectorAll('[data-del]').forEach(function (b) {
+            b.onclick = async function () {
+                if (!window.confirm('Delete this leader?')) return;
+                try { await DB.deleteLeader(this.getAttribute('data-del')); vLeaders(); } catch (e) { window.alert(e.message); }
+            };
+        });
     }
 
     async function vRequests() {
@@ -1199,9 +1487,55 @@
             '<div class="mp-card">' +
                 '<h2 class="mp-card-title">All Portal Users</h2>' +
                 '<div class="mp-table-wrap"><table class="mp-table"><thead><tr>' +
-                '<th>Name</th><th>Email</th><th>Role</th><th>Branch</th><th>Department</th><th>Date Joined</th>' +
+                '<th>Name</th><th>Email</th><th>Role</th><th>Branch</th><th>Worker Group</th><th>Date Joined</th>' +
                 '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
             '</div>';
+    }
+
+    async function vReference() {
+        $('mpContent').innerHTML = '<div class="mp-empty"><div class="mp-empty-icon">⏳</div>Loading reference lists…</div>';
+        var data;
+        try { data = await DB.getLookupsManage(); }
+        catch (e) { $('mpContent').innerHTML = '<div class="mp-empty"><div class="mp-empty-icon">⚠️</div>' + esc(e.message) + '</div>'; return; }
+
+        var labels = { branch:'Branches', department:'Worker Groups', fellowship:'Fellowships', basenia:'Basenias', membershipStatus:'Membership Statuses', meetingType:'Meeting Types', gender:'Genders' };
+        var order  = ['branch','department','fellowship','basenia','membershipStatus','meetingType','gender'];
+        var byCat  = {}; order.forEach(function (c) { byCat[c] = []; });
+        (data.lookups || []).forEach(function (r) { (byCat[r.category] = byCat[r.category] || []).push(r); });
+
+        var html = '<p style="font-size:.82rem;color:var(--text-dim);margin-bottom:18px;line-height:1.6">These lists populate the dropdowns across the portal — registration, member registry, and reports. Changes take effect immediately.</p>';
+        order.forEach(function (cat) {
+            var items = byCat[cat] || [];
+            html += '<div class="mp-card"><h2 class="mp-card-title">' + esc(labels[cat] || cat) + '</h2>' +
+                '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">' +
+                (items.length ? items.map(function (it) {
+                    return '<span class="mp-filter" style="cursor:default">' + esc(it.value) +
+                        ' <a data-dellk="' + esc(it.id) + '" title="Remove" style="color:#f87171;cursor:pointer;font-weight:700;margin-left:5px">×</a></span>';
+                }).join('') : '<span style="color:var(--text-muted);font-size:.8rem">None yet.</span>') +
+                '</div>' +
+                '<div style="display:flex;gap:8px;max-width:420px">' +
+                    '<input class="mp-refadd" data-cat="' + cat + '" placeholder="Add to ' + esc(labels[cat] || cat) + '…" style="flex:1;background:var(--surface2);border:1px solid rgba(255,255,255,0.09);border-radius:var(--r);padding:9px 12px;color:var(--text);font-family:var(--font-body);outline:none">' +
+                    '<button class="mp-act-btn mp-approve" data-addcat="' + cat + '">Add</button>' +
+                '</div></div>';
+        });
+        $('mpContent').innerHTML = html;
+
+        $('mpContent').querySelectorAll('[data-dellk]').forEach(function (a) {
+            a.onclick = async function () {
+                try { await DB.deleteLookup(this.getAttribute('data-dellk')); await DB.reloadLookups(); vReference(); }
+                catch (e) { window.alert(e.message); }
+            };
+        });
+        $('mpContent').querySelectorAll('[data-addcat]').forEach(function (b) {
+            b.onclick = async function () {
+                var cat = this.getAttribute('data-addcat');
+                var input = $('mpContent').querySelector('.mp-refadd[data-cat="' + cat + '"]');
+                var val = (input.value || '').trim();
+                if (!val) return;
+                try { await DB.addLookup(cat, val); await DB.reloadLookups(); vReference(); }
+                catch (e) { window.alert(e.message); }
+            };
+        });
     }
 
     /* ── HELPERS ─────────────────────────────── */
@@ -1216,28 +1550,20 @@
     /* ── BOOT ────────────────────────────────── */
     $('mpPage').innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg,#080808);color:rgba(255,255,255,.35);font-family:sans-serif;font-size:.85rem">Loading…</div>';
 
-    onAuthStateChanged(fbAuth, async function (fbUser) {
-        if (fbUser) {
-            if (!currentUser || currentUser.uid !== fbUser.uid) {
-                try {
-                    var snap = await getDoc(doc(fbDb, 'users', fbUser.uid));
-                    if (snap.exists()) {
-                        currentUser = Object.assign({ uid: fbUser.uid }, snap.data());
-                    } else {
-                        await signOut(fbAuth);
-                        renderAuth();
-                        return;
-                    }
-                } catch (e) { renderAuth(); return; }
-            }
+    async function boot() {
+        // Load public reference lists first (registration dropdowns need them).
+        await loadLookups();
+        // Restore an existing session from the stored JWT, if any.
+        var ok = await Auth.loadSession();
+        if (ok) {
             var saved = sessionStorage.getItem('tpm_portal_view');
             if (saved) activeView = saved;
             renderPortal();
         } else {
-            currentUser = null;
             renderAuth();
         }
-    });
+    }
+    boot();
 
     window.addEventListener('beforeunload', function () {
         sessionStorage.setItem('tpm_portal_view', activeView);
