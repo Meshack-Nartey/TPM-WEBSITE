@@ -1987,9 +1987,11 @@ section {
 /* Two-column layout */
 .contact-dark-grid {
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
+    grid-template-columns: 1fr;
     gap: 32px;
     align-items: start;
+    max-width: 620px;
+    margin: 0 auto;
 }
 
 /* Form panel */
