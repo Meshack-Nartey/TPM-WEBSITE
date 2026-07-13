@@ -1,0 +1,168 @@
+// Prisma schema for the TPM portal backend.
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  MEMBER
+  LEADER
+  ADMIN
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Portal account holders (members, leaders, admins who log in).
+model User {
+  id           String   @id @default(cuid())
+  firstName    String
+  lastName     String
+  fullName     String
+  email        String   @unique
+  passwordHash String
+  phone        String?
+  role         Role     @default(MEMBER)
+  branch       String?
+  department   String?
+  fellowship   String?
+  dateJoined   String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  reports          Report[]         @relation("SubmittedReports")
+  registeredMembers Member[]        @relation("RegisteredMembers")
+  requests         ProfileRequest[] @relation("UserRequests")
+
+  @@index([role])
+}
+
+// Church member registry (people entered by leaders — not necessarily portal users).
+model Member {
+  id                    String   @id @default(cuid())
+  firstName             String
+  middleName            String?
+  lastName              String
+  fullName              String
+  dob                   String?
+  gender                String?
+  phone                 String?
+  email                 String?
+  address               String?
+  branch                String?
+  department            String?
+  fellowship            String?
+  dateJoined            String?
+  membershipStatus      String?
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  registeredById        String?
+  registeredBy          User?    @relation("RegisteredMembers", fields: [registeredById], references: [id])
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([branch])
+  @@index([membershipStatus])
+}
+
+// Meeting / attendance / tithe / souls records submitted by leaders.
+model Report {
+  id            String   @id @default(cuid())
+  meetingType   String
+  branch        String
+  date          String
+  attMale       Int      @default(0)
+  attFemale     Int      @default(0)
+  tithe         Decimal  @default(0) @db.Decimal(12, 2)
+  soulsMale     Int      @default(0)
+  soulsFemale   Int      @default(0)
+  notes         String?
+  submittedById String?
+  submittedBy   User?    @relation("SubmittedReports", fields: [submittedById], references: [id])
+  createdAt     DateTime @default(now())
+
+  @@index([meetingType])
+  @@index([branch])
+  @@index([date])
+}
+
+// Member-initiated requests to change their profile fields (admin approves).
+model ProfileRequest {
+  id           String        @id @default(cuid())
+  userId       String?
+  user         User?         @relation("UserRequests", fields: [userId], references: [id])
+  memberName   String
+  memberEmail  String
+  field        String
+  oldValue     String?
+  newValue     String
+  status       RequestStatus @default(PENDING)
+  reviewedById String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([status])
+}
+
+// Announcements shown in the portal (and reusable on the public site).
+model Announcement {
+  id        String   @id @default(cuid())
+  tag       String
+  title     String
+  body      String
+  date      String?
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Church leadership directory.
+model Leader {
+  id         String   @id @default(cuid())
+  name       String
+  title      String?
+  branch     String?
+  fellowship String?
+  quote      String?
+  bio        String?
+  highlights String[]
+  photo      String?
+  email      String?
+  phone      String?
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// Reference lists: branches, departments, fellowships, basenias,
+// membership statuses, meeting types, genders.
+model Lookup {
+  id        String @id @default(cuid())
+  category  String
+  value     String
+  sortOrder Int    @default(0)
+
+  @@unique([category, value])
+  @@index([category])
+}
+
+// Registration invite codes validated server-side (replaces hardcoded JS codes).
+model InviteCode {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  role      Role
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

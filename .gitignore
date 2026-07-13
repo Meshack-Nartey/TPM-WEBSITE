@@ -1,5 +1,11 @@
+# OS / editor cruft
 .DS_Store
 Thumbs.db
+
+# Dependencies (each package also ignores its own)
 node_modules/
+
+# Environment files (never commit secrets)
 .env
+.env.local
 *.log

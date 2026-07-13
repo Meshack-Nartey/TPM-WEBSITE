@@ -1,5 +1,7 @@
+# Monorepo: the website lives in frontend/. Publishing that folder here means
+# Netlify needs no dashboard "base directory" change — this file overrides it.
 [build]
-  publish = "."
+  publish = "frontend"
 
 # Security headers for all pages.
 # Also revalidate every request by default so clean URLs (the site root "/" and
