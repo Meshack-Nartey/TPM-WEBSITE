@@ -14,7 +14,7 @@ Replaces the previous Firebase integration with **Node + Express + Prisma + Post
 ## Local setup
 
 ```bash
-cd tpm-api
+cd backend
 cp .env.example .env          # then fill in DATABASE_URL, DIRECT_URL, JWT_SECRET
 npm install                   # also runs `prisma generate`
 npm run prisma:migrate        # creates tables (dev migration)
@@ -38,7 +38,8 @@ node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 
 ## Deploy to Railway
 
-1. Push this `tpm-api/` folder to its own GitHub repo (see below).
+1. This lives in the monorepo under `backend/`. On Railway, set the service's
+   **root directory** to `backend` so it builds/deploys only this folder.
 2. On https://railway.app → **New Project → Deploy from GitHub repo** → pick the repo.
 3. Add environment variables (from your `.env`): `DATABASE_URL`, `DIRECT_URL`, `JWT_SECRET`,
    `JWT_EXPIRES_IN`, `NODE_ENV=production`, `CORS_ORIGINS`, and the `SEED_*` values.
