@@ -4,18 +4,28 @@ import '../theme/tpm_theme.dart';
 
 /// The gold uppercase label that opens almost every section on both surfaces.
 class Eyebrow extends StatelessWidget {
-  const Eyebrow(this.text, {super.key, this.color = TpmColors.goldDeep, this.size = 10.5});
+  const Eyebrow(
+    this.text, {
+    super.key,
+    this.color = TpmColors.goldDeep,
+    this.size = 10.5,
+    this.tracking = 2,
+  });
 
   final String text;
   final Color color;
   final double size;
+
+  /// Letter-spacing. Worth tightening where the eyebrow shares a row with
+  /// something else, since it clamps to one line and would otherwise ellipsise.
+  final double tracking;
 
   @override
   Widget build(BuildContext context) => Text(
         text.toUpperCase(),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: TpmText.eyebrow(color: color, size: size),
+        style: TpmText.eyebrow(color: color, size: size, tracking: tracking),
       );
 }
 
@@ -595,7 +605,9 @@ class ChoiceChipPill extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Container(
-          alignment: Alignment.center,
+          // Only centre when stretched by an Expanded. Setting alignment
+          // unconditionally makes the chip fill the row it wraps into.
+          alignment: expand ? Alignment.center : null,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(999),

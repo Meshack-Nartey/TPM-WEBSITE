@@ -256,7 +256,9 @@ class _CountdownCard extends StatelessWidget {
               children: [
                 const Icon(Icons.church_rounded, size: 14, color: TpmColors.navy),
                 const SizedBox(width: 8),
-                const Flexible(child: Eyebrow('Next Service', size: 10)),
+                const Flexible(
+                  child: Eyebrow('Next Service', size: 10, tracking: 1.2),
+                ),
                 const Spacer(),
                 Text(
                   MockData.nextServiceLabel,

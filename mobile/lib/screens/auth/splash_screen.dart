@@ -112,8 +112,11 @@ class _Tile extends StatelessWidget {
   final String asset;
 
   @override
-  Widget build(BuildContext context) =>
-      Image.asset(asset, fit: BoxFit.cover, width: double.infinity);
+  Widget build(BuildContext context) => SizedBox.expand(
+        // Both axes must be constrained, or the image keeps its own aspect
+        // ratio in the free one and leaves a gap the scrim renders as a band.
+        child: Image.asset(asset, fit: BoxFit.cover),
+      );
 }
 
 class _LogoLockup extends StatelessWidget {
@@ -157,7 +160,7 @@ class _LogoLockup extends StatelessWidget {
                       borderRadius: BorderRadius.circular(28),
                       border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
                     ),
-                    child: Image.asset('assets/brand/logo-white.png', fit: BoxFit.contain),
+                    child: Image.asset('assets/brand/logo-mark.png', fit: BoxFit.contain),
                   ),
                 ),
               ),

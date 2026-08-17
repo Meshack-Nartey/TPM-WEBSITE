@@ -34,22 +34,11 @@ class _SignInScreenState extends State<SignInScreen> {
             children: [
               Align(
                 alignment: Alignment.centerLeft,
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  padding: const EdgeInsets.all(11),
-                  decoration: BoxDecoration(
-                    gradient: TpmColors.blueGradient,
-                    borderRadius: BorderRadius.circular(17),
-                    boxShadow: [
-                      BoxShadow(
-                        color: TpmColors.navy.withValues(alpha: 0.28),
-                        blurRadius: 26,
-                        offset: const Offset(0, 12),
-                      ),
-                    ],
-                  ),
-                  child: Image.asset('assets/brand/logo-white.png', fit: BoxFit.contain),
+                child: Image.asset(
+                  'assets/brand/logo-mark.png',
+                  height: 64,
+                  fit: BoxFit.contain,
+                  semanticLabel: 'Transformation Project Ministries',
                 ),
               ),
               const SizedBox(height: 22),
