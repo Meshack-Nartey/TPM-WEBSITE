@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: tpm-api
+
+  datasource:
+    # Neon pooled connection string. No default: the app should fail to start
+    # rather than quietly point at the wrong database.
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      # Neon closes idle connections; recycle before it does.
+      max-lifetime: 570000
+
+  jpa:
+    # Flyway owns the schema. Hibernate must never touch it — validate catches
+    # an entity drifting from a migration at boot instead of at 2am.
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+          batch_size: 30
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    # The direct (non-pooled) URL: migrations take locks that a pooler mishandles.
+    url: ${DIRECT_DATABASE_URL:${DATABASE_URL}}
+    user: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+  # Behind Railway's proxy, so trust the forwarded headers for scheme/host.
+  forward-headers-strategy: framework
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+tpm:
+  jwt:
+    # No default. A hard-coded fallback secret is how a signing key ends up in
+    # production; refusing to boot without one is the point.
+    secret: ${JWT_SECRET}
+    issuer: tpm-api
+    expiry: ${JWT_EXPIRY:PT12H}
+  cors:
+    # The Netlify site and local development. The Flutter app is not a browser
+    # origin and needs no entry here.
+    allowed-origins: ${CORS_ORIGINS:http://localhost:8888,http://127.0.0.1:5500}
+
+logging:
+  level:
+    gh.tpm.api: ${LOG_LEVEL:INFO}
