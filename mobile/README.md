@@ -65,13 +65,25 @@ hands off to the existing web giving page rather than dressing up a dead end.
 **Leaders see one branch.** The dashboard says so on screen — cheaper than
 having someone wonder why the numbers look small.
 
-## Assets
+## Where the content comes from
 
-Photography, the seven book covers and the MTN MoMo / Telecel Cash / Stanbic
-marks all come from `frontend/assets` — the same images the website uses, just
-renamed to kebab-case and downscaled to 1200px. Nothing here is stock imagery.
+Images: photography, the seven book covers and the MTN MoMo / Telecel Cash /
+Stanbic marks all come from `frontend/assets` — the same files the website
+uses, renamed to kebab-case and downscaled to 1200px. Nothing is stock imagery.
 
-Names, figures and sermon titles in `mock_data.dart` are invented placeholders.
+Text and reference data: the nine SPRING branches, membership statuses, meeting
+types, worker groups, fellowships and basenias come from
+`backend/prisma/seed.js`. Service times, announcements, events, book titles and
+head-office contact details come from the site's own pages.
+
+**The design board's copy is not used.** It was drawn before those lists were
+available, so its branch names (Kumasi Central, Accra Ridge) and its
+member/visitor/worker statuses are invented and do not match the ministry.
+
+Three things in `mock_data.dart` are still placeholders, marked in the file:
+the signed-in user, the member registry rows, and the dashboard figures. The
+real system deliberately seeds no sample members — that data comes from
+leaders.
 
 ## Tests
 
