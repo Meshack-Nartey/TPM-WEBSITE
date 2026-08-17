@@ -314,12 +314,16 @@ class MockData {
     StatTile(label: 'Members', value: '486', icon: Icons.contacts_rounded, trend: '+5'),
   ];
 
-  /// Eight-week attendance line, as a 0–1 fraction of the chart height.
-  static const List<double> attendanceTrend = [0.33, 0.43, 0.38, 0.58, 0.52, 0.68, 0.63, 0.78];
-  static const String attendanceAverage = 'avg 214';
+  /// Eight weeks of attendance, as real head counts rather than bar heights —
+  /// the chart derives its own geometry, and the last point can be labelled.
+  /// Averages to 214 and lands on 238, matching the tile above it.
+  static const List<int> attendanceTrend = [190, 200, 196, 218, 208, 230, 232, 238];
 
-  /// Six weeks of tithe, labelled W1–W6.
-  static const List<double> titheBars = [0.52, 0.64, 0.48, 0.78, 0.70, 0.92];
+  /// Six weeks of tithe in GHS thousands, against a 20k axis. Ends on 18.4k,
+  /// matching the tile above it.
+  static const List<double> titheWeeks = [10.4, 12.8, 9.6, 15.6, 14.0, 18.4];
+  static const double titheAxisMax = 20.0;
+  static const List<String> weekLabels = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'];
 
   static const List<ReportField> reportFields = [
     ReportField(label: 'Total attendance', hint: 'e.g. 238', icon: Icons.groups_rounded),
