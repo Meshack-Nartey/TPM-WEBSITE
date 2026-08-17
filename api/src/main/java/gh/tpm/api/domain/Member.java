@@ -60,6 +60,9 @@ public class Member extends BaseEntity {
     @Column(length = 120)
     private String fellowship;
 
+    @Column(length = 120)
+    private String basenia;
+
     @Column(name = "worker_group", length = 120)
     private String workerGroup;
 
@@ -68,7 +71,7 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "membership_status", nullable = false, length = 20)
-    private MembershipStatus membershipStatus = MembershipStatus.MEMBER;
+    private MembershipStatus membershipStatus = MembershipStatus.REGULAR_MEMBER;
 
     @Column(name = "emergency_contact_name", length = 120)
     private String emergencyContactName;

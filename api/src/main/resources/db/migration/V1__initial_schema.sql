@@ -97,11 +97,15 @@ CREATE TABLE members (
     branch_id               uuid REFERENCES branches (id) ON DELETE SET NULL,
     department              varchar(120),
     fellowship              varchar(120),
+    basenia                 varchar(120),
     worker_group            varchar(120),
     date_joined             date,
-    membership_status       varchar(20) NOT NULL DEFAULT 'MEMBER'
+    -- The ministry's own four statuses, from backend/prisma/seed.js. Not the
+    -- member/visitor/worker triple the design board sketched.
+    membership_status       varchar(20) NOT NULL DEFAULT 'REGULAR_MEMBER'
                             CONSTRAINT members_status_check
-                            CHECK (membership_status IN ('MEMBER', 'VISITOR', 'WORKER')),
+                            CHECK (membership_status IN
+                                ('NEW_CONVERT', 'REGULAR_MEMBER', 'WORKER', 'LEADER')),
     emergency_contact_name  varchar(120),
     emergency_contact_phone varchar(40),
     registered_by_id        uuid REFERENCES users (id) ON DELETE SET NULL,
