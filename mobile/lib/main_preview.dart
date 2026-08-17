@@ -30,6 +30,7 @@ import 'screens/leader/member_detail_screen.dart';
 import 'screens/leader/register_member_screen.dart';
 import 'screens/leader/registry_screen.dart';
 import 'screens/leader/weekly_report_screen.dart';
+import 'screens/member/about_screen.dart';
 import 'screens/member/announcement_detail_screen.dart';
 import 'screens/member/announcements_screen.dart';
 import 'screens/member/book_detail_screen.dart';
@@ -82,6 +83,7 @@ final Map<String, _Preview> _screens = {
   'bookDetail': _Preview(() => BookDetailScreen(book: MockData.books.first), scaffold: false),
   'profile': _Preview(() => const ProfileScreen(), scaffold: false),
   'more': _Preview(() => const MoreScreen()),
+  'about': _Preview(() => const AboutScreen(), scaffold: false),
 
   // Leader portal
   'leaderDash': _Preview(() => const LeaderDashboardScreen(), dark: true),

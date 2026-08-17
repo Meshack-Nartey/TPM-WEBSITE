@@ -20,6 +20,7 @@ import 'package:tpm_mobile/screens/leader/member_detail_screen.dart';
 import 'package:tpm_mobile/screens/leader/register_member_screen.dart';
 import 'package:tpm_mobile/screens/leader/registry_screen.dart';
 import 'package:tpm_mobile/screens/leader/weekly_report_screen.dart';
+import 'package:tpm_mobile/screens/member/about_screen.dart';
 import 'package:tpm_mobile/screens/member/announcement_detail_screen.dart';
 import 'package:tpm_mobile/screens/member/announcements_screen.dart';
 import 'package:tpm_mobile/screens/member/book_detail_screen.dart';
@@ -175,6 +176,11 @@ void main() {
 
     testWidgets('profile', (t) async {
       await pumpScreen(t, const ProfileScreen(), wrapInScaffold: false);
+      expect(t.takeException(), isNull);
+    });
+
+    testWidgets('about', (t) async {
+      await pumpScreen(t, const AboutScreen(), wrapInScaffold: false);
       expect(t.takeException(), isNull);
     });
 

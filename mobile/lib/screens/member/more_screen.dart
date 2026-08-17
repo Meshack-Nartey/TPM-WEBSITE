@@ -6,6 +6,7 @@ import '../../models/models.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/shells.dart';
+import 'about_screen.dart';
 import 'announcements_screen.dart';
 import 'books_screen.dart';
 import 'branches_screen.dart';
@@ -24,6 +25,13 @@ class MoreScreen extends StatelessWidget {
     final session = AppSession.of(context);
 
     final items = <(String, IconData, Color, Color, Widget)>[
+      (
+        'About TPM',
+        Icons.info_rounded,
+        TpmColors.tintBlue,
+        TpmColors.navy,
+        const AboutScreen()
+      ),
       (
         'Announcements',
         Icons.newspaper_rounded,
