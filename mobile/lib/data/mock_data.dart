@@ -3,21 +3,35 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../theme/tpm_theme.dart';
 
-/// Seed content for the prototype.
+/// Content for the prototype.
 ///
-/// Everything here is placeholder copy carried over from the design board so
-/// the 29 screens can be walked end to end without a backend. Names, figures
-/// and sermon titles are invented; only the photography, book covers and
-/// giving-channel marks are real TPM assets. Swap this file for the API
-/// client once the Spring Boot service is serving live data.
+/// Where the real thing exists, this is the real thing: the nine SPRING
+/// branches, the ministry's reference lists, actual service times, the books
+/// TPM publishes, the announcements on the website, and head-office contact
+/// details. Those come from `frontend/` and `backend/prisma/seed.js`.
+///
+/// The design board used invented names (Kumasi Central, Accra Ridge) because
+/// it was drawn before those lists were to hand. None of that survives here.
+///
+/// Still invented, because there is no real source for them: the signed-in
+/// user, the member registry rows, and the dashboard figures. All are marked
+/// below. Replace this file with the API client once the endpoints land.
 class MockData {
   const MockData._();
 
-  // ---- Signed-in person ----
+  // ---- Ministry ----
+  static const String ministryName = 'Transformation Project Ministries';
+  static const String tagline = 'Transforming Lives';
+  static const String founder = 'Apostle Andrews Amoh Ofori';
+  static const String officeEmail = 'tprojectministries@gmail.com';
+  static const String officePhone = '0554476730';
+  static const String officeAddress = 'MC3V+2JF, Kumasi';
+
+  // ---- Signed-in person (placeholder — there is no real "current user") ----
   static const String firstName = 'Ama';
   static const String fullName = 'Ama Boateng';
   static const String initials = 'AB';
-  static const String homeBranch = 'Kumasi Central';
+  static const String homeBranch = 'DAYSPRING';
 
   /// Avatar palette, cycled by index so any list of people looks varied.
   static const List<Color> avatarPalette = [
@@ -36,38 +50,98 @@ class MockData {
     'Camp': (TpmColors.green, TpmColors.tintGreen),
     'Weekly Service': (TpmColors.navy, TpmColors.tintIndigo),
     'Upcoming Event': (TpmColors.goldDeep, TpmColors.tintAmber),
+    'Prayer': (Color(0xFF0F766E), Color(0xFFCCFBF1)),
   };
 
   static (Color, Color) tagColor(String tag) =>
       tagColors[tag] ?? (TpmColors.navy, TpmColors.tintIndigo);
 
-  // ---- Home carousel ----
+  // ---- Services (from the website) ----
+  static const List<ServiceTime> serviceTimes = [
+    ServiceTime(name: '1st Service', day: 'Sundays', time: '8:00 AM – 10:00 AM'),
+    ServiceTime(name: '2nd Service', day: 'Sundays', time: '10:30 AM – 12:30 PM'),
+    ServiceTime(name: 'Evening Feast', day: 'Sundays', time: '4:00 PM – 7:00 PM'),
+    ServiceTime(name: 'Love Therapy', day: 'Fridays', time: '6:00 PM'),
+  ];
+
+  /// The countdown on the home screen tracks the first Sunday service.
+  static const String nextServiceLabel = 'Sun · 8:00 AM';
+  static const int nextServiceHour = 8;
+  static const String serviceSummary = 'Sun 8:00 AM & 10:30 AM · Fri 6:00 PM';
+
+  // ---- Announcements (from announcements.html) ----
   static const List<Announcement> carousel = [
     Announcement(
-      tag: 'Conference',
-      title: 'Kingdom Advance 2026',
-      meta: 'Aug 14–16 · Main Auditorium',
+      tag: 'Upcoming Event',
+      title: 'Holy Ghost Festival 2026',
+      meta: 'Date to be announced',
     ),
     Announcement(
       tag: 'Weekly Service',
-      title: 'Communion Sunday',
-      meta: 'This Sunday · All branches',
+      title: 'Love Therapy — Fridays',
+      meta: 'Every Friday · 6:00 PM',
     ),
     Announcement(
       tag: 'Camp',
-      title: 'Youth Discipleship Camp',
-      meta: 'Sep 5–8 · Aburi Hills',
+      title: 'Sharpening Camp',
+      meta: 'Date to be announced',
     ),
   ];
 
-  static const String serviceLabel = 'Sun · 9:00 AM';
-  static const String serviceTimes = 'Sun 9:00 AM · Wed 6:00 PM · Fri 6:30 PM';
+  static const List<Announcement> newsFeed = [
+    Announcement(
+      tag: 'Upcoming Event',
+      title: 'Holy Ghost Festival 2026',
+      excerpt: 'The annual festival hosted by ${MockData.founder}.',
+      date: 'Date: TBA',
+      body:
+          'The Holy Ghost Festival returns in 2026. Dates will be announced from the '
+          'pastor’s office — speak with your branch leader to register your interest and '
+          'arrange transport.',
+    ),
+    Announcement(
+      tag: 'Weekly Service',
+      title: 'Love Therapy — Fridays',
+      excerpt: 'Our weekly Friday gathering, every week at 6:00 PM.',
+      date: 'Every Friday',
+      body:
+          'Love Therapy runs every Friday at 6:00 PM. Come as you are, and bring someone '
+          'who needs the family of God this week.',
+    ),
+    Announcement(
+      tag: 'Camp',
+      title: 'Sharpening Camp',
+      excerpt: 'A season set apart to be sharpened in the Word.',
+      date: 'Date: TBA',
+      body:
+          'Sharpening Camp is a set-apart season of teaching and consecration. Dates will '
+          'be announced; registration runs through your branch.',
+    ),
+    Announcement(
+      tag: 'Prayer',
+      title: 'Corporate Prayer Night',
+      excerpt: 'The whole church on its knees together.',
+      date: 'Last Friday of every month',
+      body:
+          'Corporate Prayer Night is held on the last Friday of every month. Every branch '
+          'joins for a night of intercession.',
+    ),
+    Announcement(
+      tag: 'Conference',
+      title: 'Transformation Conference',
+      excerpt: 'Our flagship gathering across all branches.',
+      date: 'Date: TBA',
+      body:
+          'The Transformation Conference brings every branch together. Dates will be '
+          'announced from the pastor’s office.',
+    ),
+  ];
 
-  // ---- Media ----
+  // ---- Media (real messages from the ministry's YouTube) ----
   static const MediaItem featured = MediaItem(
     kind: MediaKind.sermon,
-    title: 'The Weight of Glory',
-    meta: 'Rev. Daniel Owusu · 42 min',
+    title: 'Surround Yourself With Good People',
+    meta: founder,
     image: 'assets/media/sunday-service.png',
     downloaded: true,
   );
@@ -77,68 +151,72 @@ class MockData {
   static const List<MediaItem> media = [
     MediaItem(
       kind: MediaKind.sermon,
-      title: 'The Weight of Glory',
-      meta: 'Rev. Daniel Owusu · 42 min',
+      title: 'Surround Yourself With Good People',
+      meta: founder,
       image: 'assets/media/sunday-service.png',
       downloaded: true,
     ),
     MediaItem(
-      kind: MediaKind.teaching,
-      title: 'Foundations of Faith',
-      meta: 'Pastor Grace Mensah · 28 min',
+      kind: MediaKind.sermon,
+      title: 'Work As Though Unto The Lord',
+      meta: founder,
       image: 'assets/media/pure-word.jpg',
     ),
     MediaItem(
-      kind: MediaKind.podcast,
-      title: 'Everyday Discipleship',
-      meta: 'TPM Voices · Ep. 12 · 35 min',
-      image: 'assets/media/podcast.jpg',
+      kind: MediaKind.teaching,
+      title: 'Pure Word',
+      meta: 'Teaching series',
+      image: 'assets/media/music.jpg',
     ),
     MediaItem(
-      kind: MediaKind.sermon,
-      title: 'A Living Sacrifice',
-      meta: 'Rev. Daniel Owusu · 39 min',
-      image: 'assets/media/music.jpg',
+      kind: MediaKind.podcast,
+      title: 'TPM Live',
+      meta: 'Streamed on YouTube · @TPMLIVE',
+      image: 'assets/media/podcast.jpg',
     ),
   ];
 
-  // ---- Events ----
+  // ---- Events (from the website; several are genuinely undated) ----
   static const List<EventItem> events = [
     EventItem(
-      day: '14',
-      month: 'Aug',
-      tag: 'Conference',
-      title: 'Kingdom Advance 2026',
-      location: 'Main Auditorium, Kumasi',
-      when: 'Aug 14–16, 2026 · 5:00 PM',
+      tag: 'Upcoming Event',
+      title: 'Holy Ghost Festival 2026',
+      location: 'All branches',
+      when: 'Date to be announced',
       description:
-          'Three days of teaching, worship and impartation as we press into a new season. '
-          'Guest ministers from across the region join us for Kingdom Advance.',
+          'The annual Holy Ghost Festival hosted by $founder. Dates will be announced '
+          'from the pastor’s office.',
       image: 'assets/photos/gathering.jpg',
     ),
     EventItem(
-      day: '05',
-      month: 'Sep',
       tag: 'Camp',
-      title: 'Youth Discipleship Camp',
-      location: 'Aburi Hills Retreat',
-      when: 'Sep 5–8, 2026 · All day',
+      title: 'Sharpening Camp',
+      location: 'To be announced',
+      when: 'Date to be announced',
       description:
-          'A four-day residential camp for ages 13–25. Registration is required; talk to '
-          'your branch youth leader for details and transport.',
+          'A set-apart season of teaching and consecration. Registration runs through '
+          'your branch.',
       image: 'assets/photos/community.jpg',
     ),
     EventItem(
-      day: '21',
-      month: 'Jul',
+      day: 'FRI',
+      month: 'Weekly',
       tag: 'Weekly Service',
-      title: 'Communion Sunday',
+      title: 'Love Therapy',
       location: 'All branches',
-      when: 'Sun Jul 21 · 9:00 AM',
+      when: 'Every Friday · 6:00 PM',
       description:
-          'We gather at the Lord’s table across every branch. Come prepared in heart '
-          'for a time of remembrance and thanksgiving.',
+          'Our weekly Friday gathering. Come as you are, and bring someone who needs the '
+          'family of God this week.',
       image: 'assets/photos/communion.jpg',
+    ),
+    EventItem(
+      tag: 'Prayer',
+      title: 'Corporate Prayer Night',
+      location: 'All branches',
+      when: 'Last Friday of every month',
+      description: 'Every branch joins for a night of intercession.',
+      image: 'assets/photos/prayer.jpg',
     ),
   ];
 
@@ -174,17 +252,17 @@ class MockData {
     ),
   ];
 
-  /// The real giving channels already advertised on the website.
+  /// The real giving channels advertised on the website.
   static const List<GivingChannel> givingChannels = [
     GivingChannel(
       name: 'MTN Mobile Money',
       logo: 'assets/give/mtn-momo.png',
-      detail: 'Merchant ID on the giving page',
+      detail: 'Merchant details on the giving page',
     ),
     GivingChannel(
       name: 'Telecel Cash',
       logo: 'assets/give/telecel-cash.png',
-      detail: 'Merchant ID on the giving page',
+      detail: 'Merchant details on the giving page',
     ),
     GivingChannel(
       name: 'Stanbic Bank',
@@ -193,109 +271,137 @@ class MockData {
     ),
   ];
 
-  // ---- News feed ----
-  static const List<Announcement> newsFeed = [
-    Announcement(
-      tag: 'Conference',
-      title: 'Kingdom Advance 2026 registration is open',
-      excerpt: 'Secure your seat for three days of teaching and worship this August.',
-      date: '2 days ago',
-      body:
-          'Registration for Kingdom Advance 2026 is now open across all branches. This year '
-          'we welcome guest ministers from across the region for three days of teaching, '
-          'worship and impartation. Speak with your branch office to reserve your place and '
-          'arrange transport.',
-    ),
-    Announcement(
-      tag: 'Weekly Service',
-      title: 'Communion Sunday this week',
-      excerpt: 'We gather at the Lord’s table across every branch this Sunday.',
-      date: '4 days ago',
-      body:
-          'This Sunday is Communion Sunday. Every branch will observe the Lord’s table '
-          'together. Come prepared in heart, and invite someone who needs the family of God '
-          'this week.',
-    ),
-    Announcement(
-      tag: 'Camp',
-      title: 'Youth Camp — early-bird closes Friday',
-      excerpt: 'Ages 13–25. Register through your branch youth leader.',
-      date: '1 week ago',
-      body:
-          'The early-bird rate for Youth Discipleship Camp closes this Friday. The camp runs '
-          'Sep 5–8 at the Aburi Hills Retreat. Register through your branch youth leader.',
-    ),
-    Announcement(
-      tag: 'Upcoming Event',
-      title: 'Leaders’ prayer & planning retreat',
-      excerpt: 'A day set apart for our branch leaders and workers.',
-      date: '1 week ago',
-      body:
-          'All branch leaders and workers are invited to a day of prayer and planning as we '
-          'look toward the next quarter. Details will follow from the pastor’s office.',
-    ),
-  ];
-
-  // ---- Branches ----
+  // ---- Branches: the nine SPRING congregations ----
   static const List<Branch> branches = [
-    Branch(name: 'Kumasi Central', region: 'Ashanti', address: 'Adum High St, Kumasi'),
-    Branch(name: 'Accra Ridge', region: 'Greater Accra', address: '14 Independence Ave, Accra'),
-    Branch(name: 'Cape Coast', region: 'Central', address: 'Chapel Sq, Cape Coast'),
+    Branch(
+      name: 'DAYSPRING',
+      region: 'Head office',
+      address: officeAddress,
+      phone: officePhone,
+      email: officeEmail,
+    ),
+    Branch(name: 'GLORYSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'GOODNEWSSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'FAITHSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'LOYALTYSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'GRACESPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'UNITYSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'PEACESPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'SALVATIONSPRING', region: 'Branch', address: 'Kumasi'),
   ];
 
-  /// Offered in the register screen's home-branch picker.
-  static const List<String> branchNames = [
-    'Kumasi Central',
-    'Accra Ridge',
-    'Cape Coast',
-    'Takoradi',
+  static List<String> get branchNames => branches.map((b) => b.name).toList();
+
+  // ---- Reference lists (backend/prisma/seed.js) ----
+  static const List<String> memberStatuses = [
+    'New Convert',
+    'Regular Member',
+    'Worker',
+    'Leader',
   ];
 
-  // ---- Books ----
+  static const List<String> meetingTypes = [
+    'LOUCS Report',
+    'Basenia',
+    'Friday Service',
+    'General Meeting',
+    'Tithe Collection',
+    'Souls Won',
+  ];
+
+  static const List<String> fellowships = [
+    'Transformed Men Fellowship',
+    'Transformed Law',
+    'Transformed Shepherds',
+    'Transformed Couples',
+    'Transformed Women Fellowship',
+    'Transformed Youth Fellowship',
+  ];
+
+  static const List<String> basenias = [
+    'HeavenSpring Basenia',
+    'LoveSpring Basenia',
+    'GraceSpring Basenia',
+    'FaithSpring Basenia',
+    'HopeSpring Basenia',
+    'JoySpring Basenia',
+    'PeaceSpring Basenia',
+    'GlorySpring Basenia',
+  ];
+
+  /// Shown as "Worker Groups" in the portal.
+  static const List<String> departments = [
+    'Communion Stewards',
+    'Ushering',
+    'Protocol',
+    'Hospitality and Welfare',
+    'Pure Word',
+    'Media and Publicity',
+    'Music',
+    'Theatre and Arts',
+    'Finance',
+    'Organizing',
+    'Sounds and Technical',
+    'Growth',
+    'Literature',
+    'Miscellaneous',
+    "The Pastor's Office",
+  ];
+
+  static const List<String> composeTags = [
+    'Upcoming Event',
+    'Camp',
+    'Weekly Service',
+    'Conference',
+    'Prayer',
+  ];
+
+  // ---- Books published by the ministry ----
   static const List<Book> books = [
     Book(
-      title: 'Daily Dose of Truth',
-      author: 'Volume I · TPM Press',
+      title: 'Daily Drops of Transformation',
+      author: 'Volume I · $founder',
       cover: 'assets/books/ddot-1.png',
     ),
     Book(
-      title: 'Daily Dose of Truth',
-      author: 'Volume II · TPM Press',
+      title: 'Daily Drops of Transformation',
+      author: 'Volume II · $founder',
       cover: 'assets/books/ddot-2.jpg',
     ),
     Book(
       title: 'Crossing the Red Sea',
-      author: 'TPM Press',
+      author: founder,
       cover: 'assets/books/red-sea.jpg',
     ),
     Book(
-      title: 'The Transformed Life',
-      author: 'Rev. Daniel Owusu',
+      title: 'New Believer’s Handbook',
+      author: 'TPM Discipleship',
       cover: 'assets/books/cover-3.png',
     ),
     Book(
-      title: 'Foundations',
+      title: 'Prayer & Fasting Guide',
       author: 'TPM Discipleship',
       cover: 'assets/books/cover-4.png',
     ),
     Book(
-      title: 'Prayer that Moves',
-      author: 'Pastor Grace Mensah',
+      title: 'Worker’s Commitment Guide',
+      author: 'TPM Discipleship',
       cover: 'assets/books/cover-5.png',
     ),
     Book(
-      title: 'Stewardship',
-      author: 'TPM Press',
+      title: 'TPM Welcome Guide',
+      author: 'TPM Discipleship',
       cover: 'assets/books/cover-6.png',
     ),
   ];
 
-  // ---- Profile ----
+  // ---- Profile (placeholder person, real reference values) ----
   static const List<ProfileField> profileFields = [
-    ProfileField(label: 'Full name', value: 'Ama Boateng'),
+    ProfileField(label: 'Full name', value: fullName),
     ProfileField(label: 'Email', value: 'ama.b@email.com'),
     ProfileField(label: 'Phone', value: '+233 24 000 0000'),
-    ProfileField(label: 'Branch', value: 'Kumasi Central'),
+    ProfileField(label: 'Branch', value: homeBranch),
+    ProfileField(label: 'Fellowship', value: 'Transformed Women Fellowship'),
   ];
 
   static const List<NotificationSetting> notificationSettings = [
@@ -304,8 +410,8 @@ class MockData {
     NotificationSetting(label: 'Events & camps', enabled: false),
   ];
 
-  // ---- Leader dashboard ----
-  static const String leaderBranch = 'Kumasi Central Branch';
+  // ---- Leader dashboard (figures are invented; no real data source) ----
+  static const String leaderBranch = 'DAYSPRING';
 
   static const List<StatTile> leaderStats = [
     StatTile(label: 'Attendance', value: '238', icon: Icons.groups_rounded, trend: '+9%'),
@@ -314,13 +420,8 @@ class MockData {
     StatTile(label: 'Members', value: '486', icon: Icons.contacts_rounded, trend: '+5'),
   ];
 
-  /// Eight weeks of attendance, as real head counts rather than bar heights —
-  /// the chart derives its own geometry, and the last point can be labelled.
-  /// Averages to 214 and lands on 238, matching the tile above it.
   static const List<int> attendanceTrend = [190, 200, 196, 218, 208, 230, 232, 238];
 
-  /// Six weeks of tithe in GHS thousands, against a 20k axis. Ends on 18.4k,
-  /// matching the tile above it.
   static const List<double> titheWeeks = [10.4, 12.8, 9.6, 15.6, 14.0, 18.4];
   static const double titheAxisMax = 20.0;
   static const List<String> weekLabels = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'];
@@ -336,64 +437,69 @@ class MockData {
     ReportField(label: 'Full name', hint: 'e.g. Kwame Asante', icon: Icons.person_rounded),
     ReportField(label: 'Phone', hint: '+233 …', icon: Icons.phone_rounded),
     ReportField(label: 'Email (optional)', hint: 'name@email.com', icon: Icons.email_rounded),
-    ReportField(label: 'Worker group', hint: 'e.g. Ushering, Choir', icon: Icons.diversity_3_rounded),
+    ReportField(label: 'Worker group', hint: 'e.g. Ushering, Music', icon: Icons.diversity_3_rounded),
   ];
 
-  static const List<String> memberStatuses = ['Member', 'Visitor', 'Worker'];
-
-  // ---- Registry ----
-  static const String registrySubtitle = 'Kumasi Central · 486 members';
+  // ---- Registry (invented people; the real system seeds none) ----
+  static const String registrySubtitle = 'DAYSPRING · 486 members';
 
   static final List<MemberRecord> members = [
     MemberRecord(
       name: 'Kwame Asante',
-      group: 'Ushering Team',
+      group: 'Ushering',
       status: 'Worker',
       avatarColor: avatarFor(0),
+      branch: 'DAYSPRING',
     ),
     MemberRecord(
       name: 'Abena Osei',
-      group: 'Choir',
-      status: 'Member',
+      group: 'Music',
+      status: 'Regular Member',
       avatarColor: avatarFor(1),
+      branch: 'DAYSPRING',
     ),
     MemberRecord(
       name: 'Yaw Darko',
-      group: 'New convert',
-      status: 'Visitor',
+      group: 'Growth',
+      status: 'New Convert',
       avatarColor: avatarFor(2),
+      branch: 'DAYSPRING',
     ),
     MemberRecord(
       name: 'Efua Mensah',
-      group: 'Women’s Fellowship',
-      status: 'Member',
+      group: 'Transformed Women Fellowship',
+      status: 'Regular Member',
       avatarColor: avatarFor(3),
+      branch: 'DAYSPRING',
     ),
     MemberRecord(
       name: 'Kojo Antwi',
-      group: 'Media Team',
+      group: 'Media and Publicity',
       status: 'Worker',
       avatarColor: avatarFor(4),
+      branch: 'DAYSPRING',
     ),
     MemberRecord(
       name: 'Adjoa Frimpong',
-      group: 'Prayer Team',
-      status: 'Member',
+      group: 'Pure Word',
+      status: 'Leader',
       avatarColor: avatarFor(0),
+      branch: 'DAYSPRING',
     ),
   ];
 
   /// Status pill colouring in the registry — foreground then background.
   static const Map<String, (Color, Color)> statusColors = {
-    'Member': (TpmColors.success, Color(0x1F4ADE80)),
-    'Visitor': (TpmColors.portalGold, Color(0x1FC9A84C)),
+    'New Convert': (TpmColors.portalGold, Color(0x1FC9A84C)),
+    'Regular Member': (TpmColors.success, Color(0x1F4ADE80)),
     'Worker': (TpmColors.info, Color(0x1F60A5FA)),
+    'Leader': (Color(0xFFC084FC), Color(0x1FC084FC)),
   };
 
   static (Color, Color) statusColor(String status) =>
       statusColors[status] ?? (TpmColors.portalGold, const Color(0x1FC9A84C));
 
-  // ---- Administrator ----
+  // ---- Administrator (figures invented; branch names real) ----
   static const List<StatTile> adminStats = [
     StatTile(label: 'Total members', value: '6,240', icon: Icons.groups_rounded, trend: '+3%'),
     StatTile(
@@ -412,16 +518,16 @@ class MockData {
   ];
 
   static const List<BranchRank> branchRanks = [
-    BranchRank(name: 'Kumasi Central', value: 486, fraction: 1.0),
-    BranchRank(name: 'Accra Ridge', value: 412, fraction: 0.85),
-    BranchRank(name: 'Cape Coast', value: 305, fraction: 0.63),
-    BranchRank(name: 'Takoradi', value: 268, fraction: 0.55),
+    BranchRank(name: 'DAYSPRING', value: 486, fraction: 1.0),
+    BranchRank(name: 'GLORYSPRING', value: 412, fraction: 0.85),
+    BranchRank(name: 'FAITHSPRING', value: 305, fraction: 0.63),
+    BranchRank(name: 'GRACESPRING', value: 268, fraction: 0.55),
   ];
 
   static final List<ApprovalRequest> approvals = [
     ApprovalRequest(
       name: 'Abena Osei',
-      branch: 'Kumasi Central',
+      branch: 'DAYSPRING',
       field: 'Phone',
       oldValue: '+233 24 111 1111',
       newValue: '+233 20 222 2222',
@@ -429,15 +535,15 @@ class MockData {
     ),
     ApprovalRequest(
       name: 'Yaw Darko',
-      branch: 'Accra Ridge',
+      branch: 'GLORYSPRING',
       field: 'Branch',
-      oldValue: 'Accra Ridge',
-      newValue: 'Cape Coast',
+      oldValue: 'GLORYSPRING',
+      newValue: 'FAITHSPRING',
       avatarColor: avatarFor(2),
     ),
     ApprovalRequest(
       name: 'Efua Mensah',
-      branch: 'Cape Coast',
+      branch: 'PEACESPRING',
       field: 'Email',
       oldValue: 'efua@old.com',
       newValue: 'efua.m@email.com',
@@ -450,41 +556,38 @@ class MockData {
   static final List<AccessUser> accessList = [
     AccessUser(
       name: 'Ama Boateng',
-      branch: 'Kumasi Central',
+      branch: 'DAYSPRING',
       role: 'Member',
       avatarColor: avatarFor(0),
     ),
     AccessUser(
       name: 'Kwame Asante',
-      branch: 'Kumasi Central',
+      branch: 'DAYSPRING',
       role: 'Worker',
       avatarColor: avatarFor(1),
     ),
     AccessUser(
       name: 'Grace Mensah',
-      branch: 'Accra Ridge',
+      branch: 'GLORYSPRING',
       role: 'Leader',
       avatarColor: avatarFor(2),
     ),
     AccessUser(
-      name: 'Daniel Owusu',
-      branch: "Pastor's Office",
+      name: 'TPM Admin',
+      branch: "The Pastor's Office",
       role: 'Admin',
       avatarColor: avatarFor(3),
     ),
   ];
 
   static const List<ManageListEntry> manageLists = [
-    ManageListEntry(label: 'Leaders directory', count: '14 leaders', icon: Icons.badge_rounded),
-    ManageListEntry(label: 'Branches', count: '14 branches', icon: Icons.location_on_rounded),
-    ManageListEntry(label: 'Worker groups', count: '9 groups', icon: Icons.diversity_3_rounded),
-  ];
-
-  static const List<String> composeTags = [
-    'Upcoming Event',
-    'Camp',
-    'Weekly Service',
-    'Conference',
+    ManageListEntry(label: 'Leaders directory', count: 'Pastors & branch leaders',
+        icon: Icons.badge_rounded),
+    ManageListEntry(label: 'Branches', count: '9 branches', icon: Icons.location_on_rounded),
+    ManageListEntry(label: 'Worker groups', count: '15 departments',
+        icon: Icons.diversity_3_rounded),
+    ManageListEntry(label: 'Fellowships & Basenias', count: '6 fellowships · 8 basenias',
+        icon: Icons.groups_2_rounded),
   ];
 
   /// Splash collage — five real photographs behind the logo lockup.

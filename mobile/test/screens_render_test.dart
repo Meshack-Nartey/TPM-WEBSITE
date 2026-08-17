@@ -365,7 +365,8 @@ void main() {
       expect(find.text('Kwame Asante'), findsOneWidget);
       expect(find.text('Abena Osei'), findsOneWidget);
 
-      await t.enterText(find.byType(TextField), 'choir');
+      // "Music" is one of the ministry's fifteen real worker groups.
+      await t.enterText(find.byType(TextField), 'music');
       await t.pump();
 
       expect(find.text('Kwame Asante'), findsNothing);

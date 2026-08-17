@@ -48,7 +48,7 @@ class EventsScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        MockData.serviceTimes,
+                        MockData.serviceSummary,
                         style: TpmText.body(13, color: Colors.white),
                       ),
                     ],
@@ -90,19 +90,29 @@ class _EventRow extends StatelessWidget {
               color: TpmColors.tintBlue,
               borderRadius: BorderRadius.circular(13),
             ),
-            child: Column(
-              children: [
-                Text(
-                  event.day,
-                  style: TpmText.display(22, color: TpmColors.navy, height: 1),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  event.month.toUpperCase(),
-                  style: TpmText.eyebrow(size: 9.5, tracking: 1.4),
-                ),
-              ],
-            ),
+            child: event.isDated
+                ? Column(
+                    children: [
+                      Text(
+                        event.day!,
+                        style: TpmText.display(22, color: TpmColors.navy, height: 1),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        event.month!.toUpperCase(),
+                        style: TpmText.eyebrow(size: 9.5, tracking: 1.4),
+                      ),
+                    ],
+                  )
+                // Several of the ministry's events are genuinely undated. Saying
+                // so beats inventing a day that someone might plan around.
+                : Column(
+                    children: [
+                      const Icon(Icons.event_rounded, color: TpmColors.navy, size: 20),
+                      const SizedBox(height: 4),
+                      Text('TBA', style: TpmText.eyebrow(size: 9.5, tracking: 1.4)),
+                    ],
+                  ),
           ),
           const SizedBox(width: 14),
           Expanded(

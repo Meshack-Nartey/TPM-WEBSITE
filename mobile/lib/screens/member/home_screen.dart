@@ -50,7 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
   static DateTime _computeNextService() {
     final now = DateTime.now();
     final daysUntilSunday = (DateTime.sunday - now.weekday) % 7;
-    var target = DateTime(now.year, now.month, now.day + daysUntilSunday, 9);
+    var target = DateTime(
+        now.year, now.month, now.day + daysUntilSunday, MockData.nextServiceHour);
     if (!target.isAfter(now)) target = target.add(const Duration(days: 7));
     return target;
   }
@@ -258,7 +259,7 @@ class _CountdownCard extends StatelessWidget {
                 const Flexible(child: Eyebrow('Next Service', size: 10)),
                 const Spacer(),
                 Text(
-                  MockData.serviceLabel,
+                  MockData.nextServiceLabel,
                   style: TpmText.body(12.5, weight: FontWeight.w600),
                 ),
               ],

@@ -81,8 +81,8 @@ class MediaItem {
 
 class EventItem {
   const EventItem({
-    required this.day,
-    required this.month,
+    this.day,
+    this.month,
     required this.tag,
     required this.title,
     required this.location,
@@ -91,14 +91,20 @@ class EventItem {
     required this.image,
   });
 
-  final String day;
-  final String month;
+  /// Null when the date has not been announced. Several of the ministry's
+  /// events are genuinely "Date: TBA", and showing an invented day would be
+  /// worse than showing none.
+  final String? day;
+  final String? month;
+
   final String tag;
   final String title;
   final String location;
   final String when;
   final String description;
   final String image;
+
+  bool get isDated => day != null && month != null;
 }
 
 class GiveOption {
@@ -130,11 +136,24 @@ class Branch {
     required this.name,
     required this.region,
     required this.address,
+    this.phone,
+    this.email,
   });
 
   final String name;
   final String region;
   final String address;
+  final String? phone;
+  final String? email;
+}
+
+/// One of the ministry's weekly gatherings.
+class ServiceTime {
+  const ServiceTime({required this.name, required this.day, required this.time});
+
+  final String name;
+  final String day;
+  final String time;
 }
 
 class Book {
@@ -153,7 +172,7 @@ class MemberRecord {
     required this.group,
     required this.status,
     required this.avatarColor,
-    this.branch = 'Kumasi Central',
+    this.branch = 'DAYSPRING',
     this.since = '2021',
     this.phone = '+233 24 000 0000',
     this.email = 'member@email.com',
@@ -164,7 +183,7 @@ class MemberRecord {
   final String name;
   final String group;
 
-  /// Member, Visitor or Worker.
+  /// One of the ministry's four: New Convert, Regular Member, Worker, Leader.
   final String status;
   final Color avatarColor;
   final String branch;
