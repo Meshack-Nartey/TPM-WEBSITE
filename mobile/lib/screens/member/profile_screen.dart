@@ -221,12 +221,16 @@ class _DetailsCard extends StatelessWidget {
                     children: [
                       const Icon(Icons.edit_outlined, size: 15, color: TpmColors.navy),
                       const SizedBox(width: 7),
-                      Text(
-                        'Request to update details',
-                        style: TpmText.body(
-                          13,
-                          color: TpmColors.navy,
-                          weight: FontWeight.w700,
+                      Flexible(
+                        child: Text(
+                          'Request to update details',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TpmText.body(
+                            13,
+                            color: TpmColors.navy,
+                            weight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ],

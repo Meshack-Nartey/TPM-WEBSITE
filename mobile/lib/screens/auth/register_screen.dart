@@ -77,11 +77,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('Already a member? ', style: TpmText.body(13.5)),
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Text(
-                      'Sign in',
-                      style: TpmText.body(13.5, color: TpmColors.navy, weight: FontWeight.w700),
+                  Flexible(
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Text(
+                        'Sign in',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TpmText.body(
+                          13.5,
+                          color: TpmColors.navy,
+                          weight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ],

@@ -118,13 +118,21 @@ class _SignInScreenState extends State<SignInScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('New here? ', style: TpmText.body(13.5)),
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
-                    ),
-                    child: Text(
-                      'Create an account',
-                      style: TpmText.body(13.5, color: TpmColors.navy, weight: FontWeight.w700),
+                  Flexible(
+                    child: GestureDetector(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                      ),
+                      child: Text(
+                        'Create an account',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TpmText.body(
+                          13.5,
+                          color: TpmColors.navy,
+                          weight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
                 ],

@@ -150,7 +150,7 @@ class _AnnouncementCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 132,
+      height: 152,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -199,6 +199,8 @@ class _AnnouncementCarousel extends StatelessWidget {
                       const Spacer(),
                       Text(
                         item.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TpmText.display(20, color: Colors.white, height: 1.2),
                       ),
                       const SizedBox(height: 6),
@@ -253,7 +255,7 @@ class _CountdownCard extends StatelessWidget {
               children: [
                 const Icon(Icons.church_rounded, size: 14, color: TpmColors.navy),
                 const SizedBox(width: 8),
-                const Eyebrow('Next Service', size: 10),
+                const Flexible(child: Eyebrow('Next Service', size: 10)),
                 const Spacer(),
                 Text(
                   MockData.serviceLabel,

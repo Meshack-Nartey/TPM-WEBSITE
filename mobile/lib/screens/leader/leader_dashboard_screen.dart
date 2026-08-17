@@ -194,73 +194,100 @@ class _StatGrid extends StatelessWidget {
 
   final List<StatTile> stats;
 
+  /// Paired rows rather than a fixed-aspect grid: a label like "Weekly
+  /// attendance" wraps to two lines where "Members" does not, and IntrinsicHeight
+  /// lets the pair agree on a height instead of clipping the taller one.
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: GridView.count(
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1.35,
+      child: Column(
         children: [
-          for (final stat in stats)
-            PortalCard(
-              radius: 18,
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          for (var i = 0; i < stats.length; i += 2) ...[
+            if (i > 0) const SizedBox(height: 12),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconTile(
-                        icon: stat.icon,
-                        background: TpmColors.portalGold.withValues(alpha: 0.12),
-                        foreground: TpmColors.portalGold,
-                        size: 34,
-                        radius: 10,
-                        iconSize: 16,
-                      ),
-                      Row(
-                        children: [
-                          Icon(
-                            stat.up ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
-                            size: 11,
-                            color: stat.up ? TpmColors.success : TpmColors.danger,
-                          ),
-                          const SizedBox(width: 3),
-                          Text(
-                            stat.trend,
-                            style: TpmText.body(
-                              10.5,
-                              color: stat.up ? TpmColors.success : TpmColors.danger,
-                              weight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                  Expanded(child: _StatCard(stat: stats[i])),
+                  const SizedBox(width: 12),
+                  if (i + 1 < stats.length)
+                    Expanded(child: _StatCard(stat: stats[i + 1]))
+                  else
+                    const Spacer(),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  const _StatCard({required this.stat});
+
+  final StatTile stat;
+
+  @override
+  Widget build(BuildContext context) {
+    return PortalCard(
+      radius: 18,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconTile(
+                icon: stat.icon,
+                background: TpmColors.portalGold.withValues(alpha: 0.12),
+                foreground: TpmColors.portalGold,
+                size: 34,
+                radius: 10,
+                iconSize: 16,
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    stat.up ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
+                    size: 11,
+                    color: stat.up ? TpmColors.success : TpmColors.danger,
                   ),
-                  const Spacer(),
+                  const SizedBox(width: 3),
                   Text(
-                    stat.value,
-                    style: TpmText.display(28, color: TpmColors.portalInk, height: 1),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    stat.label.toUpperCase(),
-                    style: TpmText.eyebrow(
-                      color: Colors.white.withValues(alpha: 0.45),
-                      size: 9.5,
-                      tracking: 1.2,
+                    stat.trend,
+                    style: TpmText.body(
+                      10.5,
+                      color: stat.up ? TpmColors.success : TpmColors.danger,
+                      weight: FontWeight.w700,
                     ),
                   ),
                 ],
               ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Text(
+            stat.value,
+            maxLines: 1,
+            style: TpmText.display(28, color: TpmColors.portalInk, height: 1),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            stat.label.toUpperCase(),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TpmText.eyebrow(
+              color: Colors.white.withValues(alpha: 0.45),
+              size: 9.5,
+              tracking: 1.2,
             ),
+          ),
         ],
       ),
     );
@@ -287,7 +314,7 @@ class _ChartCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Eyebrow(title, color: TpmColors.portalGold, size: 10),
+                Flexible(child: Eyebrow(title, color: TpmColors.portalGold, size: 10)),
                 Text(
                   note,
                   style: TpmText.body(11.5, color: Colors.white.withValues(alpha: 0.5)),

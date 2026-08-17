@@ -225,7 +225,7 @@ class _SectionLabel extends StatelessWidget {
         children: [
           Icon(icon, size: 12, color: TpmColors.portalGold),
           const SizedBox(width: 7),
-          Eyebrow(label, color: TpmColors.portalGold, size: 10),
+          Flexible(child: Eyebrow(label, color: TpmColors.portalGold, size: 10)),
         ],
       ),
     );

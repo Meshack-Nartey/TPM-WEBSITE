@@ -13,6 +13,8 @@ class Eyebrow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
         text.toUpperCase(),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TpmText.eyebrow(color: color, size: size),
       );
 }
@@ -328,12 +330,18 @@ class TpmButton extends StatelessWidget {
                     Icon(icon, size: fontSize + 3, color: foreground),
                     const SizedBox(width: 9),
                   ],
-                  Text(
-                    label,
-                    style: TpmText.body(
-                      fontSize,
-                      color: foreground,
-                      weight: FontWeight.w700,
+                  // Long labels shrink rather than overflow — button widths are
+                  // set by the layout around them, not by the text inside.
+                  Flexible(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TpmText.body(
+                        fontSize,
+                        color: foreground,
+                        weight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ],
@@ -394,9 +402,13 @@ class TpmOutlineButton extends StatelessWidget {
                     Icon(icon, size: 17, color: foreground),
                     const SizedBox(width: 9),
                   ],
-                  Text(
-                    label,
-                    style: TpmText.body(13.8, color: foreground, weight: FontWeight.w700),
+                  Flexible(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TpmText.body(13.8, color: foreground, weight: FontWeight.w700),
+                    ),
                   ),
                 ],
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../data/mock_data.dart';
+import '../../models/models.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 
@@ -40,42 +41,72 @@ class _GiveOptionsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final options = MockData.giveOptions;
+
+    // Paired rows rather than a fixed-aspect grid, so a longer blurb grows the
+    // pair instead of being clipped by a ratio guessed up front.
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 22),
-      child: GridView.count(
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1.55,
+      child: Column(
         children: [
-          for (final option in MockData.giveOptions)
-            TpmCard(
-              radius: 16,
-              border: Border.all(color: TpmColors.navy.withValues(alpha: 0.06)),
-              onTap: () {},
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+          for (var i = 0; i < options.length; i += 2) ...[
+            if (i > 0) const SizedBox(height: 12),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  IconTile(
-                    icon: option.icon,
-                    background: option.tintBg,
-                    foreground: option.tintFg,
-                    size: 38,
-                    iconSize: 18,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    option.label,
-                    style: TpmText.body(14.5, color: TpmColors.ink, weight: FontWeight.w700),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(option.blurb, style: TpmText.body(11.5)),
+                  Expanded(child: _GiveTile(option: options[i])),
+                  const SizedBox(width: 12),
+                  if (i + 1 < options.length)
+                    Expanded(child: _GiveTile(option: options[i + 1]))
+                  else
+                    const Spacer(),
                 ],
               ),
             ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _GiveTile extends StatelessWidget {
+  const _GiveTile({required this.option});
+
+  final GiveOption option;
+
+  @override
+  Widget build(BuildContext context) {
+    return TpmCard(
+      radius: 16,
+      border: Border.all(color: TpmColors.navy.withValues(alpha: 0.06)),
+      onTap: () {},
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconTile(
+            icon: option.icon,
+            background: option.tintBg,
+            foreground: option.tintFg,
+            size: 38,
+            iconSize: 18,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            option.label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TpmText.body(14.5, color: TpmColors.ink, weight: FontWeight.w700),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            option.blurb,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TpmText.body(11.5),
+          ),
         ],
       ),
     );
