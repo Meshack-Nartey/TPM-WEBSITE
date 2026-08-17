@@ -19,4 +19,14 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmailIgnoreCase(@Param("email") String email);
 
     boolean existsByEmailIgnoreCase(String email);
+
+    /**
+     * Reads a user with the branch already joined.
+     *
+     * <p>{@code findById} will not do: UserResponse always reads the branch
+     * name, open-in-view is off, and a lazy proxy cannot initialise once the
+     * transaction has closed. Anything that serialises a user uses this.
+     */
+    @Query("select u from User u left join fetch u.branch where u.id = :id")
+    Optional<User> findWithBranchById(@Param("id") UUID id);
 }

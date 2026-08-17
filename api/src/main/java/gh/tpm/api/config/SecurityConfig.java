@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import gh.tpm.api.security.JwtAuthenticationFilter;
+import gh.tpm.api.security.RestAuthEntryPoint;
 
 @Configuration
 @EnableConfigurationProperties({JwtProperties.class, CorsProperties.class})
@@ -31,8 +32,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter)
-            throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           JwtAuthenticationFilter jwtFilter,
+                                           RestAuthEntryPoint authEntryPoint) throws Exception {
 
         return http
                 // No cookies and no sessions, so there is no CSRF surface: every
@@ -40,6 +42,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Without this, a missing or expired token answers 403, which
+                // tells the app "not yours" when it means "sign in again".
+                .exceptionHandling(e -> e.authenticationEntryPoint(authEntryPoint))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login")

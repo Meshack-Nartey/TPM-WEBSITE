@@ -44,7 +44,7 @@ public class AuthController {
      */
     @GetMapping("/me")
     public UserResponse me(@AuthenticationPrincipal AppPrincipal principal) {
-        return users.findById(principal.id())
+        return users.findWithBranchById(principal.id())
                 .map(UserResponse::from)
                 .orElseThrow(() -> ApiException.notFound("Account"));
     }
