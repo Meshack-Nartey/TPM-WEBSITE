@@ -156,7 +156,7 @@ class _AnnouncementCarousel extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 22),
         physics: const PageScrollPhysics(),
         itemCount: MockData.carousel.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 14),
+        separatorBuilder: (_, _) => const SizedBox(width: 14),
         itemBuilder: (context, i) {
           final item = MockData.carousel[i];
           return Container(

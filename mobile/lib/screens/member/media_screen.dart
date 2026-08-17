@@ -48,7 +48,7 @@ class _MediaScreenState extends State<MediaScreen> {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 22),
             itemCount: MockData.mediaFilters.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (context, i) => ChoiceChipPill(
               label: MockData.mediaFilters[i],
               selected: i == _filter,
