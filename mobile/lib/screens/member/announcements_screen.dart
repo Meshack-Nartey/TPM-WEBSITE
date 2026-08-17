@@ -1,0 +1,68 @@
+import 'package:flutter/material.dart';
+
+import '../../app/navigation.dart';
+import '../../data/mock_data.dart';
+import '../../models/models.dart';
+import '../../theme/tpm_theme.dart';
+import '../../widgets/common.dart';
+import 'announcement_detail_screen.dart';
+
+class AnnouncementsScreen extends StatelessWidget {
+  const AnnouncementsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: TpmColors.canvas,
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.only(top: 12, bottom: 24),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22),
+              child: ScreenTitle(
+                eyebrow: 'News & Updates',
+                title: 'Announcements',
+                titleSize: 24,
+                onBack: () => Navigator.of(context).pop(),
+              ),
+            ),
+            const SizedBox(height: 14),
+            for (final item in MockData.newsFeed)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(22, 0, 22, 12),
+                child: _NewsRow(item: item),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NewsRow extends StatelessWidget {
+  const _NewsRow({required this.item});
+
+  final Announcement item;
+
+  @override
+  Widget build(BuildContext context) {
+    final (fg, bg) = MockData.tagColor(item.tag);
+
+    return TpmCard(
+      onTap: () => pushScreen(context, AnnouncementDetailScreen(item: item)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Pill(item.tag, foreground: fg, background: bg, fontSize: 9),
+          const SizedBox(height: 9),
+          Text(item.title, style: TpmText.display(18, height: 1.25)),
+          const SizedBox(height: 5),
+          Text(item.excerpt, style: TpmText.body(12.8, height: 1.5)),
+          const SizedBox(height: 8),
+          Text(item.date, style: TpmText.body(11, color: TpmColors.faint)),
+        ],
+      ),
+    );
+  }
+}
