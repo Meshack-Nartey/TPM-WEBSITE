@@ -24,20 +24,24 @@ class WelcomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Image.asset(
-                'assets/brand/logo-mark.png',
-                height: 56,
-                fit: BoxFit.contain,
-                semanticLabel: 'Transformation Project Ministries',
+              const SizedBox(height: 48),
+              Center(
+                child: Image.asset(
+                  'assets/brand/logo-mark.png',
+                  height: 56,
+                  fit: BoxFit.contain,
+                  semanticLabel: 'Transformation Project Ministries',
+                ),
               ),
               const SizedBox(height: 22),
-              Text('Continue as', style: TpmText.display(28)),
+              Text('Continue as', textAlign: TextAlign.center, style: TpmText.display(28)),
               const SizedBox(height: 4),
               Text(
-                'Pick the role that describes you — you\'ll set up your account next.',
+                'Pick the role that describes you and you\'ll set up your account next.',
+                textAlign: TextAlign.center,
                 style: TpmText.body(13.8),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               for (final role in const [AppRole.member, AppRole.leader, AppRole.admin]) ...[
                 _RoleTile(
                   role: role,
@@ -75,7 +79,7 @@ class WelcomeScreen extends StatelessWidget {
                 },
                 child: Text(
                   'Continue as guest',
-                  style: TpmText.body(13.8, color: TpmColors.subtle, weight: FontWeight.w700),
+                  style: TpmText.body(13.8, color: TpmColors.ink, weight: FontWeight.bold),
                 ),
               ),
             ],
