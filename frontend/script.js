@@ -719,13 +719,11 @@ function initAnnouncementSlider() {
     // Let the user dismiss the flyer panel entirely
     const closeBtn = document.getElementById('closeHeroAnnouncements');
     const panel = document.getElementById('heroAnnouncements');
-    const focusWrap = document.querySelector('.hero-focus');
     if (closeBtn && panel) {
         closeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             clearInterval(timer);
             panel.style.display = 'none';
-            if (focusWrap) focusWrap.classList.add('flyer-closed');
         });
     }
 }
