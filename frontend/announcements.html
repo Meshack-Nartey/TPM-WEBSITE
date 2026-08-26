@@ -57,10 +57,7 @@
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 16px;
-            padding: 28px 24px 22px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            overflow: hidden;
             transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
         }
 
@@ -70,50 +67,11 @@
             background: rgba(255,255,255,0.08);
         }
 
-        .ann-tag {
-            font-size: 0.68rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.8px;
-            color: #c9a84c;
+        .ann-card img {
+            display: block;
+            width: 100%;
+            height: auto;
         }
-
-        .ann-card h3 {
-            font-family: var(--font-display);
-            font-size: 1.15rem;
-            color: #fff;
-            margin: 0;
-            line-height: 1.35;
-        }
-
-        .ann-card p {
-            font-size: 0.88rem;
-            color: rgba(255,255,255,0.65);
-            line-height: 1.65;
-            margin: 0;
-            flex: 1;
-        }
-
-        .ann-date {
-            font-size: 0.75rem;
-            color: rgba(212,175,55,0.85);
-            font-weight: 600;
-            padding-top: 8px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            margin-top: auto;
-        }
-
-        .ann-date span {
-            margin-right: 6px;
-        }
-
-        /* category colour accents */
-        .ann-card[data-category="event"] { border-top: 3px solid #3b82f6; }
-        .ann-card[data-category="camp"]  { border-top: 3px solid #10b981; }
-        .ann-card[data-category="weekly"] { border-top: 3px solid #c9a84c; }
-        .ann-card[data-category="conference"] { border-top: 3px solid #8b5cf6; }
-        .ann-card[data-category="prayer"] { border-top: 3px solid #f59e0b; }
-        .ann-card[data-category="general"] { border-top: 3px solid #64748b; }
     </style>
 </head>
 <body>
@@ -148,46 +106,20 @@
 
         <div class="announcements-grid-section" id="announcementsGrid">
 
-            <div class="ann-card" data-category="event">
-                <span class="ann-tag">Upcoming Event</span>
-                <h3>Holy Ghost Festival 2026</h3>
-                <p>Mark your calendars for our annual Spirit-filled gathering. Experience God's power like never before. Come ready to encounter the Holy Spirit in a fresh and powerful way.</p>
-                <div class="ann-date"><span>&#128197;</span>Date: TBA</div>
+            <div class="ann-card">
+                <img src="assets/images/flyers/tc.png" alt="Transformation Conference flyer">
             </div>
 
-            <div class="ann-card" data-category="camp">
-                <span class="ann-tag">Camp</span>
-                <h3>Sharpening Camp</h3>
-                <p>Join us for intensive leadership training and spiritual equipping for effective ministry. This camp is designed to develop sharp, effective leaders for the Kingdom of God.</p>
-                <div class="ann-date"><span>&#128197;</span>Date: TBA</div>
+            <div class="ann-card">
+                <img src="assets/images/flyers/ts.png" alt="Program flyer">
             </div>
 
-            <div class="ann-card" data-category="weekly">
-                <span class="ann-tag">Weekly Service</span>
-                <h3>Love Therapy — Fridays</h3>
-                <p>Join us every Friday evening for powerful teaching on love and relationships. A transformative experience grounded in the Word of God.</p>
-                <div class="ann-date"><span>&#128336;</span>Every Friday, 6:00 PM</div>
+            <div class="ann-card">
+                <img src="assets/images/flyers/tpm-waits.png" alt="TPM Waits flyer">
             </div>
 
-            <div class="ann-card" data-category="conference">
-                <span class="ann-tag">Conference</span>
-                <h3>Transformation Conference</h3>
-                <p>A powerful gathering of worship, faith, and prophetic teaching. All are welcome to come and be transformed by the Word and the Spirit.</p>
-                <div class="ann-date"><span>&#128197;</span>Date: TBA</div>
-            </div>
-
-            <div class="ann-card" data-category="weekly">
-                <span class="ann-tag">Weekly Service</span>
-                <h3>Sunday Celebration Service</h3>
-                <p>Join us every Sunday for a powerful time of worship, the Word, and fellowship with the family of God. Bring someone with you!</p>
-                <div class="ann-date"><span>&#128336;</span>Every Sunday, 9:00 AM</div>
-            </div>
-
-            <div class="ann-card" data-category="prayer">
-                <span class="ann-tag">Prayer</span>
-                <h3>Corporate Prayer Night</h3>
-                <p>Come together as one body to seek God's face. Our monthly corporate prayer night is a powerful time of intercession and worship.</p>
-                <div class="ann-date"><span>&#128197;</span>Last Friday of every month</div>
+            <div class="ann-card">
+                <img src="assets/images/flyers/fasting-and-prayers.png" alt="Fasting and Prayers flyer">
             </div>
 
         </div>

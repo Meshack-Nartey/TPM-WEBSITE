@@ -64,48 +64,44 @@
             </div>
         </div>
 
-        <div class="hero-content">
-            <h1 class="hero-title">WELCOME TO<br>TRANSFORMATION PROJECT<br>MINISTRIES</h1>
-            <p class="hero-subtitle">Transforming lives</p>
-            <div class="hero-buttons">
-                <a href="join-us.html" class="btn btn-primary">Join Our Service</a>
-                <a href="about.html" class="btn btn-secondary">Learn More</a>
+        <!-- Flyer + welcome copy live together in one centered, vertically
+             stacked block so they scale as a unit instead of drifting apart
+             on short viewports. -->
+        <div class="hero-focus">
+            <!-- Flyer Slider — one flyer showing at a time.
+                 Add or swap flyers by editing the .announce-card images below;
+                 files live in assets/images/flyers/. -->
+            <div class="hero-announcements" id="heroAnnouncements">
+                <div class="announce-strip">
+                    <span class="announce-badge">&#128226; Announcements</span>
+                    <a href="announcements.html" style="margin-left:auto;font-size:0.7rem;color:#c9a84c;font-weight:700;text-decoration:none;letter-spacing:0.8px;">View all &#8250;</a>
+                    <button type="button" class="announce-close" id="closeHeroAnnouncements" aria-label="Close announcements">&times;</button>
+                </div>
+                <div class="announce-track" id="announceTrack" style="cursor:pointer;" onclick="window.location.href='announcements.html'" title="View all announcements">
+                    <div class="announce-card active">
+                        <img src="assets/images/flyers/tc.png" alt="Transformation Conference flyer">
+                    </div>
+                    <div class="announce-card">
+                        <img src="assets/images/flyers/ts.png" alt="Program flyer">
+                    </div>
+                    <div class="announce-card">
+                        <img src="assets/images/flyers/tpm-waits.png" alt="TPM Waits flyer">
+                    </div>
+                    <div class="announce-card">
+                        <img src="assets/images/flyers/fasting-and-prayers.png" alt="Fasting and Prayers flyer">
+                    </div>
+                </div>
+                <div class="announce-nav" id="announceNav"></div>
             </div>
-        </div>
 
-        <!-- Announcement Slider — bottom right of hero -->
-        <div class="hero-announcements" id="heroAnnouncements">
-            <div class="announce-strip">
-                <span class="announce-badge">&#128226; Announcements</span>
-                <a href="announcements.html" style="margin-left:auto;font-size:0.7rem;color:#c9a84c;font-weight:700;text-decoration:none;letter-spacing:0.8px;">View all &#8250;</a>
-            </div>
-            <div class="announce-track" id="announceTrack" style="cursor:pointer;" onclick="window.location.href='announcements.html'" title="View all announcements">
-                <div class="announce-card active">
-                    <span class="announce-tag">Upcoming Event</span>
-                    <h4>Holy Ghost Festival 2026</h4>
-                    <p>Mark your calendars for our annual Spirit-filled gathering. Experience God's power like never before.</p>
-                    <span class="announce-date">Date: TBA</span>
-                </div>
-                <div class="announce-card">
-                    <span class="announce-tag">Camp</span>
-                    <h4>Sharpening Camp</h4>
-                    <p>Join us for intensive leadership training and spiritual equipping for effective ministry.</p>
-                    <span class="announce-date">Date: TBA</span>
-                </div>
-                <div class="announce-card">
-                    <span class="announce-tag">Weekly Service</span>
-                    <h4>Love Therapy — Fridays</h4>
-                    <p>Join us every Friday evening for powerful teaching on love and relationships.</p>
-                    <span class="announce-date">Every Friday, 6:00 PM</span>
-                </div>
-                <div class="announce-card">
-                    <span class="announce-tag">Conference</span>
-                    <h4>Transformation Conference</h4>
-                    <p>A powerful gathering of worship, faith, and prophetic teaching. All are welcome.</p>
-                    <span class="announce-date">Date: TBA</span>
+            <div class="hero-content">
+                <h1 class="hero-title">WELCOME TO<br>TRANSFORMATION PROJECT<br>MINISTRIES</h1>
+                <p class="hero-subtitle">Transforming lives</p>
+                <div class="hero-buttons">
+                    <a href="join-us.html" class="btn btn-primary">Join Our Service</a>
+                    <a href="about.html" class="btn btn-secondary">Learn More</a>
                 </div>
             </div>
-            <div class="announce-nav" id="announceNav"></div>
         </div>
 
         <div class="slider-controls">
@@ -136,19 +132,16 @@
             </div>
             <div class="home-cards-grid">
                 <div class="home-feature-card">
-                    <span class="home-card-icon">&#128591;</span>
                     <h3>Worship With Us</h3>
                     <p>Join us every Sunday for powerful worship and Spirit-filled messages that transform hearts.</p>
                     <a href="join-us.html" class="home-card-link">Learn More &#8594;</a>
                 </div>
                 <div class="home-feature-card">
-                    <span class="home-card-icon">&#128214;</span>
                     <h3>Grow in Faith</h3>
                     <p>Discover ministries and communities designed to deepen your walk with God and sharpen your calling.</p>
                     <a href="join-us.html" class="home-card-link">Explore &#8594;</a>
                 </div>
                 <div class="home-feature-card">
-                    <span class="home-card-icon">&#129309;</span>
                     <h3>Serve Together</h3>
                     <p>Use your God-given gifts to make a lasting difference in our community and advance His Kingdom.</p>
                     <a href="partner-with-us.html" class="home-card-link">Get Involved &#8594;</a>
