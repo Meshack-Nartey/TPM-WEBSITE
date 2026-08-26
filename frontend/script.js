@@ -667,7 +667,7 @@ function initAnnouncementSlider() {
 
     let current = 0;
     let timer;
-    const INTERVAL = 5000;
+    const INTERVAL = 7000;
 
     // Build dot indicators
     cards.forEach((_, i) => {
@@ -715,6 +715,19 @@ function initAnnouncementSlider() {
     }
 
     resetTimer();
+
+    // Let the user dismiss the flyer panel entirely
+    const closeBtn = document.getElementById('closeHeroAnnouncements');
+    const panel = document.getElementById('heroAnnouncements');
+    const focusWrap = document.querySelector('.hero-focus');
+    if (closeBtn && panel) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            clearInterval(timer);
+            panel.style.display = 'none';
+            if (focusWrap) focusWrap.classList.add('flyer-closed');
+        });
+    }
 }
 
 // ===================================
