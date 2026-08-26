@@ -7,9 +7,15 @@ import '../models/models.dart';
 /// Thrown for anything the API rejected, or that couldn't be reached at all —
 /// the message is written to be shown to the user directly.
 class ApiException implements Exception {
-  ApiException(this.message);
+  ApiException(this.message, {this.fieldErrors = const {}});
 
   final String message;
+
+  /// Field name (matching the request body, e.g. "email", "password") to
+  /// its specific message — from the API's zod `details` array, when
+  /// present — so the offending field can be highlighted, not just named
+  /// in the message text.
+  final Map<String, String> fieldErrors;
 
   @override
   String toString() => message;
@@ -100,9 +106,27 @@ class AuthApi {
     }
 
     if (response.statusCode >= 400) {
-      throw ApiException((data['error'] as String?) ?? 'Something went wrong.');
+      final fieldErrors = _fieldErrors(data);
+      final message = fieldErrors.isNotEmpty
+          ? fieldErrors.values.toSet().join('\n')
+          : (data['error'] as String?) ?? 'Something went wrong.';
+      throw ApiException(message, fieldErrors: fieldErrors);
     }
 
     return data;
+  }
+
+  /// The API's zod validation returns a generic "Validation failed" plus a
+  /// `details` array of {field, message} — surface the actual field-level
+  /// messages, and which field each belongs to, instead of that generic
+  /// top-line error.
+  Map<String, String> _fieldErrors(Map<String, dynamic> data) {
+    final details = data['details'];
+    if (details is! List) return const {};
+    return {
+      for (final entry in details.whereType<Map>())
+        if (entry['field'] is String && entry['message'] is String)
+          entry['field'] as String: entry['message'] as String,
+    };
   }
 }

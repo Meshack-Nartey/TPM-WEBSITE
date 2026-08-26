@@ -20,6 +20,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   bool _loading = false;
   bool _done = false;
   String? _error;
+  Map<String, String> _fieldErrors = const {};
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -69,6 +70,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   hint: 'you@email.com',
                   icon: Icons.email_outlined,
                   controller: _emailController,
+                  error: _fieldErrors.containsKey('email'),
                 ),
                 const SizedBox(height: 14),
                 TpmField(
@@ -77,6 +79,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   icon: Icons.lock_outline_rounded,
                   obscure: _obscure,
                   controller: _passwordController,
+                  error: _fieldErrors.containsKey('newPassword'),
                   trailing: GestureDetector(
                     onTap: () => setState(() => _obscure = !_obscure),
                     child: Icon(
@@ -111,13 +114,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final password = _passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      setState(() => _error = 'Enter your email and a new password.');
+      setState(() {
+        _error = 'Enter your email and a new password.';
+        _fieldErrors = {
+          if (email.isEmpty) 'email': 'Required',
+          if (password.isEmpty) 'newPassword': 'Required',
+        };
+      });
       return;
     }
 
     setState(() {
       _loading = true;
       _error = null;
+      _fieldErrors = const {};
     });
 
     try {
@@ -131,6 +141,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() {
         _loading = false;
         _error = e.message;
+        _fieldErrors = e.fieldErrors;
       });
     }
   }

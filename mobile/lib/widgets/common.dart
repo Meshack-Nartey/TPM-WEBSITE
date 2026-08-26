@@ -486,6 +486,7 @@ class TpmField extends StatelessWidget {
     this.trailing,
     this.maxLines = 1,
     this.controller,
+    this.error = false,
   });
 
   final String label;
@@ -497,9 +498,14 @@ class TpmField extends StatelessWidget {
   final int maxLines;
   final TextEditingController? controller;
 
+  /// Highlights the field's border red — set when the server rejected this
+  /// specific field (e.g. an invalid email, a too-short password).
+  final bool error;
+
   @override
   Widget build(BuildContext context) {
-    final labelColor = dark ? Colors.white.withValues(alpha: 0.5) : TpmColors.goldDeep;
+    final labelColor =
+        error ? TpmColors.danger : (dark ? Colors.white.withValues(alpha: 0.5) : TpmColors.goldDeep);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -514,7 +520,10 @@ class TpmField extends StatelessWidget {
             color: dark ? TpmColors.nightSurface : TpmColors.surface,
             borderRadius: BorderRadius.circular(13),
             border: Border.all(
-              color: dark ? Colors.white.withValues(alpha: 0.1) : TpmColors.hairline,
+              color: error
+                  ? TpmColors.danger
+                  : (dark ? Colors.white.withValues(alpha: 0.1) : TpmColors.hairline),
+              width: error ? 1.5 : 1,
             ),
           ),
           child: Row(

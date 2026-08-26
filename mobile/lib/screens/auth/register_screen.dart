@@ -28,6 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _loading = false;
   bool _obscure = true;
   String? _error;
+  Map<String, String> _fieldErrors = const {};
 
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -74,6 +75,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 hint: 'Ama Boateng',
                 icon: Icons.person_outline_rounded,
                 controller: _nameController,
+                error: _fieldErrors.containsKey('firstName') ||
+                    _fieldErrors.containsKey('lastName'),
               ),
               const SizedBox(height: 14),
               TpmField(
@@ -81,6 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 hint: 'you@email.com',
                 icon: Icons.email_outlined,
                 controller: _emailController,
+                error: _fieldErrors.containsKey('email'),
               ),
               const SizedBox(height: 14),
               TpmField(
@@ -89,6 +93,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 icon: Icons.lock_outline_rounded,
                 obscure: _obscure,
                 controller: _passwordController,
+                error: _fieldErrors.containsKey('password'),
                 trailing: GestureDetector(
                   onTap: () => setState(() => _obscure = !_obscure),
                   child: Icon(
@@ -105,6 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   hint: "Ask the pastor's office for yours",
                   icon: Icons.vpn_key_outlined,
                   controller: _inviteCodeController,
+                  error: _fieldErrors.containsKey('inviteCode'),
                 ),
               ],
               const SizedBox(height: 14),
@@ -159,13 +165,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final password = _passwordController.text;
 
     if (fullName.isEmpty || email.isEmpty || password.isEmpty) {
-      setState(() => _error = 'Fill in your name, email and password.');
+      setState(() {
+        _error = 'Fill in your name, email and password.';
+        _fieldErrors = {
+          if (fullName.isEmpty) 'firstName': 'Required',
+          if (email.isEmpty) 'email': 'Required',
+          if (password.isEmpty) 'password': 'Required',
+        };
+      });
       return;
     }
 
     final inviteCode = _inviteCodeController.text.trim();
     if (_needsInviteCode && inviteCode.isEmpty) {
-      setState(() => _error = "Enter the invite code from the pastor's office.");
+      setState(() {
+        _error = "Enter the invite code from the pastor's office.";
+        _fieldErrors = const {'inviteCode': 'Required'};
+      });
       return;
     }
 
@@ -177,6 +193,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       _loading = true;
       _error = null;
+      _fieldErrors = const {};
     });
 
     try {
@@ -197,6 +214,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       setState(() {
         _loading = false;
         _error = e.message;
+        _fieldErrors = e.fieldErrors;
       });
     }
   }

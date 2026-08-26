@@ -21,6 +21,7 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _obscure = true;
   bool _loading = false;
   String? _error;
+  Map<String, String> _fieldErrors = const {};
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -61,6 +62,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 hint: 'you@email.com',
                 icon: Icons.email_outlined,
                 controller: _emailController,
+                error: _fieldErrors.containsKey('email'),
               ),
               const SizedBox(height: 16),
               TpmField(
@@ -69,6 +71,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 icon: Icons.lock_outline_rounded,
                 obscure: _obscure,
                 controller: _passwordController,
+                error: _fieldErrors.containsKey('password'),
                 trailing: GestureDetector(
                   onTap: () => setState(() => _obscure = !_obscure),
                   child: Icon(
@@ -168,13 +171,20 @@ class _SignInScreenState extends State<SignInScreen> {
     final password = _passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      setState(() => _error = 'Enter your email and password.');
+      setState(() {
+        _error = 'Enter your email and password.';
+        _fieldErrors = {
+          if (email.isEmpty) 'email': 'Required',
+          if (password.isEmpty) 'password': 'Required',
+        };
+      });
       return;
     }
 
     setState(() {
       _loading = true;
       _error = null;
+      _fieldErrors = const {};
     });
 
     try {
@@ -187,6 +197,7 @@ class _SignInScreenState extends State<SignInScreen> {
       setState(() {
         _loading = false;
         _error = e.message;
+        _fieldErrors = e.fieldErrors;
       });
     }
   }

@@ -48,11 +48,19 @@ router.post(
       const match = await prisma.inviteCode.findFirst({
         where: { code, role: data.role, active: true },
       });
-      if (!match) throw badRequest('Invalid invite code for the selected role.');
+      if (!match) {
+        throw badRequest('Invalid invite code for the selected role.', [
+          { field: 'inviteCode', message: 'Invalid invite code for the selected role.' },
+        ]);
+      }
     }
 
     const existing = await prisma.user.findUnique({ where: { email: data.email } });
-    if (existing) throw conflict('An account with this email already exists.');
+    if (existing) {
+      throw conflict('An account with this email already exists.', [
+        { field: 'email', message: 'An account with this email already exists.' },
+      ]);
+    }
 
     const passwordHash = await bcrypt.hash(data.password, 12);
     const user = await prisma.user.create({
@@ -120,7 +128,11 @@ router.post(
 
     const { email, newPassword } = req.body;
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user || !user.active) throw notFound('No account found with that email.');
+    if (!user || !user.active) {
+      throw notFound('No account found with that email.', [
+        { field: 'email', message: 'No account found with that email.' },
+      ]);
+    }
 
     const passwordHash = await bcrypt.hash(newPassword, 12);
     await prisma.user.update({ where: { email }, data: { passwordHash } });
