@@ -2,6 +2,7 @@ import 'dart:ui' show Size;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tpm_mobile/app/session.dart';
 import 'package:tpm_mobile/main.dart';
@@ -9,9 +10,14 @@ import 'package:tpm_mobile/models/models.dart';
 import 'package:tpm_mobile/screens/auth/welcome_screen.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   setUpAll(() {
     // Tests must not reach the network for fonts; fall back to the bundled face.
     GoogleFonts.config.allowRuntimeFetching = false;
+    // AppSession persists to shared_preferences; the plugin has no real
+    // platform channel in tests, so give it an in-memory store instead.
+    SharedPreferences.setMockInitialValues({});
   });
 
   testWidgets('splash shows the brand lockup and leads to welcome', (tester) async {
@@ -22,7 +28,7 @@ void main() {
       ..devicePixelRatio = 3.0;
     addTearDown(tester.view.reset);
 
-    await tester.pumpWidget(const TpmApp());
+    await tester.pumpWidget(TpmApp(session: AppSession()));
     await tester.pump();
 
     expect(find.text('Transformation'), findsOneWidget);
@@ -32,7 +38,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(WelcomeScreen), findsOneWidget);
-    expect(find.text('Get started'), findsOneWidget);
+    expect(find.text('Continue as'), findsOneWidget);
   });
 
   group('AppSession', () {

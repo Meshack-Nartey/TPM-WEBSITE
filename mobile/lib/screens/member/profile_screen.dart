@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../app/session.dart';
 import '../../data/mock_data.dart';
+import '../../models/models.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 
@@ -118,6 +120,19 @@ class _IdentityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = AppSession.of(context).user;
+
+    // A real sign-in carries the name and branch; the guest/preview paths
+    // (no real account) fall back to the design board's sample member.
+    final fullName = user?.fullName.trim().isNotEmpty == true
+        ? user!.fullName
+        : MockData.fullName;
+    final branch = user?.branch?.trim().isNotEmpty == true
+        ? user!.branch!
+        : MockData.homeBranch;
+    final roleLabel = user?.role.label ?? AppSession.of(context).role.label;
+    final initials = _initialsOf(fullName);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 22),
       child: TpmCard(
@@ -134,7 +149,7 @@ class _IdentityCard extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Text(
-                MockData.initials,
+                initials,
                 style: TpmText.body(19, color: Colors.white, weight: FontWeight.w700),
               ),
             ),
@@ -143,11 +158,8 @@ class _IdentityCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(MockData.fullName, style: TpmText.display(19)),
-                  Text(
-                    'Member · ${MockData.homeBranch}',
-                    style: TpmText.body(12.2),
-                  ),
+                  Text(fullName, style: TpmText.display(19)),
+                  Text('$roleLabel · $branch', style: TpmText.body(12.2)),
                 ],
               ),
             ),
@@ -155,6 +167,12 @@ class _IdentityCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  static String _initialsOf(String fullName) {
+    final parts = fullName.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty);
+    final letters = parts.take(2).map((p) => p[0].toUpperCase()).join();
+    return letters.isEmpty ? MockData.initials : letters;
   }
 }
 

@@ -2,8 +2,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../../app/session.dart';
 import '../../data/mock_data.dart';
 import '../../theme/tpm_theme.dart';
+import '../../widgets/shells.dart';
 import 'welcome_screen.dart';
 
 /// First run. A collage of real congregation photography behind the logo
@@ -64,6 +66,12 @@ class SplashScreen extends StatelessWidget {
   }
 
   void _continue(BuildContext context) {
+    // A restored session (see AppSession.restore, called at app start) skips
+    // straight past sign-in rather than making someone log in every launch.
+    if (AppSession.of(context).isSignedIn) {
+      MemberShell.enter(context);
+      return;
+    }
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const WelcomeScreen()),
     );

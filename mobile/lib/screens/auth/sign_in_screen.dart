@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../app/session.dart';
 import '../../models/models.dart';
+import '../../services/auth_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/shells.dart';
 import 'biometric_screen.dart';
-import 'register_screen.dart';
+import 'forgot_password_screen.dart';
+import 'welcome_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -17,10 +19,18 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   bool _obscure = true;
+  bool _loading = false;
+  String? _error;
 
-  /// Prototype-only. Stands in for the role the API will return on the real
-  /// token, so every one of the 29 screens stays reachable without a backend.
-  AppRole _previewRole = AppRole.member;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +56,11 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 4),
               Text('Sign in to continue your journey.', style: TpmText.body(13.8)),
               const SizedBox(height: 24),
-              const TpmField(
+              TpmField(
                 label: 'Email',
                 hint: 'you@email.com',
                 icon: Icons.email_outlined,
+                controller: _emailController,
               ),
               const SizedBox(height: 16),
               TpmField(
@@ -57,6 +68,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 hint: '••••••••',
                 icon: Icons.lock_outline_rounded,
                 obscure: _obscure,
+                controller: _passwordController,
                 trailing: GestureDetector(
                   onTap: () => setState(() => _obscure = !_obscure),
                   child: Icon(
@@ -69,27 +81,35 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 10),
               Align(
                 alignment: Alignment.centerRight,
-                child: Text(
-                  'Forgot password?',
-                  style: TpmText.body(12.5, color: TpmColors.navy, weight: FontWeight.w600),
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                  ),
+                  child: Text(
+                    'Forgot password?',
+                    style: TpmText.body(12.5, color: TpmColors.navy, weight: FontWeight.w600),
+                  ),
                 ),
               ),
+              if (_error != null) ...[
+                const SizedBox(height: 14),
+                Text(
+                  _error!,
+                  style: TpmText.body(12.5, color: TpmColors.danger, weight: FontWeight.w600),
+                ),
+              ],
               const SizedBox(height: 22),
-              TpmButton(label: 'Sign in', onPressed: () => _signIn(context)),
+              TpmButton(
+                label: _loading ? 'Signing in…' : 'Sign in',
+                onPressed: _loading ? null : () => _signIn(context),
+              ),
               const SizedBox(height: 12),
               TpmOutlineButton(
                 label: 'Use Face / Touch ID',
                 icon: Icons.fingerprint_rounded,
                 onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => BiometricScreen(role: _previewRole),
-                  ),
+                  MaterialPageRoute(builder: (_) => const BiometricScreen()),
                 ),
-              ),
-              const SizedBox(height: 22),
-              _RolePreviewPicker(
-                value: _previewRole,
-                onChanged: (r) => setState(() => _previewRole = r),
               ),
               const SizedBox(height: 22),
               Row(
@@ -110,7 +130,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   Flexible(
                     child: GestureDetector(
                       onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                        MaterialPageRoute(builder: (_) => const WelcomeScreen()),
                       ),
                       child: Text(
                         'Create an account',
@@ -143,57 +163,31 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  void _signIn(BuildContext context) {
-    AppSession.of(context).signInAs(_previewRole);
-    MemberShell.enter(context);
-  }
-}
+  Future<void> _signIn(BuildContext context) async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
 
-/// A prototype affordance, not a product feature — it replaces the role the
-/// server would hand back so leader and admin screens can be walked too.
-class _RolePreviewPicker extends StatelessWidget {
-  const _RolePreviewPicker({required this.value, required this.onChanged});
+    if (email.isEmpty || password.isEmpty) {
+      setState(() => _error = 'Enter your email and password.');
+      return;
+    }
 
-  final AppRole value;
-  final ValueChanged<AppRole> onChanged;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-      decoration: BoxDecoration(
-        color: TpmColors.slateWash,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: TpmColors.hairline, style: BorderStyle.solid),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.science_outlined, size: 14, color: TpmColors.faint),
-              const SizedBox(width: 7),
-              Text(
-                'PROTOTYPE · SIGN IN AS',
-                style: TpmText.eyebrow(color: TpmColors.faint, size: 9.5, tracking: 1.4),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final role in AppRole.values)
-                ChoiceChipPill(
-                  label: role.label,
-                  selected: role == value,
-                  onTap: () => onChanged(role),
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
+    try {
+      final result = await const AuthApi().login(email: email, password: password);
+      if (!context.mounted) return;
+      await AppSession.of(context).signInWithAuth(result.token, result.user);
+      if (!context.mounted) return;
+      MemberShell.enter(context);
+    } on ApiException catch (e) {
+      setState(() {
+        _loading = false;
+        _error = e.message;
+      });
+    }
   }
 }

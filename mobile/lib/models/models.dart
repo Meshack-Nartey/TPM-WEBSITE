@@ -23,6 +23,56 @@ extension AppRoleX on AppRole {
   bool get hasPortal => this == AppRole.leader || this == AppRole.admin;
 }
 
+/// Maps the API's `Role` enum ('MEMBER' | 'LEADER' | 'ADMIN') onto [AppRole].
+AppRole roleFromApi(String? value) => switch (value) {
+      'ADMIN' => AppRole.admin,
+      'LEADER' => AppRole.leader,
+      'MEMBER' => AppRole.member,
+      _ => AppRole.guest,
+    };
+
+/// The signed-in person, as the API returns them (`publicUser` in
+/// `backend/src/lib/serialize.js` — everything but the password hash).
+class AppUser {
+  const AppUser({
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.fullName,
+    required this.email,
+    required this.role,
+    this.branch,
+  });
+
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String fullName;
+  final String email;
+  final AppRole role;
+  final String? branch;
+
+  factory AppUser.fromJson(Map<String, dynamic> json) => AppUser(
+        id: json['id'] as String,
+        firstName: json['firstName'] as String? ?? '',
+        lastName: json['lastName'] as String? ?? '',
+        fullName: json['fullName'] as String? ?? '',
+        email: json['email'] as String? ?? '',
+        role: roleFromApi(json['role'] as String?),
+        branch: json['branch'] as String?,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'firstName': firstName,
+        'lastName': lastName,
+        'fullName': fullName,
+        'email': email,
+        'role': role.name.toUpperCase(),
+        'branch': branch,
+      };
+}
+
 class Announcement {
   const Announcement({
     required this.tag,
@@ -31,6 +81,7 @@ class Announcement {
     this.excerpt = '',
     this.date = '',
     this.body = '',
+    this.flyer,
   });
 
   final String tag;
@@ -43,6 +94,10 @@ class Announcement {
   final String excerpt;
   final String date;
   final String body;
+
+  /// The event's printed flyer, when one exists — shown in place of the tag
+  /// pill so the announcement reads the same as it does on the website.
+  final String? flyer;
 }
 
 enum MediaKind { sermon, teaching, podcast }
@@ -138,6 +193,7 @@ class Branch {
     required this.address,
     this.phone,
     this.email,
+    this.photo,
   });
 
   final String name;
@@ -145,6 +201,19 @@ class Branch {
   final String address;
   final String? phone;
   final String? email;
+
+  /// The branch's resident pastor — shown as a small avatar on the card.
+  final String? photo;
+}
+
+/// One of the fifteen worker groups members can serve in — the website's
+/// "Get Involved" tabs, ported over with the same photo and copy.
+class WorkerGroup {
+  const WorkerGroup({required this.name, required this.photo, required this.blurb});
+
+  final String name;
+  final String photo;
+  final String blurb;
 }
 
 /// One of the ministry's weekly gatherings.

@@ -3,14 +3,21 @@ import 'package:flutter/material.dart';
 import '../../app/session.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
+import '../../services/auth_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/shells.dart';
 
 /// Creating an account. The home-branch selector matters more than it looks —
 /// it is what scopes a member to a branch for the rest of the app.
+///
+/// [role] comes from the "Continue as" screen. Leader and admin need an
+/// invite code — the server checks it against the InviteCode table, this
+/// screen just decides whether to ask for one.
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  const RegisterScreen({super.key, this.role = AppRole.member});
+
+  final AppRole role;
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -18,6 +25,25 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   String? _branch;
+  bool _loading = false;
+  bool _obscure = true;
+  String? _error;
+
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _inviteCodeController = TextEditingController();
+
+  bool get _needsInviteCode => widget.role != AppRole.member;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _inviteCodeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,40 +63,66 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              Eyebrow(widget.role.label),
+              const SizedBox(height: 6),
               Text('Create account', style: TpmText.display(27)),
               const SizedBox(height: 4),
               Text('Join the TPM family in a few steps.', style: TpmText.body(13.8)),
               const SizedBox(height: 22),
-              const TpmField(
+              TpmField(
                 label: 'Full name',
                 hint: 'Ama Boateng',
                 icon: Icons.person_outline_rounded,
+                controller: _nameController,
               ),
               const SizedBox(height: 14),
-              const TpmField(
+              TpmField(
                 label: 'Email',
                 hint: 'you@email.com',
                 icon: Icons.email_outlined,
+                controller: _emailController,
               ),
               const SizedBox(height: 14),
-              const TpmField(
+              TpmField(
                 label: 'Password',
                 hint: 'Create a password',
                 icon: Icons.lock_outline_rounded,
-                obscure: true,
+                obscure: _obscure,
+                controller: _passwordController,
+                trailing: GestureDetector(
+                  onTap: () => setState(() => _obscure = !_obscure),
+                  child: Icon(
+                    _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    size: 18,
+                    color: TpmColors.faint,
+                  ),
+                ),
               ),
+              if (_needsInviteCode) ...[
+                const SizedBox(height: 14),
+                TpmField(
+                  label: 'Invite code',
+                  hint: "Ask the pastor's office for yours",
+                  icon: Icons.vpn_key_outlined,
+                  controller: _inviteCodeController,
+                ),
+              ],
               const SizedBox(height: 14),
               _BranchPicker(
                 value: _branch,
                 onChanged: (b) => setState(() => _branch = b),
               ),
+              if (_error != null) ...[
+                const SizedBox(height: 14),
+                Text(
+                  _error!,
+                  style: TpmText.body(12.5, color: TpmColors.danger, weight: FontWeight.w600),
+                ),
+              ],
               const SizedBox(height: 24),
               TpmButton(
-                label: 'Create account',
-                onPressed: () {
-                  AppSession.of(context).signInAs(AppRole.member);
-                  MemberShell.enter(context);
-                },
+                label: _loading ? 'Creating account…' : 'Create account',
+                onPressed: _loading ? null : () => _register(context),
               ),
               const SizedBox(height: 16),
               Row(
@@ -99,6 +151,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _register(BuildContext context) async {
+    final fullName = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (fullName.isEmpty || email.isEmpty || password.isEmpty) {
+      setState(() => _error = 'Fill in your name, email and password.');
+      return;
+    }
+
+    final inviteCode = _inviteCodeController.text.trim();
+    if (_needsInviteCode && inviteCode.isEmpty) {
+      setState(() => _error = "Enter the invite code from the pastor's office.");
+      return;
+    }
+
+    // The API wants first/last separately; the form asks for one field.
+    final parts = fullName.split(RegExp(r'\s+'));
+    final firstName = parts.first;
+    final lastName = parts.length > 1 ? parts.sublist(1).join(' ') : parts.first;
+
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+
+    try {
+      final result = await const AuthApi().register(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password,
+        role: widget.role,
+        inviteCode: inviteCode,
+        branch: _branch ?? '',
+      );
+      if (!context.mounted) return;
+      await AppSession.of(context).signInWithAuth(result.token, result.user);
+      if (!context.mounted) return;
+      MemberShell.enter(context);
+    } on ApiException catch (e) {
+      setState(() {
+        _loading = false;
+        _error = e.message;
+      });
+    }
   }
 }
 
@@ -154,30 +254,53 @@ class _BranchPicker extends StatelessWidget {
   }
 
   Future<void> _pick(BuildContext context) async {
+    // Nine branches don't fit a fixed-height sheet on shorter phones —
+    // isScrollControlled plus a capped height lets the list scroll instead
+    // of overflowing past the bottom of the screen.
     final picked = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: TpmColors.surface,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
       builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 16),
-            Text('Choose your home branch', style: TpmText.display(17)),
-            const SizedBox(height: 8),
-            for (final branch in MockData.branchNames)
-              ListTile(
-                leading: const Icon(Icons.location_on_outlined, color: TpmColors.navy),
-                title: Text(
-                  branch,
-                  style: TpmText.body(14.5, color: TpmColors.ink, weight: FontWeight.w600),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.7,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 16),
+              Text('Choose your home branch', style: TpmText.display(17)),
+              const SizedBox(height: 8),
+              Flexible(
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    for (final branch in MockData.branchNames)
+                      ListTile(
+                        leading: const Icon(
+                          Icons.location_on_outlined,
+                          color: TpmColors.navy,
+                        ),
+                        title: Text(
+                          branch,
+                          style: TpmText.body(
+                            14.5,
+                            color: TpmColors.ink,
+                            weight: FontWeight.w600,
+                          ),
+                        ),
+                        onTap: () => Navigator.of(context).pop(branch),
+                      ),
+                  ],
                 ),
-                onTap: () => Navigator.of(context).pop(branch),
               ),
-            const SizedBox(height: 8),
-          ],
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
       ),
     );

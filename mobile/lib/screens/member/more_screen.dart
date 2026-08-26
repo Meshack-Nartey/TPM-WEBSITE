@@ -6,10 +6,12 @@ import '../../models/models.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/shells.dart';
+import '../auth/splash_screen.dart';
 import 'about_screen.dart';
 import 'announcements_screen.dart';
 import 'books_screen.dart';
 import 'branches_screen.dart';
+import 'missions_screen.dart';
 import 'profile_screen.dart';
 
 /// Secondary navigation, and the doorway to the work portal.
@@ -52,6 +54,13 @@ class MoreScreen extends StatelessWidget {
         TpmColors.tintBlue,
         TpmColors.navy,
         const BranchesScreen()
+      ),
+      (
+        'Missions',
+        Icons.public_rounded,
+        TpmColors.tintGreen,
+        TpmColors.green,
+        const MissionsScreen()
       ),
       (
         'My Profile',
@@ -140,7 +149,13 @@ class MoreScreen extends StatelessWidget {
           child: TextButton(
             onPressed: () {
               session.signOut();
-              Navigator.of(context).popUntil((route) => route.isFirst);
+              // MemberShell replaced the whole stack on entry (see
+              // MemberShell.enter), so it's the only route there is —
+              // popping does nothing. Replace the stack again instead.
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const SplashScreen()),
+                (route) => false,
+              );
             },
             child: Text(
               session.isSignedIn ? 'Sign out' : 'Sign in',

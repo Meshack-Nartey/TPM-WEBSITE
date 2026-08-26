@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../data/about_content.dart';
 import '../../data/mock_data.dart';
+import '../../models/models.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 
@@ -54,10 +57,19 @@ class AboutScreen extends StatelessWidget {
                     _Section(section: section),
                     const SizedBox(height: 26),
                   ],
+                  const Eyebrow('Get involved'),
+                  const SizedBox(height: 6),
+                  Text('Where you can serve', style: TpmText.display(21, height: 1.2)),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Fifteen worker groups keep TPM running — every believer has a place.',
+                    style: TpmText.body(13.5, color: TpmColors.muted, height: 1.6),
+                  ),
                 ],
               ),
             ),
           ),
+          SliverToBoxAdapter(child: _WorkerGroups()),
           const SliverToBoxAdapter(child: _Founder()),
           SliverToBoxAdapter(
             child: Padding(
@@ -354,6 +366,119 @@ class _Section extends StatelessWidget {
   }
 }
 
+/// Horizontal shelf of worker-group cards — the website's "Get Involved" tabs,
+/// photo and blurb, ported to a swipeable strip rather than a tab bar.
+class _WorkerGroups extends StatelessWidget {
+  const _WorkerGroups();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 210,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 22),
+        itemCount: MockData.workerGroups.length,
+        separatorBuilder: (context, i) => const SizedBox(width: 12),
+        itemBuilder: (context, i) => _WorkerGroupCard(group: MockData.workerGroups[i]),
+      ),
+    );
+  }
+}
+
+class _WorkerGroupCard extends StatelessWidget {
+  const _WorkerGroupCard({required this.group});
+
+  final WorkerGroup group;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 168,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: TpmColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: TpmShadows.card,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 110,
+            width: double.infinity,
+            child: Image.asset(group.photo, fit: BoxFit.cover),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  group.name,
+                  style: TpmText.display(13.5, height: 1.2),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  group.blurb,
+                  style: TpmText.body(11, color: TpmColors.muted, height: 1.45),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Cycles through the founder's other website photos, the way the site's own
+/// about page crossfades between them.
+class _FounderPhoto extends StatefulWidget {
+  const _FounderPhoto();
+
+  @override
+  State<_FounderPhoto> createState() => _FounderPhotoState();
+}
+
+class _FounderPhotoState extends State<_FounderPhoto> {
+  int _index = 0;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (!mounted) return;
+      setState(() => _index = (_index + 1) % AboutContent.founderGallery.length);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 700),
+      child: Image.asset(
+        AboutContent.founderGallery[_index],
+        key: ValueKey(_index),
+        fit: BoxFit.cover,
+        alignment: Alignment.topCenter,
+        semanticLabel: AboutContent.founderName,
+      ),
+    );
+  }
+}
+
 /// The founder, on the night palette — the one part of the member surface that
 /// is about a person, and the website gives it the same separation.
 class _Founder extends StatelessWidget {
@@ -388,12 +513,7 @@ class _Founder extends StatelessWidget {
                     ],
                   ),
                 ),
-                child: Image.asset(
-                  AboutContent.founderPhoto,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
-                  semanticLabel: AboutContent.founderName,
-                ),
+                child: const _FounderPhoto(),
               ),
               const SizedBox(width: 16),
               Expanded(

@@ -179,11 +179,27 @@ class _AnnouncementCarousel extends StatelessWidget {
             ),
             child: Stack(
               children: [
+                if (item.flyer != null)
+                  Positioned.fill(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(22),
+                      child: Image.asset(item.flyer!, fit: BoxFit.cover),
+                    ),
+                  ),
                 Positioned.fill(
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(22),
-                      gradient: TpmColors.goldGlow(opacity: 0.4),
+                      gradient: item.flyer == null
+                          ? TpmColors.goldGlow(opacity: 0.4)
+                          : LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black.withValues(alpha: 0.05),
+                                Colors.black.withValues(alpha: 0.75),
+                              ],
+                            ),
                     ),
                   ),
                 ),

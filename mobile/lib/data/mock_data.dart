@@ -51,6 +51,8 @@ class MockData {
     'Weekly Service': (TpmColors.navy, TpmColors.tintIndigo),
     'Upcoming Event': (TpmColors.goldDeep, TpmColors.tintAmber),
     'Prayer': (Color(0xFF0F766E), Color(0xFFCCFBF1)),
+    'Special Gathering': (TpmColors.violet, TpmColors.tintViolet),
+    'Sunday': (TpmColors.goldDeep, TpmColors.tintAmber),
   };
 
   static (Color, Color) tagColor(String tag) =>
@@ -72,32 +74,73 @@ class MockData {
   // ---- Announcements (from announcements.html) ----
   static const List<Announcement> carousel = [
     Announcement(
-      tag: 'Upcoming Event',
-      title: 'Holy Ghost Festival 2026',
-      meta: 'Date to be announced',
+      tag: 'Prayer',
+      title: '3 Days Fasting and Prayers',
+      meta: '26th–28th August · 6:00 AM–6:00 PM',
+      flyer: 'assets/flyers/fasting-and-prayers.png',
     ),
     Announcement(
-      tag: 'Weekly Service',
-      title: 'Love Therapy — Fridays',
-      meta: 'Every Friday · 6:00 PM',
+      tag: 'Special Gathering',
+      title: 'TPM Waits: Grace Over Grades',
+      meta: 'Fri 4th Sept 2026 · 6:00 PM–12:00 AM',
+      flyer: 'assets/flyers/tpm-waits.png',
     ),
     Announcement(
-      tag: 'Camp',
-      title: 'Sharpening Camp',
-      meta: 'Date to be announced',
+      tag: 'Conference',
+      title: 'Transformation Conference',
+      meta: 'Sat 5th Sept 2026 · 8:00 AM',
+      flyer: 'assets/flyers/tc.png',
+    ),
+    Announcement(
+      tag: 'Sunday',
+      title: 'Transformation Sunday',
+      meta: 'Sun 6th Sept 2026 · 8:30 AM',
+      flyer: 'assets/flyers/ts.png',
     ),
   ];
 
   static const List<Announcement> newsFeed = [
     Announcement(
-      tag: 'Upcoming Event',
-      title: 'Holy Ghost Festival 2026',
-      excerpt: 'The annual festival hosted by ${MockData.founder}.',
-      date: 'Date: TBA',
+      tag: 'Prayer',
+      title: '3 Days Fasting and Prayers',
+      excerpt: "Dubbed 'Great Favor' — with ${MockData.founder}.",
+      date: '26th–28th August · 6:00 AM–6:00 PM',
       body:
-          'The Holy Ghost Festival returns in 2026. Dates will be announced from the '
-          'pastor’s office — speak with your branch leader to register your interest and '
-          'arrange transport.',
+          'Three days set apart to seek God for great favor. Prayer meetings hold in '
+          'person, 6:00 AM to 6:00 PM daily, with an additional session on Google Meet '
+          'at 10:00 PM each night.',
+      flyer: 'assets/flyers/fasting-and-prayers.png',
+    ),
+    Announcement(
+      tag: 'Special Gathering',
+      title: 'TPM Waits: Grace Over Grades',
+      excerpt: 'An evening set apart for students, before the new term.',
+      date: 'Friday 4th September 2026 · 6:00 PM–12:00 AM',
+      body:
+          'TPM Waits returns with "Grace Over Grades" — a night of worship and prayer '
+          'for students heading back to school, trusting God for grace that outworks '
+          'effort.',
+      flyer: 'assets/flyers/tpm-waits.png',
+    ),
+    Announcement(
+      tag: 'Conference',
+      title: 'Transformation Conference',
+      excerpt: "Dubbed 'The Fullness of the Holy Spirit'.",
+      date: 'Saturday 5th September 2026 · 8:00 AM',
+      body:
+          'Our flagship gathering across all branches, themed "The Fullness of the Holy '
+          'Spirit" — a full day of worship, the Word, and impartation.',
+      flyer: 'assets/flyers/tc.png',
+    ),
+    Announcement(
+      tag: 'Sunday',
+      title: 'Transformation Sunday',
+      excerpt: "Dubbed 'The Kingdom Life'.",
+      date: 'Sunday 6th September 2026 · 8:30 AM',
+      body:
+          'Transformation Sunday closes out the weekend, themed "The Kingdom Life" — '
+          'come expecting a fresh encounter with God.',
+      flyer: 'assets/flyers/ts.png',
     ),
     Announcement(
       tag: 'Weekly Service',
@@ -109,15 +152,6 @@ class MockData {
           'who needs the family of God this week.',
     ),
     Announcement(
-      tag: 'Camp',
-      title: 'Sharpening Camp',
-      excerpt: 'A season set apart to be sharpened in the Word.',
-      date: 'Date: TBA',
-      body:
-          'Sharpening Camp is a set-apart season of teaching and consecration. Dates will '
-          'be announced; registration runs through your branch.',
-    ),
-    Announcement(
       tag: 'Prayer',
       title: 'Corporate Prayer Night',
       excerpt: 'The whole church on its knees together.',
@@ -125,15 +159,6 @@ class MockData {
       body:
           'Corporate Prayer Night is held on the last Friday of every month. Every branch '
           'joins for a night of intercession.',
-    ),
-    Announcement(
-      tag: 'Conference',
-      title: 'Transformation Conference',
-      excerpt: 'Our flagship gathering across all branches.',
-      date: 'Date: TBA',
-      body:
-          'The Transformation Conference brings every branch together. Dates will be '
-          'announced from the pastor’s office.',
     ),
   ];
 
@@ -279,15 +304,56 @@ class MockData {
       address: officeAddress,
       phone: officePhone,
       email: officeEmail,
+      photo: 'assets/branches/dayspring.jpg',
     ),
-    Branch(name: 'GLORYSPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'GOODNEWSSPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'FAITHSPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'LOYALTYSPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'GRACESPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'UNITYSPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'PEACESPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'SALVATIONSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(
+      name: 'GLORYSPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/gloryspring.webp',
+    ),
+    Branch(
+      name: 'GOODNEWSSPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/goodnewsspring.webp',
+    ),
+    Branch(
+      name: 'FAITHSPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/faithspring.webp',
+    ),
+    Branch(
+      name: 'LOYALTYSPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/loyaltyspring.jpg',
+    ),
+    Branch(
+      name: 'GRACESPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/gracespring.webp',
+    ),
+    Branch(
+      name: 'UNITYSPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/unityspring.webp',
+    ),
+    Branch(
+      name: 'PEACESPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/peacespring.webp',
+    ),
+    Branch(
+      name: 'SALVATIONSPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/salvationspring.webp',
+    ),
   ];
 
   static List<String> get branchNames => branches.map((b) => b.name).toList();
@@ -346,6 +412,111 @@ class MockData {
     'Literature',
     'Miscellaneous',
     "The Pastor's Office",
+  ];
+
+  /// The same worker groups, with the photo and blurb from the website's
+  /// "Get Involved" tabs — shown to members deciding where to serve.
+  static const List<WorkerGroup> workerGroups = [
+    WorkerGroup(
+      name: 'Communion Stewards',
+      photo: 'assets/team/communion-stewards.jpg',
+      blurb:
+          "Serves with deep reverence in the preparation and administration of the "
+          "Lord's Supper, upholding the sanctity of one of the Church's most sacred "
+          'practices.',
+    ),
+    WorkerGroup(
+      name: 'Ushering',
+      photo: 'assets/team/ushering.jpg',
+      blurb:
+          'The first point of contact for members and visitors — warm, professional, '
+          'and attentive to seating and order throughout the service.',
+    ),
+    WorkerGroup(
+      name: 'Protocol',
+      photo: 'assets/team/protocol.jpg',
+      blurb:
+          'Coordinates ministers, guests, and leadership at every special service and '
+          'programme, upholding the honour of God\'s house with precision.',
+    ),
+    WorkerGroup(
+      name: 'Hospitality and Welfare',
+      photo: 'assets/team/hospitality-welfare.jpg',
+      blurb:
+          'Cares for members and guests in need — welfare support, refreshments, and '
+          "visiting the sick — God's hands extended in practical love.",
+    ),
+    WorkerGroup(
+      name: 'Pure Word',
+      photo: 'assets/team/pure-word.jpg',
+      blurb:
+          'Supports discipleship and Bible study so sound doctrine stays the '
+          'foundation of everything at TPM.',
+    ),
+    WorkerGroup(
+      name: 'Media and Publicity',
+      photo: 'assets/team/media-publicity.jpg',
+      blurb:
+          'Handles the visual, digital, and communication needs of the ministry — '
+          'flyers, social media, recording, and content that carries the message '
+          'beyond the building.',
+    ),
+    WorkerGroup(
+      name: 'Music',
+      photo: 'assets/team/music.jpg',
+      blurb:
+          "Leads the congregation into God's presence through anointed worship — "
+          'instrumentalists, vocalists, and choir together.',
+    ),
+    WorkerGroup(
+      name: 'Theatre and Arts',
+      photo: 'assets/team/theatre-arts.jpg',
+      blurb:
+          'Brings biblical stories and spiritual truths to life through drama, dance, '
+          'and mime.',
+    ),
+    WorkerGroup(
+      name: 'Finance',
+      photo: 'assets/team/finance.jpg',
+      blurb:
+          "Faithful stewards of the church's resources — offerings, records, and "
+          'allocation, with integrity and transparency.',
+    ),
+    WorkerGroup(
+      name: 'Organizing',
+      photo: 'assets/team/organizing.jpg',
+      blurb:
+          'The backbone of every TPM event — planning, logistics, and scheduling so '
+          'each gathering runs with order and purpose.',
+    ),
+    WorkerGroup(
+      name: 'Sounds and Technical',
+      photo: 'assets/team/sounds-technical.jpg',
+      blurb:
+          'Runs the audio, lighting, projection, and livestream — mostly behind the '
+          'scenes, always critical to the service.',
+    ),
+    WorkerGroup(
+      name: 'Growth',
+      photo: 'assets/team/growth.jpg',
+      blurb:
+          'Follows up with new converts and connects visitors into the church '
+          'community, so no one falls through the cracks.',
+    ),
+    WorkerGroup(
+      name: 'Literature',
+      photo: 'assets/team/literature.jpg',
+      blurb:
+          "Distributes the ministry's books and devotionals — including "
+          "$founder's own — to members and the wider public.",
+    ),
+    WorkerGroup(
+      name: "The Pastor's Office",
+      photo: 'assets/team/pastors-office.jpg',
+      blurb:
+          "Provides administrative and pastoral support to TPM's leadership — "
+          'scheduling, correspondence, and day-to-day coordination.',
+    ),
   ];
 
   static const List<String> composeTags = [
