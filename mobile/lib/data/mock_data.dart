@@ -768,5 +768,16 @@ class MockData {
     'assets/photos/choir.jpg',
     'assets/photos/prayer.jpg',
     'assets/photos/community.jpg',
+    'assets/photos/gathering.jpg',
+    'assets/photos/growth.jpg',
+    'assets/photos/join-us.jpg',
+    'assets/photos/communion.jpg',
+    'assets/photos/about-1.jpg',
+    'assets/photos/hero1.jpg',
+    'assets/photos/hero2.jpg',
+    'assets/photos/hero3.jpg',
+    'assets/photos/hero4.jpg',
+    'assets/photos/hero5.jpg',
+    'assets/photos/hero6.jpg',
   ];
 }

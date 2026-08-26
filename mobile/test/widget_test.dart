@@ -31,7 +31,7 @@ void main() {
     await tester.pumpWidget(TpmApp(session: AppSession()));
     await tester.pump();
 
-    expect(find.text('Transformation'), findsOneWidget);
+    expect(find.text('TRANSFORMATION'), findsOneWidget);
     expect(find.text('TRANSFORMING LIVES'), findsOneWidget);
 
     await tester.tap(find.text('Tap to continue'));
