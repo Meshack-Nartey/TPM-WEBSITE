@@ -11,6 +11,7 @@ import 'package:tpm_mobile/screens/admin/approvals_screen.dart';
 import 'package:tpm_mobile/screens/admin/compose_screen.dart';
 import 'package:tpm_mobile/screens/admin/manage_lists_screen.dart';
 import 'package:tpm_mobile/screens/auth/biometric_screen.dart';
+import 'package:tpm_mobile/screens/auth/forgot_password_screen.dart';
 import 'package:tpm_mobile/screens/auth/register_screen.dart';
 import 'package:tpm_mobile/screens/auth/sign_in_screen.dart';
 import 'package:tpm_mobile/screens/auth/splash_screen.dart';
@@ -31,6 +32,7 @@ import 'package:tpm_mobile/screens/member/events_screen.dart';
 import 'package:tpm_mobile/screens/member/give_screen.dart';
 import 'package:tpm_mobile/screens/member/home_screen.dart';
 import 'package:tpm_mobile/screens/member/media_screen.dart';
+import 'package:tpm_mobile/screens/member/missions_screen.dart';
 import 'package:tpm_mobile/screens/member/more_screen.dart';
 import 'package:tpm_mobile/screens/member/player_screen.dart';
 import 'package:tpm_mobile/screens/member/profile_screen.dart';
@@ -88,6 +90,11 @@ void main() {
 
     testWidgets('sign in', (t) async {
       await pumpScreen(t, const SignInScreen(), wrapInScaffold: false);
+      expect(t.takeException(), isNull);
+    });
+
+    testWidgets('forgot password', (t) async {
+      await pumpScreen(t, const ForgotPasswordScreen(), wrapInScaffold: false);
       expect(t.takeException(), isNull);
     });
 
@@ -181,6 +188,11 @@ void main() {
 
     testWidgets('about', (t) async {
       await pumpScreen(t, const AboutScreen(), wrapInScaffold: false);
+      expect(t.takeException(), isNull);
+    });
+
+    testWidgets('missions', (t) async {
+      await pumpScreen(t, const MissionsScreen(), wrapInScaffold: false);
       expect(t.takeException(), isNull);
     });
 

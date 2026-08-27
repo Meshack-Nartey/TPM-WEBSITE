@@ -16,7 +16,7 @@ class ManageListsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final body = ListView(
-      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      padding: const EdgeInsets.only(top: 20, bottom: 24),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

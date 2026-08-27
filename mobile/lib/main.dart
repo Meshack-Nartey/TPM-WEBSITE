@@ -5,24 +5,30 @@ import 'app/session.dart';
 import 'screens/auth/splash_screen.dart';
 import 'theme/tpm_theme.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  runApp(const TpmApp());
+
+  final session = AppSession();
+  await session.restore();
+
+  runApp(TpmApp(session: session));
 }
 
 class TpmApp extends StatefulWidget {
-  const TpmApp({super.key});
+  const TpmApp({super.key, required this.session});
+
+  final AppSession session;
 
   @override
   State<TpmApp> createState() => _TpmAppState();
 }
 
 class _TpmAppState extends State<TpmApp> {
-  final _session = AppSession();
+  late final _session = widget.session;
 
   @override
   void dispose() {

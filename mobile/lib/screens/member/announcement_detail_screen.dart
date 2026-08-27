@@ -24,6 +24,13 @@ class AnnouncementDetailScreen extends StatelessWidget {
             children: [
               CircleBackButton(size: 38, onTap: () => Navigator.of(context).pop()),
               const SizedBox(height: 16),
+              if (item.flyer != null) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Image.asset(item.flyer!, fit: BoxFit.cover),
+                ),
+                const SizedBox(height: 18),
+              ],
               Pill(item.tag, foreground: fg, background: bg),
               const SizedBox(height: 12),
               Text(item.title, style: TpmText.display(27, height: 1.2)),

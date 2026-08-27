@@ -537,6 +537,9 @@ section {
     height: 100%;
     background-size: cover;
     background-position: center 30%;
+    /* Softened and darkened so the flyer in front reads as the focal point */
+    filter: blur(3px) brightness(0.55);
+    transform: scale(1.03);
 }
 
 /* Hero Slide Backgrounds */
@@ -583,21 +586,24 @@ section {
    so they scale together instead of being independently anchored. */
 .hero-focus {
     position: absolute;
-    top: 50%;
+    top: 54%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    width: min(400px, 86vw);
-    height: min(85vh, 720px);
-    transition: height 0.3s ease;
+    gap: 36px;
+    width: min(500px, 90vw);
+    max-height: 92vh;
+    transition: gap 0.3s ease;
 }
 
-.hero-focus.flyer-closed {
-    height: auto;
+@media (min-width: 1024px) {
+    .hero-focus {
+        width: min(560px, 40vw);
+        gap: 42px;
+    }
 }
 
 /* Hero Content */
@@ -870,9 +876,18 @@ section {
 .hero-announcements {
     display: flex;
     flex-direction: column;
-    width: 100%;
-    flex: 1 1 auto;
-    min-height: 0;
+    /* A4 portrait proportions (210:297) so the flyer reads like a printed
+       poster; height drives the size, width follows automatically. */
+    height: min(58vh, 660px);
+    width: auto;
+    aspect-ratio: 210 / 297;
+    max-width: 100%;
+}
+
+@media (min-width: 1024px) {
+    .hero-announcements {
+        height: min(66vh, 760px);
+    }
 }
 
 .announce-strip {

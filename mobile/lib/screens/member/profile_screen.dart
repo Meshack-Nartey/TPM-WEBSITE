@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../app/session.dart';
 import '../../data/mock_data.dart';
+import '../../models/models.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 
@@ -17,8 +19,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late final List<bool> _notifications =
-      MockData.notificationSettings.map((n) => n.enabled).toList();
+  late final List<bool> _notifications = MockData.notificationSettings
+      .map((n) => n.enabled)
+      .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: TpmColors.canvas,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(top: 12, bottom: 24),
+          padding: const EdgeInsets.only(top: 20, bottom: 24),
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -118,6 +121,20 @@ class _IdentityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = AppSession.of(context).user;
+
+    // A real sign-in carries the name and branch; the guest/preview paths
+    // (no real account) fall back to the design board's sample member.
+    final fullName = user?.fullName.trim().isNotEmpty == true
+        ? user!.fullName
+        : MockData.fullName;
+    final branch = user?.branch?.trim().isNotEmpty == true
+        ? user!.branch!
+        : MockData.homeBranch;
+    final roleLabel = user?.role.label ?? AppSession.of(context).role.label;
+    final rawInitials = initialsOf(fullName);
+    final initials = rawInitials.isEmpty ? MockData.initials : rawInitials;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 22),
       child: TpmCard(
@@ -134,8 +151,12 @@ class _IdentityCard extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Text(
-                MockData.initials,
-                style: TpmText.body(19, color: Colors.white, weight: FontWeight.w700),
+                initials,
+                style: TpmText.body(
+                  19,
+                  color: Colors.white,
+                  weight: FontWeight.w700,
+                ),
               ),
             ),
             const SizedBox(width: 14),
@@ -143,11 +164,8 @@ class _IdentityCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(MockData.fullName, style: TpmText.display(19)),
-                  Text(
-                    'Member · ${MockData.homeBranch}',
-                    style: TpmText.body(12.2),
-                  ),
+                  Text(fullName, style: TpmText.display(19)),
+                  Text('$roleLabel · $branch', style: TpmText.body(12.2)),
                 ],
               ),
             ),
@@ -183,7 +201,10 @@ class _DetailsCard extends StatelessWidget {
             ),
             for (final field in MockData.profileFields)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 11,
+                ),
                 decoration: const BoxDecoration(
                   border: Border(top: BorderSide(color: TpmColors.divider)),
                 ),
@@ -219,7 +240,11 @@ class _DetailsCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.edit_outlined, size: 15, color: TpmColors.navy),
+                      const Icon(
+                        Icons.edit_outlined,
+                        size: 15,
+                        color: TpmColors.navy,
+                      ),
                       const SizedBox(width: 7),
                       Flexible(
                         child: Text(
@@ -271,7 +296,10 @@ class _NotificationsCard extends StatelessWidget {
             ),
             for (var i = 0; i < MockData.notificationSettings.length; i++)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
                 decoration: const BoxDecoration(
                   border: Border(top: BorderSide(color: TpmColors.divider)),
                 ),

@@ -16,6 +16,10 @@ dependencies:
   google_fonts: ^6.2.1
   # Date/number formatting for the service countdown and GHS amounts.
   intl: ^0.20.2
+  # Talks to the TPM API for auth.
+  http: ^1.2.2
+  # Persists the signed-in session's JWT across app restarts.
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:
@@ -32,3 +36,7 @@ flutter:
     - assets/books/
     - assets/give/
     - assets/leaders/
+    - assets/team/
+    - assets/flyers/
+    - assets/missions/
+    - assets/branches/

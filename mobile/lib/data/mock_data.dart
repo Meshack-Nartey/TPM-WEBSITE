@@ -42,7 +42,8 @@ class MockData {
     TpmColors.blue,
   ];
 
-  static Color avatarFor(int index) => avatarPalette[index % avatarPalette.length];
+  static Color avatarFor(int index) =>
+      avatarPalette[index % avatarPalette.length];
 
   /// Tag colouring for announcements — foreground then background.
   static const Map<String, (Color, Color)> tagColors = {
@@ -51,6 +52,8 @@ class MockData {
     'Weekly Service': (TpmColors.navy, TpmColors.tintIndigo),
     'Upcoming Event': (TpmColors.goldDeep, TpmColors.tintAmber),
     'Prayer': (Color(0xFF0F766E), Color(0xFFCCFBF1)),
+    'Special Gathering': (TpmColors.violet, TpmColors.tintViolet),
+    'Sunday': (TpmColors.goldDeep, TpmColors.tintAmber),
   };
 
   static (Color, Color) tagColor(String tag) =>
@@ -58,9 +61,21 @@ class MockData {
 
   // ---- Services (from the website) ----
   static const List<ServiceTime> serviceTimes = [
-    ServiceTime(name: '1st Service', day: 'Sundays', time: '8:00 AM – 10:00 AM'),
-    ServiceTime(name: '2nd Service', day: 'Sundays', time: '10:30 AM – 12:30 PM'),
-    ServiceTime(name: 'Evening Feast', day: 'Sundays', time: '4:00 PM – 7:00 PM'),
+    ServiceTime(
+      name: '1st Service',
+      day: 'Sundays',
+      time: '8:00 AM – 10:00 AM',
+    ),
+    ServiceTime(
+      name: '2nd Service',
+      day: 'Sundays',
+      time: '10:30 AM – 12:30 PM',
+    ),
+    ServiceTime(
+      name: 'Evening Feast',
+      day: 'Sundays',
+      time: '4:00 PM – 7:00 PM',
+    ),
     ServiceTime(name: 'Love Therapy', day: 'Fridays', time: '6:00 PM'),
   ];
 
@@ -70,34 +85,57 @@ class MockData {
   static const String serviceSummary = 'Sun 8:00 AM & 10:30 AM · Fri 6:00 PM';
 
   // ---- Announcements (from announcements.html) ----
-  static const List<Announcement> carousel = [
-    Announcement(
-      tag: 'Upcoming Event',
-      title: 'Holy Ghost Festival 2026',
-      meta: 'Date to be announced',
-    ),
-    Announcement(
-      tag: 'Weekly Service',
-      title: 'Love Therapy — Fridays',
-      meta: 'Every Friday · 6:00 PM',
-    ),
-    Announcement(
-      tag: 'Camp',
-      title: 'Sharpening Camp',
-      meta: 'Date to be announced',
-    ),
-  ];
+  //
+  // The home carousel used to be its own separate, sparser list — cards had
+  // a title but no body, so tapping one from Home opened a detail screen
+  // with nothing to read. `carousel` is now just the flyer-backed slice of
+  // `newsFeed`, so every announcement has the same real description
+  // wherever you tap into it from.
+  static List<Announcement> get carousel =>
+      newsFeed.where((a) => a.flyer != null).toList();
 
   static const List<Announcement> newsFeed = [
     Announcement(
-      tag: 'Upcoming Event',
-      title: 'Holy Ghost Festival 2026',
-      excerpt: 'The annual festival hosted by ${MockData.founder}.',
-      date: 'Date: TBA',
+      tag: 'Prayer',
+      title: '3 Days Fasting and Prayers',
+      excerpt: "Dubbed 'Great Favor' — with ${MockData.founder}.",
+      date: '26th–28th August · 6:00 AM–6:00 PM',
       body:
-          'The Holy Ghost Festival returns in 2026. Dates will be announced from the '
-          'pastor’s office — speak with your branch leader to register your interest and '
-          'arrange transport.',
+          'Three days set apart to seek God for great favor. Prayer meetings hold in '
+          'person, 6:00 AM to 6:00 PM daily, with an additional session on Google Meet '
+          'at 10:00 PM each night.',
+      flyer: 'assets/flyers/fasting-and-prayers.png',
+    ),
+    Announcement(
+      tag: 'Special Gathering',
+      title: 'TPM Waits: Grace Over Grades',
+      excerpt: 'An evening set apart for students, before the new term.',
+      date: 'Friday 4th September 2026 · 6:00 PM–12:00 AM',
+      body:
+          'TPM Waits returns with "Grace Over Grades" — a night of worship and prayer '
+          'for students heading back to school, trusting God for grace that outworks '
+          'effort.',
+      flyer: 'assets/flyers/tpm-waits.png',
+    ),
+    Announcement(
+      tag: 'Conference',
+      title: 'Transformation Conference',
+      excerpt: "Dubbed 'The Fullness of the Holy Spirit'.",
+      date: 'Saturday 5th September 2026 · 8:00 AM',
+      body:
+          'Our flagship gathering across all branches, themed "The Fullness of the Holy '
+          'Spirit" — a full day of worship, the Word, and impartation.',
+      flyer: 'assets/flyers/tc.png',
+    ),
+    Announcement(
+      tag: 'Sunday',
+      title: 'Transformation Sunday',
+      excerpt: "Dubbed 'The Kingdom Life'.",
+      date: 'Sunday 6th September 2026 · 8:30 AM',
+      body:
+          'Transformation Sunday closes out the weekend, themed "The Kingdom Life" — '
+          'come expecting a fresh encounter with God.',
+      flyer: 'assets/flyers/ts.png',
     ),
     Announcement(
       tag: 'Weekly Service',
@@ -109,15 +147,6 @@ class MockData {
           'who needs the family of God this week.',
     ),
     Announcement(
-      tag: 'Camp',
-      title: 'Sharpening Camp',
-      excerpt: 'A season set apart to be sharpened in the Word.',
-      date: 'Date: TBA',
-      body:
-          'Sharpening Camp is a set-apart season of teaching and consecration. Dates will '
-          'be announced; registration runs through your branch.',
-    ),
-    Announcement(
       tag: 'Prayer',
       title: 'Corporate Prayer Night',
       excerpt: 'The whole church on its knees together.',
@@ -125,15 +154,6 @@ class MockData {
       body:
           'Corporate Prayer Night is held on the last Friday of every month. Every branch '
           'joins for a night of intercession.',
-    ),
-    Announcement(
-      tag: 'Conference',
-      title: 'Transformation Conference',
-      excerpt: 'Our flagship gathering across all branches.',
-      date: 'Date: TBA',
-      body:
-          'The Transformation Conference brings every branch together. Dates will be '
-          'announced from the pastor’s office.',
     ),
   ];
 
@@ -146,7 +166,12 @@ class MockData {
     downloaded: true,
   );
 
-  static const List<String> mediaFilters = ['All', 'Sermons', 'Teachings', 'Podcasts'];
+  static const List<String> mediaFilters = [
+    'All',
+    'Sermons',
+    'Teachings',
+    'Podcasts',
+  ];
 
   static const List<MediaItem> media = [
     MediaItem(
@@ -279,15 +304,56 @@ class MockData {
       address: officeAddress,
       phone: officePhone,
       email: officeEmail,
+      photo: 'assets/branches/dayspring.jpg',
     ),
-    Branch(name: 'GLORYSPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'GOODNEWSSPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'FAITHSPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'LOYALTYSPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'GRACESPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'UNITYSPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'PEACESPRING', region: 'Branch', address: 'Kumasi'),
-    Branch(name: 'SALVATIONSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(
+      name: 'GLORYSPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/gloryspring.webp',
+    ),
+    Branch(
+      name: 'GOODNEWSSPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/goodnewsspring.webp',
+    ),
+    Branch(
+      name: 'FAITHSPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/faithspring.webp',
+    ),
+    Branch(
+      name: 'LOYALTYSPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/loyaltyspring.jpg',
+    ),
+    Branch(
+      name: 'GRACESPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/gracespring.webp',
+    ),
+    Branch(
+      name: 'UNITYSPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/unityspring.webp',
+    ),
+    Branch(
+      name: 'PEACESPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/peacespring.webp',
+    ),
+    Branch(
+      name: 'SALVATIONSPRING',
+      region: 'Branch',
+      address: 'Kumasi',
+      photo: 'assets/branches/salvationspring.webp',
+    ),
   ];
 
   static List<String> get branchNames => branches.map((b) => b.name).toList();
@@ -346,6 +412,111 @@ class MockData {
     'Literature',
     'Miscellaneous',
     "The Pastor's Office",
+  ];
+
+  /// The same worker groups, with the photo and blurb from the website's
+  /// "Get Involved" tabs — shown to members deciding where to serve.
+  static const List<WorkerGroup> workerGroups = [
+    WorkerGroup(
+      name: 'Communion Stewards',
+      photo: 'assets/team/communion-stewards.jpg',
+      blurb:
+          "Serves with deep reverence in the preparation and administration of the "
+          "Lord's Supper, upholding the sanctity of one of the Church's most sacred "
+          'practices.',
+    ),
+    WorkerGroup(
+      name: 'Ushering',
+      photo: 'assets/team/ushering.jpg',
+      blurb:
+          'The first point of contact for members and visitors — warm, professional, '
+          'and attentive to seating and order throughout the service.',
+    ),
+    WorkerGroup(
+      name: 'Protocol',
+      photo: 'assets/team/protocol.jpg',
+      blurb:
+          'Coordinates ministers, guests, and leadership at every special service and '
+          'programme, upholding the honour of God\'s house with precision.',
+    ),
+    WorkerGroup(
+      name: 'Hospitality and Welfare',
+      photo: 'assets/team/hospitality-welfare.jpg',
+      blurb:
+          'Cares for members and guests in need — welfare support, refreshments, and '
+          "visiting the sick — God's hands extended in practical love.",
+    ),
+    WorkerGroup(
+      name: 'Pure Word',
+      photo: 'assets/team/pure-word.jpg',
+      blurb:
+          'Supports discipleship and Bible study so sound doctrine stays the '
+          'foundation of everything at TPM.',
+    ),
+    WorkerGroup(
+      name: 'Media and Publicity',
+      photo: 'assets/team/media-publicity.jpg',
+      blurb:
+          'Handles the visual, digital, and communication needs of the ministry — '
+          'flyers, social media, recording, and content that carries the message '
+          'beyond the building.',
+    ),
+    WorkerGroup(
+      name: 'Music',
+      photo: 'assets/team/music.jpg',
+      blurb:
+          "Leads the congregation into God's presence through anointed worship — "
+          'instrumentalists, vocalists, and choir together.',
+    ),
+    WorkerGroup(
+      name: 'Theatre and Arts',
+      photo: 'assets/team/theatre-arts.jpg',
+      blurb:
+          'Brings biblical stories and spiritual truths to life through drama, dance, '
+          'and mime.',
+    ),
+    WorkerGroup(
+      name: 'Finance',
+      photo: 'assets/team/finance.jpg',
+      blurb:
+          "Faithful stewards of the church's resources — offerings, records, and "
+          'allocation, with integrity and transparency.',
+    ),
+    WorkerGroup(
+      name: 'Organizing',
+      photo: 'assets/team/organizing.jpg',
+      blurb:
+          'The backbone of every TPM event — planning, logistics, and scheduling so '
+          'each gathering runs with order and purpose.',
+    ),
+    WorkerGroup(
+      name: 'Sounds and Technical',
+      photo: 'assets/team/sounds-technical.jpg',
+      blurb:
+          'Runs the audio, lighting, projection, and livestream — mostly behind the '
+          'scenes, always critical to the service.',
+    ),
+    WorkerGroup(
+      name: 'Growth',
+      photo: 'assets/team/growth.jpg',
+      blurb:
+          'Follows up with new converts and connects visitors into the church '
+          'community, so no one falls through the cracks.',
+    ),
+    WorkerGroup(
+      name: 'Literature',
+      photo: 'assets/team/literature.jpg',
+      blurb:
+          "Distributes the ministry's books and devotionals — including "
+          "$founder's own — to members and the wider public.",
+    ),
+    WorkerGroup(
+      name: "The Pastor's Office",
+      photo: 'assets/team/pastors-office.jpg',
+      blurb:
+          "Provides administrative and pastoral support to TPM's leadership — "
+          'scheduling, correspondence, and day-to-day coordination.',
+    ),
   ];
 
   static const List<String> composeTags = [
@@ -414,30 +585,87 @@ class MockData {
   static const String leaderBranch = 'DAYSPRING';
 
   static const List<StatTile> leaderStats = [
-    StatTile(label: 'Attendance', value: '238', icon: Icons.groups_rounded, trend: '+9%'),
-    StatTile(label: 'Tithe (GHS)', value: '18.4k', icon: Icons.savings_rounded, trend: '+4%'),
-    StatTile(label: 'Souls won', value: '12', icon: Icons.volunteer_activism_rounded, trend: '+3'),
-    StatTile(label: 'Members', value: '486', icon: Icons.contacts_rounded, trend: '+5'),
+    StatTile(
+      label: 'Attendance',
+      value: '238',
+      icon: Icons.groups_rounded,
+      trend: '+9%',
+    ),
+    StatTile(
+      label: 'Tithe (GHS)',
+      value: '18.4k',
+      icon: Icons.savings_rounded,
+      trend: '+4%',
+    ),
+    StatTile(
+      label: 'Souls won',
+      value: '12',
+      icon: Icons.volunteer_activism_rounded,
+      trend: '+3',
+    ),
+    StatTile(
+      label: 'Members',
+      value: '486',
+      icon: Icons.contacts_rounded,
+      trend: '+5',
+    ),
   ];
 
-  static const List<int> attendanceTrend = [190, 200, 196, 218, 208, 230, 232, 238];
+  static const List<int> attendanceTrend = [
+    190,
+    200,
+    196,
+    218,
+    208,
+    230,
+    232,
+    238,
+  ];
 
   static const List<double> titheWeeks = [10.4, 12.8, 9.6, 15.6, 14.0, 18.4];
   static const double titheAxisMax = 20.0;
   static const List<String> weekLabels = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'];
 
   static const List<ReportField> reportFields = [
-    ReportField(label: 'Total attendance', hint: 'e.g. 238', icon: Icons.groups_rounded),
-    ReportField(label: 'Tithe collected (GHS)', hint: 'e.g. 18400', icon: Icons.savings_rounded),
-    ReportField(label: 'Souls won', hint: 'e.g. 12', icon: Icons.volunteer_activism_rounded),
-    ReportField(label: 'First-time visitors', hint: 'e.g. 9', icon: Icons.person_add_rounded),
+    ReportField(
+      label: 'Total attendance',
+      hint: 'e.g. 238',
+      icon: Icons.groups_rounded,
+    ),
+    ReportField(
+      label: 'Tithe collected (GHS)',
+      hint: 'e.g. 18400',
+      icon: Icons.savings_rounded,
+    ),
+    ReportField(
+      label: 'Souls won',
+      hint: 'e.g. 12',
+      icon: Icons.volunteer_activism_rounded,
+    ),
+    ReportField(
+      label: 'First-time visitors',
+      hint: 'e.g. 9',
+      icon: Icons.person_add_rounded,
+    ),
   ];
 
   static const List<ReportField> newMemberFields = [
-    ReportField(label: 'Full name', hint: 'e.g. Kwame Asante', icon: Icons.person_rounded),
+    ReportField(
+      label: 'Full name',
+      hint: 'e.g. Kwame Asante',
+      icon: Icons.person_rounded,
+    ),
     ReportField(label: 'Phone', hint: '+233 …', icon: Icons.phone_rounded),
-    ReportField(label: 'Email (optional)', hint: 'name@email.com', icon: Icons.email_rounded),
-    ReportField(label: 'Worker group', hint: 'e.g. Ushering, Music', icon: Icons.diversity_3_rounded),
+    ReportField(
+      label: 'Email (optional)',
+      hint: 'name@email.com',
+      icon: Icons.email_rounded,
+    ),
+    ReportField(
+      label: 'Worker group',
+      hint: 'e.g. Ushering, Music',
+      icon: Icons.diversity_3_rounded,
+    ),
   ];
 
   // ---- Registry (invented people; the real system seeds none) ----
@@ -501,14 +729,24 @@ class MockData {
 
   // ---- Administrator (figures invented; branch names real) ----
   static const List<StatTile> adminStats = [
-    StatTile(label: 'Total members', value: '6,240', icon: Icons.groups_rounded, trend: '+3%'),
+    StatTile(
+      label: 'Total members',
+      value: '6,240',
+      icon: Icons.groups_rounded,
+      trend: '+3%',
+    ),
     StatTile(
       label: 'Weekly attendance',
       value: '3,180',
       icon: Icons.self_improvement_rounded,
       trend: '+6%',
     ),
-    StatTile(label: 'Tithe (GHS)', value: '242k', icon: Icons.savings_rounded, trend: '+5%'),
+    StatTile(
+      label: 'Tithe (GHS)',
+      value: '242k',
+      icon: Icons.savings_rounded,
+      trend: '+5%',
+    ),
     StatTile(
       label: 'Souls won (mo)',
       value: '146',
@@ -581,13 +819,26 @@ class MockData {
   ];
 
   static const List<ManageListEntry> manageLists = [
-    ManageListEntry(label: 'Leaders directory', count: 'Pastors & branch leaders',
-        icon: Icons.badge_rounded),
-    ManageListEntry(label: 'Branches', count: '9 branches', icon: Icons.location_on_rounded),
-    ManageListEntry(label: 'Worker groups', count: '15 departments',
-        icon: Icons.diversity_3_rounded),
-    ManageListEntry(label: 'Fellowships & Basenias', count: '6 fellowships · 8 basenias',
-        icon: Icons.groups_2_rounded),
+    ManageListEntry(
+      label: 'Leaders directory',
+      count: 'Pastors & branch leaders',
+      icon: Icons.badge_rounded,
+    ),
+    ManageListEntry(
+      label: 'Branches',
+      count: '9 branches',
+      icon: Icons.location_on_rounded,
+    ),
+    ManageListEntry(
+      label: 'Worker groups',
+      count: '15 departments',
+      icon: Icons.diversity_3_rounded,
+    ),
+    ManageListEntry(
+      label: 'Fellowships & Basenias',
+      count: '6 fellowships · 8 basenias',
+      icon: Icons.groups_2_rounded,
+    ),
   ];
 
   /// Splash collage — five real photographs behind the logo lockup.
@@ -597,5 +848,16 @@ class MockData {
     'assets/photos/choir.jpg',
     'assets/photos/prayer.jpg',
     'assets/photos/community.jpg',
+    'assets/photos/gathering.jpg',
+    'assets/photos/growth.jpg',
+    'assets/photos/join-us.jpg',
+    'assets/photos/communion.jpg',
+    'assets/photos/about-1.jpg',
+    'assets/photos/hero1.jpg',
+    'assets/photos/hero2.jpg',
+    'assets/photos/hero3.jpg',
+    'assets/photos/hero4.jpg',
+    'assets/photos/hero5.jpg',
+    'assets/photos/hero6.jpg',
   ];
 }

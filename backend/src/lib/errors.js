@@ -11,8 +11,8 @@ export class ApiError extends Error {
 export const badRequest = (msg, details) => new ApiError(400, msg, details);
 export const unauthorized = (msg = 'Not authenticated') => new ApiError(401, msg);
 export const forbidden = (msg = 'Not authorized') => new ApiError(403, msg);
-export const notFound = (msg = 'Not found') => new ApiError(404, msg);
-export const conflict = (msg = 'Already exists') => new ApiError(409, msg);
+export const notFound = (msg = 'Not found', details) => new ApiError(404, msg, details);
+export const conflict = (msg = 'Already exists', details) => new ApiError(409, msg, details);
 
 // Wrap async route handlers so thrown/rejected errors reach the error middleware.
 export const asyncHandler = (fn) => (req, res, next) =>

@@ -22,7 +22,7 @@ class LeaderDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      padding: const EdgeInsets.only(top: 20, bottom: 24),
       children: [
         const _PortalHeader(
           eyebrow: 'My Ministry · Leader',

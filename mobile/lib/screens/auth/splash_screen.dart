@@ -2,12 +2,15 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../../app/session.dart';
 import '../../data/mock_data.dart';
 import '../../theme/tpm_theme.dart';
+import '../../widgets/shells.dart';
 import 'welcome_screen.dart';
 
-/// First run. A collage of real congregation photography behind the logo
-/// lockup, pulled far enough back by the scrim that the gold reads cleanly.
+/// First run. A 4x4 collage of real congregation photography, shown as-is —
+/// no scrim over it — with the logo lockup on a small frosted panel so it
+/// stays legible over whatever photo lands behind it.
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
@@ -17,105 +20,134 @@ class SplashScreen extends StatelessWidget {
       backgroundColor: TpmColors.deepNavy,
       body: GestureDetector(
         onTap: () => _continue(context),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            const _PhotoCollage(),
-            // Scrim: navy at the top, blue through the middle, dark at the base.
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  stops: const [0, 0.55, 1],
-                  colors: [
-                    TpmColors.deepNavy.withValues(alpha: 0.72),
-                    TpmColors.navy.withValues(alpha: 0.62),
-                    TpmColors.deepNavy.withValues(alpha: 0.86),
-                  ],
+        // The collage shouldn't run under the status bar or the bottom
+        // gesture area — SafeArea keeps it clear of both.
+        child: SafeArea(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              const _PhotoCollage(),
+              const _LogoLockup(),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 40,
+                child: Center(
+                  child: _TapToContinue(onTap: () => _continue(context)),
                 ),
               ),
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: RadialGradient(
-                  center: const Alignment(0, -0.16),
-                  radius: 0.75,
-                  colors: [
-                    TpmColors.gold.withValues(alpha: 0.22),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-            const _LogoLockup(),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 70,
-              child: Center(
-                child: _TapToContinue(onTap: () => _continue(context)),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   void _continue(BuildContext context) {
+    // A restored session (see AppSession.restore, called at app start) skips
+    // straight past sign-in rather than making someone log in every launch.
+    if (AppSession.of(context).isSignedIn) {
+      MemberShell.enter(context);
+      return;
+    }
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => const WelcomeScreen()),
     );
   }
 }
 
-class _PhotoCollage extends StatelessWidget {
+/// A plain 4x4 grid — sixteen photos, no scrim, no cropping tricks — that
+/// fades in one column at a time, left to right (top and bottom of a column
+/// together, rather than the bottom rows waiting on the top ones), then
+/// holds and repeats the
+/// whole wave every 4 seconds for as long as the splash screen is up.
+class _PhotoCollage extends StatefulWidget {
   const _PhotoCollage();
+
+  @override
+  State<_PhotoCollage> createState() => _PhotoCollageState();
+}
+
+class _PhotoCollageState extends State<_PhotoCollage>
+    with SingleTickerProviderStateMixin {
+  // Tiles stagger by column, not by tile — so a column's top and bottom
+  // photo start fading in together instead of the bottom rows waiting for
+  // every row above them to finish first.
+  static const _columnCount = 4;
+
+  // The wave itself only fills the first 60% of each 2s cycle — the rest is
+  // a hold at full opacity before it resets and plays again.
+  static const _activeFraction = 0.6;
+  static const _tileSpan = 0.35;
+
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 4),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  /// Each column gets its own slice of the controller's 0–1 span, so columns
+  /// fade in left to right rather than all together — and every tile in a
+  /// column shares that same slice, so it fades in as one unit.
+  Animation<double> _fadeForColumn(int col) {
+    final step = (_activeFraction - _tileSpan) / (_columnCount - 1);
+    final start = col * step;
+    return CurvedAnimation(
+      parent: _controller,
+      curve: Interval(start, start + _tileSpan, curve: Curves.easeOut),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final photos = MockData.splashCollage;
     return Column(
       children: [
-        Expanded(
-          flex: 11,
-          child: Row(
-            children: [
-              Expanded(child: _Tile(photos[0])),
-              const SizedBox(width: 6),
-              Expanded(child: _Tile(photos[1])),
-            ],
+        for (var row = 0; row < 4; row++) ...[
+          if (row > 0) const SizedBox(height: 4),
+          Expanded(
+            child: Row(
+              children: [
+                for (var col = 0; col < 4; col++) ...[
+                  if (col > 0) const SizedBox(width: 4),
+                  Expanded(
+                    child: _Tile(
+                      photos[row * 4 + col],
+                      fade: _fadeForColumn(col),
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 6),
-        Expanded(flex: 9, child: _Tile(photos[2])),
-        const SizedBox(height: 6),
-        Expanded(
-          flex: 10,
-          child: Row(
-            children: [
-              Expanded(child: _Tile(photos[3])),
-              const SizedBox(width: 6),
-              Expanded(child: _Tile(photos[4])),
-            ],
-          ),
-        ),
+        ],
       ],
     );
   }
 }
 
 class _Tile extends StatelessWidget {
-  const _Tile(this.asset);
+  const _Tile(this.asset, {required this.fade});
 
   final String asset;
+  final Animation<double> fade;
 
   @override
-  Widget build(BuildContext context) => SizedBox.expand(
-        // Both axes must be constrained, or the image keeps its own aspect
-        // ratio in the free one and leaves a gap the scrim renders as a band.
-        child: Image.asset(asset, fit: BoxFit.cover),
+  Widget build(BuildContext context) => FadeTransition(
+        opacity: fade,
+        child: ScaleTransition(
+          scale: Tween(begin: 0.94, end: 1.0).animate(fade),
+          child: SizedBox.expand(
+            // Both axes must be constrained, or the image keeps its own aspect
+            // ratio in the free one and leaves a gap.
+            child: Image.asset(asset, fit: BoxFit.cover),
+          ),
+        ),
       );
 }
 
@@ -125,77 +157,77 @@ class _LogoLockup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Vignette that darkens the photography directly behind the wordmark.
-          Container(
-            width: 340,
-            height: 360,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  const Color(0xFF080C16).withValues(alpha: 0.96),
-                  const Color(0xFF080C16).withValues(alpha: 0.8),
-                  Colors.transparent,
-                ],
-                stops: const [0, 0.5, 0.8],
-              ),
-            ),
+      child: Center(
+        child: ConstrainedBox(
+          // On the very first frame, before the engine reports real window
+          // metrics, MediaQuery.size can briefly be 0x0 — clamp so that never
+          // produces a negative (and invalid) max width.
+          constraints: BoxConstraints(
+            maxWidth: (MediaQuery.sizeOf(context).width - 64).clamp(200.0, double.infinity),
           ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(28),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(28),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
-                    ),
-                    child: Image.asset('assets/brand/logo-mark.png', fit: BoxFit.contain),
-                  ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 20),
+                decoration: BoxDecoration(
+                  color: TpmColors.deepNavy.withValues(alpha: 0.42),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
                 ),
-              ),
-              const SizedBox(height: 26),
-              Text(
-                'Transformation',
-                textAlign: TextAlign.center,
-                style: TpmText.display(27, color: Colors.white, height: 1.15).copyWith(
-                  letterSpacing: 0.5,
-                  shadows: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.85),
-                      blurRadius: 24,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/brand/logo-mark.png',
+                          width: 64,
+                          height: 64,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(width: 14),
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'TRANSFORMATION',
+                                style: TpmText.display(16.5, color: Colors.white, height: 1.1)
+                                    .copyWith(letterSpacing: 0.3),
+                              ),
+                              Text(
+                                'PROJECT MINISTRIES',
+                                style: TpmText.display(
+                                  14.5,
+                                  color: Colors.white.withValues(alpha: 0.92),
+                                  weight: FontWeight.bold,
+                                  height: 1.25,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      'TRANSFORMING LIVES',
+                      style: TpmText.eyebrow(
+                        color: const Color(0xFFF0D375),
+                        size: 11,
+                        tracking: 3,
+                      ),
                     ),
                   ],
                 ),
               ),
-              Text(
-                'Project Ministries',
-                textAlign: TextAlign.center,
-                style: TpmText.display(
-                  19,
-                  color: Colors.white.withValues(alpha: 0.92),
-                  weight: FontWeight.w500,
-                  height: 1.3,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'TRANSFORMING LIVES',
-                style: TpmText.eyebrow(color: const Color(0xFFF0D375), size: 11, tracking: 3),
-              ),
-            ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -208,21 +240,21 @@ class _TapToContinue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
+    return Material(
+      color: Colors.white,
       borderRadius: BorderRadius.circular(999),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-        child: Material(
-          color: Colors.white.withValues(alpha: 0.16),
-          child: InkWell(
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 12),
-              child: Text(
-                'Tap to continue',
-                style: TpmText.body(13.5, color: Colors.white, weight: FontWeight.w600),
-              ),
-            ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: TpmColors.gold, width: 2),
+          ),
+          child: Text(
+            'Tap to continue',
+            style: TpmText.body(13.5, color: TpmColors.navy, weight: FontWeight.w700),
           ),
         ),
       ),

@@ -205,7 +205,9 @@ class _PortalTabBar extends StatelessWidget {
           decoration: BoxDecoration(
             color: TpmColors.nightSurface.withValues(alpha: 0.9),
             border: Border(
-              top: BorderSide(color: TpmColors.portalGold.withValues(alpha: 0.14)),
+              top: BorderSide(
+                color: TpmColors.portalGold.withValues(alpha: 0.14),
+              ),
             ),
           ),
           child: SafeArea(
@@ -262,7 +264,10 @@ class _TabButton extends StatelessWidget {
         children: [
           Icon(icon, size: 22, color: color),
           const SizedBox(height: 4),
-          Text(label, style: TpmText.body(9.8, color: color, weight: FontWeight.w600)),
+          Text(
+            label,
+            style: TpmText.body(9.8, color: color, weight: FontWeight.w600),
+          ),
         ],
       ),
     );
@@ -317,7 +322,10 @@ class _PortalMoreScreen extends StatelessWidget {
                 size: 10,
               ),
               const SizedBox(height: 3),
-              Text('More', style: TpmText.display(24, color: TpmColors.portalInk)),
+              Text(
+                'More',
+                style: TpmText.display(24, color: TpmColors.portalInk),
+              ),
             ],
           ),
         ),

@@ -111,6 +111,15 @@ class AboutContent {
       'Founder & Executive President — Transformation Project Ministries';
   static const String founderPhoto = 'assets/leaders/apostle-andrews.png';
 
+  /// Other photographs of the founder from the website's about page — the
+  /// founder card cycles through these the way the site's own crossfade does.
+  static const List<String> founderGallery = [
+    'assets/leaders/apostle-andrews.png',
+    'assets/leaders/founder-2.jpg',
+    'assets/leaders/founder-3.jpg',
+    'assets/leaders/founder-4.jpg',
+  ];
+
   static const String founderIntro =
       'Apostle Andrews Amoh Ofori is the Founder and Executive President of Transformation '
       'Project Ministries, a vibrant Christian ministry with a divine mandate to transform '

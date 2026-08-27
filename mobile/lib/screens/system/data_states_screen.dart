@@ -18,7 +18,7 @@ class DataStatesScreen extends StatelessWidget {
       backgroundColor: TpmColors.nightCanvas,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(top: 8, bottom: 30),
+          padding: const EdgeInsets.only(top: 20, bottom: 30),
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),

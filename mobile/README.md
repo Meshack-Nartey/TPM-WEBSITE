@@ -38,13 +38,17 @@ lib/
   models/       plain data classes
   screens/
     auth/       splash, welcome, sign in, register, biometric
-    member/     13 screens — home through more
+    member/     15 screens — home through missions
     leader/     dashboard, weekly report, registry, register member, member detail
     admin/      overview, approvals, access, manage lists, compose
     system/     data states
   theme/        colour, type, elevation tokens
   widgets/      shared components, charts, the two navigation shells
-assets/         photography, book covers and giving marks from the website
+assets/         photography, book covers and giving marks from the website —
+                brand/, photos/, media/, books/, give/, leaders/ (the founder,
+                across his own photo gallery), team/ (the fifteen worker
+                groups), flyers/ (the current event flyers), missions/ and
+                branches/ (each SPRING congregation's resident pastor)
 ```
 
 ## Things that are load-bearing

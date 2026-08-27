@@ -49,7 +49,7 @@ class _RegistryScreenState extends State<RegistryScreen> {
     final results = _visible;
 
     final body = ListView(
-      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      padding: const EdgeInsets.only(top: 20, bottom: 24),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

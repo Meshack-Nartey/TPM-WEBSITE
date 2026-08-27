@@ -35,7 +35,7 @@ class _MediaScreenState extends State<MediaScreen> {
     final items = _visible;
 
     return ListView(
-      padding: const EdgeInsets.only(top: 12, bottom: 24),
+      padding: const EdgeInsets.only(top: 20, bottom: 24),
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 22),

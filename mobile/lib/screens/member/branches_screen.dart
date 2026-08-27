@@ -17,7 +17,7 @@ class BranchesScreen extends StatelessWidget {
       backgroundColor: TpmColors.canvas,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(top: 12, bottom: 24),
+          padding: const EdgeInsets.only(top: 20, bottom: 24),
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -129,6 +129,17 @@ class _BranchCard extends StatelessWidget {
         children: [
           Row(
             children: [
+              if (branch.photo != null) ...[
+                ClipOval(
+                  child: Image.asset(
+                    branch.photo!,
+                    width: 36,
+                    height: 36,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(width: 10),
+              ],
               Expanded(child: Text(branch.name, style: TpmText.display(17))),
               const SizedBox(width: 8),
               Pill(

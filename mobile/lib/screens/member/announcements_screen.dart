@@ -16,7 +16,7 @@ class AnnouncementsScreen extends StatelessWidget {
       backgroundColor: TpmColors.canvas,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(top: 12, bottom: 24),
+          padding: const EdgeInsets.only(top: 20, bottom: 24),
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -40,6 +40,31 @@ class AnnouncementsScreen extends StatelessWidget {
   }
 }
 
+class _NewsBody extends StatelessWidget {
+  const _NewsBody({required this.item, required this.fg, required this.bg});
+
+  final Announcement item;
+  final Color fg;
+  final Color bg;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Pill(item.tag, foreground: fg, background: bg, fontSize: 9),
+        const SizedBox(height: 9),
+        Text(item.title, style: TpmText.display(18, height: 1.25)),
+        const SizedBox(height: 5),
+        Text(item.excerpt, style: TpmText.body(12.8, height: 1.5)),
+        const SizedBox(height: 8),
+        Text(item.date, style: TpmText.body(11, color: TpmColors.faint)),
+      ],
+    );
+  }
+}
+
 class _NewsRow extends StatelessWidget {
   const _NewsRow({required this.item});
 
@@ -51,18 +76,29 @@ class _NewsRow extends StatelessWidget {
 
     return TpmCard(
       onTap: () => pushScreen(context, AnnouncementDetailScreen(item: item)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Pill(item.tag, foreground: fg, background: bg, fontSize: 9),
-          const SizedBox(height: 9),
-          Text(item.title, style: TpmText.display(18, height: 1.25)),
-          const SizedBox(height: 5),
-          Text(item.excerpt, style: TpmText.body(12.8, height: 1.5)),
-          const SizedBox(height: 8),
-          Text(item.date, style: TpmText.body(11, color: TpmColors.faint)),
-        ],
-      ),
+      padding: item.flyer == null ? const EdgeInsets.all(16) : EdgeInsets.zero,
+      child: item.flyer == null
+          ? _NewsBody(item: item, fg: fg, bg: bg)
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
+                  child: Image.asset(
+                    item.flyer!,
+                    width: 88,
+                    height: 128,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: _NewsBody(item: item, fg: fg, bg: bg),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }
