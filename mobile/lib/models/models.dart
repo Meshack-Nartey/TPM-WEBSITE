@@ -6,18 +6,18 @@ enum AppRole { guest, member, leader, admin }
 
 extension AppRoleX on AppRole {
   String get label => switch (this) {
-        AppRole.guest => 'Guest',
-        AppRole.member => 'Member',
-        AppRole.leader => 'Church Leader',
-        AppRole.admin => 'Administrator',
-      };
+    AppRole.guest => 'Guest',
+    AppRole.member => 'Member',
+    AppRole.leader => 'Church Leader',
+    AppRole.admin => 'Administrator',
+  };
 
   String get blurb => switch (this) {
-        AppRole.guest => 'Browse, not signed in',
-        AppRole.member => 'Signed-in individual',
-        AppRole.leader => 'One branch only',
-        AppRole.admin => "Pastor's office",
-      };
+    AppRole.guest => 'Browse, not signed in',
+    AppRole.member => 'Signed-in individual',
+    AppRole.leader => 'One branch only',
+    AppRole.admin => "Pastor's office",
+  };
 
   /// Leaders and admins can cross into the work portal; members cannot.
   bool get hasPortal => this == AppRole.leader || this == AppRole.admin;
@@ -25,11 +25,11 @@ extension AppRoleX on AppRole {
 
 /// Maps the API's `Role` enum ('MEMBER' | 'LEADER' | 'ADMIN') onto [AppRole].
 AppRole roleFromApi(String? value) => switch (value) {
-      'ADMIN' => AppRole.admin,
-      'LEADER' => AppRole.leader,
-      'MEMBER' => AppRole.member,
-      _ => AppRole.guest,
-    };
+  'ADMIN' => AppRole.admin,
+  'LEADER' => AppRole.leader,
+  'MEMBER' => AppRole.member,
+  _ => AppRole.guest,
+};
 
 /// The signed-in person, as the API returns them (`publicUser` in
 /// `backend/src/lib/serialize.js` — everything but the password hash).
@@ -53,31 +53,40 @@ class AppUser {
   final String? branch;
 
   factory AppUser.fromJson(Map<String, dynamic> json) => AppUser(
-        id: json['id'] as String,
-        firstName: json['firstName'] as String? ?? '',
-        lastName: json['lastName'] as String? ?? '',
-        fullName: json['fullName'] as String? ?? '',
-        email: json['email'] as String? ?? '',
-        role: roleFromApi(json['role'] as String?),
-        branch: json['branch'] as String?,
-      );
+    id: json['id'] as String,
+    firstName: json['firstName'] as String? ?? '',
+    lastName: json['lastName'] as String? ?? '',
+    fullName: json['fullName'] as String? ?? '',
+    email: json['email'] as String? ?? '',
+    role: roleFromApi(json['role'] as String?),
+    branch: json['branch'] as String?,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'firstName': firstName,
-        'lastName': lastName,
-        'fullName': fullName,
-        'email': email,
-        'role': role.name.toUpperCase(),
-        'branch': branch,
-      };
+    'id': id,
+    'firstName': firstName,
+    'lastName': lastName,
+    'fullName': fullName,
+    'email': email,
+    'role': role.name.toUpperCase(),
+    'branch': branch,
+  };
+}
+
+/// The first letter of up to the first two words of a name — used for the
+/// avatar initials on the home greeting and the profile screen alike.
+String initialsOf(String fullName) {
+  final parts = fullName
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((p) => p.isNotEmpty);
+  return parts.take(2).map((p) => p[0].toUpperCase()).join();
 }
 
 class Announcement {
   const Announcement({
     required this.tag,
     required this.title,
-    this.meta = '',
     this.excerpt = '',
     this.date = '',
     this.body = '',
@@ -86,9 +95,6 @@ class Announcement {
 
   final String tag;
   final String title;
-
-  /// Short line under the title on the home carousel.
-  final String meta;
 
   /// Longer teaser used in the news feed list.
   final String excerpt;
@@ -104,16 +110,16 @@ enum MediaKind { sermon, teaching, podcast }
 
 extension MediaKindX on MediaKind {
   String get label => switch (this) {
-        MediaKind.sermon => 'Sermon',
-        MediaKind.teaching => 'Teaching',
-        MediaKind.podcast => 'Podcast',
-      };
+    MediaKind.sermon => 'Sermon',
+    MediaKind.teaching => 'Teaching',
+    MediaKind.podcast => 'Podcast',
+  };
 
   IconData get icon => switch (this) {
-        MediaKind.sermon => Icons.play_arrow_rounded,
-        MediaKind.teaching => Icons.school_rounded,
-        MediaKind.podcast => Icons.mic_rounded,
-      };
+    MediaKind.sermon => Icons.play_arrow_rounded,
+    MediaKind.teaching => Icons.school_rounded,
+    MediaKind.podcast => Icons.mic_rounded,
+  };
 }
 
 class MediaItem {
@@ -179,7 +185,11 @@ class GiveOption {
 }
 
 class GivingChannel {
-  const GivingChannel({required this.name, required this.logo, required this.detail});
+  const GivingChannel({
+    required this.name,
+    required this.logo,
+    required this.detail,
+  });
 
   final String name;
   final String logo;
@@ -209,7 +219,11 @@ class Branch {
 /// One of the fifteen worker groups members can serve in — the website's
 /// "Get Involved" tabs, ported over with the same photo and copy.
 class WorkerGroup {
-  const WorkerGroup({required this.name, required this.photo, required this.blurb});
+  const WorkerGroup({
+    required this.name,
+    required this.photo,
+    required this.blurb,
+  });
 
   final String name;
   final String photo;
@@ -218,7 +232,11 @@ class WorkerGroup {
 
 /// One of the ministry's weekly gatherings.
 class ServiceTime {
-  const ServiceTime({required this.name, required this.day, required this.time});
+  const ServiceTime({
+    required this.name,
+    required this.day,
+    required this.time,
+  });
 
   final String name;
   final String day;
@@ -331,7 +349,11 @@ class StatTile {
 }
 
 class BranchRank {
-  const BranchRank({required this.name, required this.value, required this.fraction});
+  const BranchRank({
+    required this.name,
+    required this.value,
+    required this.fraction,
+  });
 
   final String name;
   final int value;
@@ -341,7 +363,11 @@ class BranchRank {
 }
 
 class ReportField {
-  const ReportField({required this.label, required this.hint, required this.icon});
+  const ReportField({
+    required this.label,
+    required this.hint,
+    required this.icon,
+  });
 
   final String label;
   final String hint;

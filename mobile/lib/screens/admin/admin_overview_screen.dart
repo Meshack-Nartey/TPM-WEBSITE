@@ -17,7 +17,7 @@ class AdminOverviewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      padding: const EdgeInsets.only(top: 20, bottom: 24),
       children: [
         const PortalHeader(
           eyebrow: "Pastor's Office · Church-wide",

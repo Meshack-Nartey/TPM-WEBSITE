@@ -19,8 +19,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late final List<bool> _notifications =
-      MockData.notificationSettings.map((n) => n.enabled).toList();
+  late final List<bool> _notifications = MockData.notificationSettings
+      .map((n) => n.enabled)
+      .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: TpmColors.canvas,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(top: 12, bottom: 24),
+          padding: const EdgeInsets.only(top: 20, bottom: 24),
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -131,7 +132,8 @@ class _IdentityCard extends StatelessWidget {
         ? user!.branch!
         : MockData.homeBranch;
     final roleLabel = user?.role.label ?? AppSession.of(context).role.label;
-    final initials = _initialsOf(fullName);
+    final rawInitials = initialsOf(fullName);
+    final initials = rawInitials.isEmpty ? MockData.initials : rawInitials;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -150,7 +152,11 @@ class _IdentityCard extends StatelessWidget {
               ),
               child: Text(
                 initials,
-                style: TpmText.body(19, color: Colors.white, weight: FontWeight.w700),
+                style: TpmText.body(
+                  19,
+                  color: Colors.white,
+                  weight: FontWeight.w700,
+                ),
               ),
             ),
             const SizedBox(width: 14),
@@ -167,12 +173,6 @@ class _IdentityCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  static String _initialsOf(String fullName) {
-    final parts = fullName.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty);
-    final letters = parts.take(2).map((p) => p[0].toUpperCase()).join();
-    return letters.isEmpty ? MockData.initials : letters;
   }
 }
 
@@ -201,7 +201,10 @@ class _DetailsCard extends StatelessWidget {
             ),
             for (final field in MockData.profileFields)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 11,
+                ),
                 decoration: const BoxDecoration(
                   border: Border(top: BorderSide(color: TpmColors.divider)),
                 ),
@@ -237,7 +240,11 @@ class _DetailsCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.edit_outlined, size: 15, color: TpmColors.navy),
+                      const Icon(
+                        Icons.edit_outlined,
+                        size: 15,
+                        color: TpmColors.navy,
+                      ),
                       const SizedBox(width: 7),
                       Flexible(
                         child: Text(
@@ -289,7 +296,10 @@ class _NotificationsCard extends StatelessWidget {
             ),
             for (var i = 0; i < MockData.notificationSettings.length; i++)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 4,
+                ),
                 decoration: const BoxDecoration(
                   border: Border(top: BorderSide(color: TpmColors.divider)),
                 ),

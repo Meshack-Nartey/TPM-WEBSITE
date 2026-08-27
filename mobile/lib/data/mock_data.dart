@@ -42,7 +42,8 @@ class MockData {
     TpmColors.blue,
   ];
 
-  static Color avatarFor(int index) => avatarPalette[index % avatarPalette.length];
+  static Color avatarFor(int index) =>
+      avatarPalette[index % avatarPalette.length];
 
   /// Tag colouring for announcements — foreground then background.
   static const Map<String, (Color, Color)> tagColors = {
@@ -60,9 +61,21 @@ class MockData {
 
   // ---- Services (from the website) ----
   static const List<ServiceTime> serviceTimes = [
-    ServiceTime(name: '1st Service', day: 'Sundays', time: '8:00 AM – 10:00 AM'),
-    ServiceTime(name: '2nd Service', day: 'Sundays', time: '10:30 AM – 12:30 PM'),
-    ServiceTime(name: 'Evening Feast', day: 'Sundays', time: '4:00 PM – 7:00 PM'),
+    ServiceTime(
+      name: '1st Service',
+      day: 'Sundays',
+      time: '8:00 AM – 10:00 AM',
+    ),
+    ServiceTime(
+      name: '2nd Service',
+      day: 'Sundays',
+      time: '10:30 AM – 12:30 PM',
+    ),
+    ServiceTime(
+      name: 'Evening Feast',
+      day: 'Sundays',
+      time: '4:00 PM – 7:00 PM',
+    ),
     ServiceTime(name: 'Love Therapy', day: 'Fridays', time: '6:00 PM'),
   ];
 
@@ -72,32 +85,14 @@ class MockData {
   static const String serviceSummary = 'Sun 8:00 AM & 10:30 AM · Fri 6:00 PM';
 
   // ---- Announcements (from announcements.html) ----
-  static const List<Announcement> carousel = [
-    Announcement(
-      tag: 'Prayer',
-      title: '3 Days Fasting and Prayers',
-      meta: '26th–28th August · 6:00 AM–6:00 PM',
-      flyer: 'assets/flyers/fasting-and-prayers.png',
-    ),
-    Announcement(
-      tag: 'Special Gathering',
-      title: 'TPM Waits: Grace Over Grades',
-      meta: 'Fri 4th Sept 2026 · 6:00 PM–12:00 AM',
-      flyer: 'assets/flyers/tpm-waits.png',
-    ),
-    Announcement(
-      tag: 'Conference',
-      title: 'Transformation Conference',
-      meta: 'Sat 5th Sept 2026 · 8:00 AM',
-      flyer: 'assets/flyers/tc.png',
-    ),
-    Announcement(
-      tag: 'Sunday',
-      title: 'Transformation Sunday',
-      meta: 'Sun 6th Sept 2026 · 8:30 AM',
-      flyer: 'assets/flyers/ts.png',
-    ),
-  ];
+  //
+  // The home carousel used to be its own separate, sparser list — cards had
+  // a title but no body, so tapping one from Home opened a detail screen
+  // with nothing to read. `carousel` is now just the flyer-backed slice of
+  // `newsFeed`, so every announcement has the same real description
+  // wherever you tap into it from.
+  static List<Announcement> get carousel =>
+      newsFeed.where((a) => a.flyer != null).toList();
 
   static const List<Announcement> newsFeed = [
     Announcement(
@@ -171,7 +166,12 @@ class MockData {
     downloaded: true,
   );
 
-  static const List<String> mediaFilters = ['All', 'Sermons', 'Teachings', 'Podcasts'];
+  static const List<String> mediaFilters = [
+    'All',
+    'Sermons',
+    'Teachings',
+    'Podcasts',
+  ];
 
   static const List<MediaItem> media = [
     MediaItem(
@@ -585,30 +585,87 @@ class MockData {
   static const String leaderBranch = 'DAYSPRING';
 
   static const List<StatTile> leaderStats = [
-    StatTile(label: 'Attendance', value: '238', icon: Icons.groups_rounded, trend: '+9%'),
-    StatTile(label: 'Tithe (GHS)', value: '18.4k', icon: Icons.savings_rounded, trend: '+4%'),
-    StatTile(label: 'Souls won', value: '12', icon: Icons.volunteer_activism_rounded, trend: '+3'),
-    StatTile(label: 'Members', value: '486', icon: Icons.contacts_rounded, trend: '+5'),
+    StatTile(
+      label: 'Attendance',
+      value: '238',
+      icon: Icons.groups_rounded,
+      trend: '+9%',
+    ),
+    StatTile(
+      label: 'Tithe (GHS)',
+      value: '18.4k',
+      icon: Icons.savings_rounded,
+      trend: '+4%',
+    ),
+    StatTile(
+      label: 'Souls won',
+      value: '12',
+      icon: Icons.volunteer_activism_rounded,
+      trend: '+3',
+    ),
+    StatTile(
+      label: 'Members',
+      value: '486',
+      icon: Icons.contacts_rounded,
+      trend: '+5',
+    ),
   ];
 
-  static const List<int> attendanceTrend = [190, 200, 196, 218, 208, 230, 232, 238];
+  static const List<int> attendanceTrend = [
+    190,
+    200,
+    196,
+    218,
+    208,
+    230,
+    232,
+    238,
+  ];
 
   static const List<double> titheWeeks = [10.4, 12.8, 9.6, 15.6, 14.0, 18.4];
   static const double titheAxisMax = 20.0;
   static const List<String> weekLabels = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6'];
 
   static const List<ReportField> reportFields = [
-    ReportField(label: 'Total attendance', hint: 'e.g. 238', icon: Icons.groups_rounded),
-    ReportField(label: 'Tithe collected (GHS)', hint: 'e.g. 18400', icon: Icons.savings_rounded),
-    ReportField(label: 'Souls won', hint: 'e.g. 12', icon: Icons.volunteer_activism_rounded),
-    ReportField(label: 'First-time visitors', hint: 'e.g. 9', icon: Icons.person_add_rounded),
+    ReportField(
+      label: 'Total attendance',
+      hint: 'e.g. 238',
+      icon: Icons.groups_rounded,
+    ),
+    ReportField(
+      label: 'Tithe collected (GHS)',
+      hint: 'e.g. 18400',
+      icon: Icons.savings_rounded,
+    ),
+    ReportField(
+      label: 'Souls won',
+      hint: 'e.g. 12',
+      icon: Icons.volunteer_activism_rounded,
+    ),
+    ReportField(
+      label: 'First-time visitors',
+      hint: 'e.g. 9',
+      icon: Icons.person_add_rounded,
+    ),
   ];
 
   static const List<ReportField> newMemberFields = [
-    ReportField(label: 'Full name', hint: 'e.g. Kwame Asante', icon: Icons.person_rounded),
+    ReportField(
+      label: 'Full name',
+      hint: 'e.g. Kwame Asante',
+      icon: Icons.person_rounded,
+    ),
     ReportField(label: 'Phone', hint: '+233 …', icon: Icons.phone_rounded),
-    ReportField(label: 'Email (optional)', hint: 'name@email.com', icon: Icons.email_rounded),
-    ReportField(label: 'Worker group', hint: 'e.g. Ushering, Music', icon: Icons.diversity_3_rounded),
+    ReportField(
+      label: 'Email (optional)',
+      hint: 'name@email.com',
+      icon: Icons.email_rounded,
+    ),
+    ReportField(
+      label: 'Worker group',
+      hint: 'e.g. Ushering, Music',
+      icon: Icons.diversity_3_rounded,
+    ),
   ];
 
   // ---- Registry (invented people; the real system seeds none) ----
@@ -672,14 +729,24 @@ class MockData {
 
   // ---- Administrator (figures invented; branch names real) ----
   static const List<StatTile> adminStats = [
-    StatTile(label: 'Total members', value: '6,240', icon: Icons.groups_rounded, trend: '+3%'),
+    StatTile(
+      label: 'Total members',
+      value: '6,240',
+      icon: Icons.groups_rounded,
+      trend: '+3%',
+    ),
     StatTile(
       label: 'Weekly attendance',
       value: '3,180',
       icon: Icons.self_improvement_rounded,
       trend: '+6%',
     ),
-    StatTile(label: 'Tithe (GHS)', value: '242k', icon: Icons.savings_rounded, trend: '+5%'),
+    StatTile(
+      label: 'Tithe (GHS)',
+      value: '242k',
+      icon: Icons.savings_rounded,
+      trend: '+5%',
+    ),
     StatTile(
       label: 'Souls won (mo)',
       value: '146',
@@ -752,13 +819,26 @@ class MockData {
   ];
 
   static const List<ManageListEntry> manageLists = [
-    ManageListEntry(label: 'Leaders directory', count: 'Pastors & branch leaders',
-        icon: Icons.badge_rounded),
-    ManageListEntry(label: 'Branches', count: '9 branches', icon: Icons.location_on_rounded),
-    ManageListEntry(label: 'Worker groups', count: '15 departments',
-        icon: Icons.diversity_3_rounded),
-    ManageListEntry(label: 'Fellowships & Basenias', count: '6 fellowships · 8 basenias',
-        icon: Icons.groups_2_rounded),
+    ManageListEntry(
+      label: 'Leaders directory',
+      count: 'Pastors & branch leaders',
+      icon: Icons.badge_rounded,
+    ),
+    ManageListEntry(
+      label: 'Branches',
+      count: '9 branches',
+      icon: Icons.location_on_rounded,
+    ),
+    ManageListEntry(
+      label: 'Worker groups',
+      count: '15 departments',
+      icon: Icons.diversity_3_rounded,
+    ),
+    ManageListEntry(
+      label: 'Fellowships & Basenias',
+      count: '6 fellowships · 8 basenias',
+      icon: Icons.groups_2_rounded,
+    ),
   ];
 
   /// Splash collage — five real photographs behind the logo lockup.
