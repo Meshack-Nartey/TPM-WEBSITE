@@ -201,27 +201,60 @@ class MockData {
     ),
   ];
 
-  // ---- Events (from the website; several are genuinely undated) ----
+  // ---- Events (from the website) ----
+  // The four dated programs lead the list — they're the near-term events the
+  // home banner is already announcing, so Events answers "when" for the same
+  // things. The recurring weekly/monthly ones follow.
   static const List<EventItem> events = [
     EventItem(
-      tag: 'Upcoming Event',
-      title: 'Holy Ghost Festival 2026',
-      location: 'All branches',
-      when: 'Date to be announced',
+      day: '26–28',
+      month: 'Aug',
+      tag: 'Prayer',
+      title: '3 Days Fasting and Prayers',
+      location: 'All branches · Google Meet',
+      when: '26th–28th August · 6:00 AM–6:00 PM daily',
       description:
-          'The annual Holy Ghost Festival hosted by $founder. Dates will be announced '
-          'from the pastor’s office.',
-      image: 'assets/photos/gathering.jpg',
+          'Three days set apart to seek God for great favor, dubbed "Great Favor" — with '
+          '$founder. Prayer meetings hold in person, 6:00 AM to 6:00 PM daily, with an '
+          'additional session on Google Meet at 10:00 PM each night.',
+      image: 'assets/flyers/fasting-and-prayers.png',
     ),
     EventItem(
-      tag: 'Camp',
-      title: 'Sharpening Camp',
-      location: 'To be announced',
-      when: 'Date to be announced',
+      day: '04',
+      month: 'Sep',
+      tag: 'Special Gathering',
+      title: 'TPM Waits: Grace Over Grades',
+      location: 'All branches',
+      when: 'Friday 4th September 2026 · 6:00 PM–12:00 AM',
       description:
-          'A set-apart season of teaching and consecration. Registration runs through '
-          'your branch.',
-      image: 'assets/photos/community.jpg',
+          'TPM Waits returns with "Grace Over Grades" — a night of worship and prayer '
+          'for students heading back to school, trusting God for grace that outworks '
+          'effort.',
+      image: 'assets/flyers/tpm-waits.png',
+    ),
+    EventItem(
+      day: '05',
+      month: 'Sep',
+      tag: 'Conference',
+      title: 'Transformation Conference',
+      location: 'All branches',
+      when: 'Saturday 5th September 2026 · 8:00 AM',
+      description:
+          'Our flagship gathering across all branches, themed "The Fullness of the Holy '
+          'Spirit" — a full day of worship, the Word, and impartation.',
+      image: 'assets/flyers/tc.png',
+    ),
+    EventItem(
+      day: '06',
+      month: 'Sep',
+      tag: 'Sunday',
+      title: 'Transformation Sunday',
+      location: 'All branches',
+      when: 'Sunday 6th September 2026 · 8:30 AM',
+      description:
+          'Transformation Sunday closes out the weekend, themed "The Kingdom Life" — '
+          'come expecting a fresh encounter with God.',
+      image: 'assets/flyers/ts.png',
     ),
     EventItem(
       day: 'FRI',
@@ -234,14 +267,6 @@ class MockData {
           'Our weekly Friday gathering. Come as you are, and bring someone who needs the '
           'family of God this week.',
       image: 'assets/photos/communion.jpg',
-    ),
-    EventItem(
-      tag: 'Prayer',
-      title: 'Corporate Prayer Night',
-      location: 'All branches',
-      when: 'Last Friday of every month',
-      description: 'Every branch joins for a night of intercession.',
-      image: 'assets/photos/prayer.jpg',
     ),
   ];
 

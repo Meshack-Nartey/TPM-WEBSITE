@@ -1,24 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../app/navigation.dart';
-import '../../app/session.dart';
 import '../../data/mock_data.dart';
-import '../../models/models.dart';
 import '../../theme/tpm_theme.dart';
-import '../../widgets/announcement_banner.dart';
 import '../../widgets/common.dart';
-import 'books_screen.dart';
-import 'player_screen.dart';
+import 'announcement_detail_screen.dart';
 
 /// The member's landing screen: who you are, what's coming, and the quickest
 /// routes back into the ministry.
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.onSelectTab});
-
-  final ValueChanged<MemberTab> onSelectTab;
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -64,73 +57,270 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
-    final greeting = now.hour < 12
-        ? 'Good morning'
-        : now.hour < 17
-        ? 'Good afternoon'
-        : 'Good evening';
-
-    return ListView(
-      // Always scrollable, even if the content happens to be short enough
-      // to fit — a fixed-in-place feel here reads as broken, not tidy.
-      physics: const AlwaysScrollableScrollPhysics(
-        parent: BouncingScrollPhysics(),
+    // Dark from the top of the photo slideshow all the way down — the
+    // countdown and quick actions sit on the same surface, not a separate
+    // light card floating below.
+    return ColoredBox(
+      color: TpmColors.night,
+      child: ListView(
+        // Always scrollable, even if the content happens to be short enough
+        // to fit — a fixed-in-place feel here reads as broken, not tidy.
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
+        padding: const EdgeInsets.only(bottom: 24),
+        children: [
+          const _Hero(),
+          const SizedBox(height: 40),
+          _CountdownCard(target: _nextService),
+        ],
       ),
-      padding: const EdgeInsets.only(top: 20, bottom: 24),
-      children: [
-        _Greeting(
-          greeting: greeting,
-          date: DateFormat('EEEE, d MMMM').format(now),
-        ),
-        const SizedBox(height: 18),
-        const AnnouncementBanner(),
-        const SizedBox(height: 8),
-        _CountdownCard(target: _nextService),
-        const SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22),
-          child: const Eyebrow('Quick Actions'),
-        ),
-        const SizedBox(height: 12),
-        _QuickActions(onSelectTab: widget.onSelectTab),
-        const SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22),
-          child: const Eyebrow('Featured Message'),
-        ),
-        const SizedBox(height: 12),
-        const _FeaturedSermon(),
-      ],
     );
   }
 }
 
-class _Greeting extends StatelessWidget {
-  const _Greeting({required this.greeting, required this.date});
+/// The website's hero, ported to a phone-width card: a dark, full-bleed
+/// photo slideshow — crossfading through the same shots the website cycles —
+/// with the ministry's name and tagline overlaid at the bottom, legible over
+/// a dark gradient. Replaces the personal "Good evening" greeting.
+class _Hero extends StatefulWidget {
+  const _Hero();
 
-  final String greeting;
-  final String date;
+  @override
+  State<_Hero> createState() => _HeroState();
+}
+
+class _HeroState extends State<_Hero> {
+  // hero1–hero6 (and about-1) are tight portrait crops or busy stage shots
+  // with faces right at the top of the frame — no amount of cropping here
+  // gives the banner clearance on all of them. These three are actually
+  // composed with headroom at the top instead.
+  static const _photos = [
+    'assets/photos/gathering.jpg',
+    'assets/photos/join-us.jpg',
+    'assets/photos/growth.jpg',
+  ];
+
+  Timer? _ticker;
+  int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (!mounted) return;
+      setState(() => _index = (_index + 1) % _photos.length);
+    });
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final user = AppSession.of(context).user;
-    final firstName = user?.firstName.trim().isNotEmpty == true
-        ? user!.firstName
-        : MockData.firstName;
+    return SizedBox(
+      height: 500,
+      width: double.infinity,
+      child: ColoredBox(
+        color: TpmColors.night,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 900),
+              // AnimatedSwitcher lays its child out loosely, so without an
+              // explicit size the image would shrink to its own intrinsic
+              // size instead of covering the hero — leaving a bare gap of
+              // the ColoredBox behind it.
+              child: Image.asset(
+                _photos[_index],
+                key: ValueKey(_index),
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+                alignment: const Alignment(0, -0.3),
+              ),
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.25),
+                    Colors.black.withValues(alpha: 0.2),
+                    TpmColors.night,
+                  ],
+                  stops: const [0, 0.55, 1],
+                ),
+              ),
+            ),
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: 8,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Eyebrow('Transforming Lives', color: TpmColors.gold),
+                  const SizedBox(height: 8),
+                  Text(
+                    MockData.ministryName,
+                    style: TpmText.display(
+                      24,
+                      color: Colors.white,
+                      height: 1.15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              right: 20,
+              top: 98,
+              child: Row(
+                children: [
+                  for (var i = 0; i < _photos.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 5),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: i == _index ? 14 : 5,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(
+                          alpha: i == _index ? 0.95 : 0.4,
+                        ),
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const Positioned(
+              top: 14,
+              left: 14,
+              right: 14,
+              child: _AnnouncementTicker(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Eyebrow(date),
-          const SizedBox(height: 3),
-          Text(
-            '$greeting,\n$firstName',
-            style: TpmText.display(27, height: 1.1),
+/// A slim banner pinned above the hero slideshow, cycling through the same
+/// announcements the website surfaces — dismissible, the way the reference
+/// site's "New and Featured" strip works.
+class _AnnouncementTicker extends StatefulWidget {
+  const _AnnouncementTicker();
+
+  @override
+  State<_AnnouncementTicker> createState() => _AnnouncementTickerState();
+}
+
+class _AnnouncementTickerState extends State<_AnnouncementTicker> {
+  Timer? _ticker;
+  int _index = 0;
+  bool _dismissed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (MockData.carousel.length > 1) {
+      _ticker = Timer.periodic(const Duration(seconds: 5), (_) {
+        if (!mounted) return;
+        setState(() => _index = (_index + 1) % MockData.carousel.length);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_dismissed || MockData.carousel.isEmpty) return const SizedBox.shrink();
+    final item = MockData.carousel[_index];
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(18),
+      // A BackdropFilter blur here silently fails to paint anything on this
+      // device's Impeller/Vulkan backend, so the banner reads as fine when
+      // reviewed in code but is invisible on screen — a solid translucent
+      // surface avoids that entirely.
+      child: Material(
+        color: TpmColors.navy.withValues(alpha: 0.9),
+        child: InkWell(
+          onTap: () =>
+              pushScreen(context, AnnouncementDetailScreen(item: item)),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.notifications_rounded,
+                  size: 18,
+                  color: TpmColors.gold,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 400),
+                    child: Column(
+                      key: ValueKey(item.title),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          item.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TpmText.body(
+                            14,
+                            color: Colors.white,
+                            weight: FontWeight.w600,
+                          ),
+                        ),
+                        if (item.date.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            item.date,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TpmText.body(
+                              12,
+                              color: Colors.white.withValues(alpha: 0.72),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () => setState(() => _dismissed = true),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(
+                      Icons.close_rounded,
+                      size: 19,
+                      color: Colors.white.withValues(alpha: 0.8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -157,10 +347,14 @@ class _CountdownCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.7),
+          // nightSurface sits almost flush with the page's own night
+          // background (#111 on #080808), so the card reads as a separate
+          // surface here instead of nearly vanishing into it.
+          color: Colors.white.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: TpmColors.navy.withValues(alpha: 0.1)),
-          boxShadow: TpmShadows.raised,
+          border: Border.all(
+            color: TpmColors.portalGold.withValues(alpha: 0.22),
+          ),
         ),
         child: Column(
           children: [
@@ -169,16 +363,25 @@ class _CountdownCard extends StatelessWidget {
                 const Icon(
                   Icons.church_rounded,
                   size: 14,
-                  color: TpmColors.navy,
+                  color: TpmColors.portalGold,
                 ),
                 const SizedBox(width: 8),
                 const Flexible(
-                  child: Eyebrow('Next Service', size: 10, tracking: 1.2),
+                  child: Eyebrow(
+                    'Next Service',
+                    size: 10,
+                    tracking: 1.2,
+                    color: TpmColors.portalGold,
+                  ),
                 ),
                 const Spacer(),
                 Text(
                   MockData.nextServiceLabel,
-                  style: TpmText.body(12.5, weight: FontWeight.w600),
+                  style: TpmText.body(
+                    12.5,
+                    color: TpmColors.portalInk,
+                    weight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
@@ -222,174 +425,6 @@ class _CountdownCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _QuickActions extends StatelessWidget {
-  const _QuickActions({required this.onSelectTab});
-
-  final ValueChanged<MemberTab> onSelectTab;
-
-  @override
-  Widget build(BuildContext context) {
-    final actions = <(String, IconData, Color, Color, VoidCallback)>[
-      (
-        'Watch',
-        Icons.play_arrow_rounded,
-        TpmColors.tintBlue,
-        TpmColors.navy,
-        () => onSelectTab(MemberTab.media),
-      ),
-      (
-        'Give',
-        Icons.volunteer_activism_rounded,
-        TpmColors.tintAmber,
-        TpmColors.goldDeep,
-        () => onSelectTab(MemberTab.give),
-      ),
-      (
-        'Events',
-        Icons.event_rounded,
-        const Color(0xFFE0E7FF),
-        TpmColors.blue,
-        () => onSelectTab(MemberTab.events),
-      ),
-      (
-        'Books',
-        Icons.menu_book_rounded,
-        TpmColors.tintViolet,
-        TpmColors.violet,
-        () => pushScreen(context, const BooksScreen()),
-      ),
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 22),
-      child: Row(
-        children: [
-          for (var i = 0; i < actions.length; i++) ...[
-            if (i > 0) const SizedBox(width: 10),
-            Expanded(
-              child: TpmCard(
-                onTap: actions[i].$5,
-                radius: 18,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 14,
-                  horizontal: 4,
-                ),
-                child: Column(
-                  children: [
-                    IconTile(
-                      icon: actions[i].$2,
-                      background: actions[i].$3,
-                      foreground: actions[i].$4,
-                      size: 42,
-                      radius: 13,
-                      iconSize: 19,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      actions[i].$1,
-                      style: TpmText.body(
-                        11,
-                        color: TpmColors.ink,
-                        weight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-/// One image-forward card — title and speaker sit over the photo itself,
-/// the way the announcement banner reads, rather than a separate text block
-/// bolted on below.
-class _FeaturedSermon extends StatelessWidget {
-  const _FeaturedSermon();
-
-  @override
-  Widget build(BuildContext context) {
-    final sermon = MockData.featured;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 22),
-      child: GestureDetector(
-        onTap: () => pushScreen(context, PlayerScreen(item: sermon)),
-        child: Container(
-          height: 220,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: TpmColors.deepNavy.withValues(alpha: 0.35),
-                blurRadius: 30,
-                offset: const Offset(0, 14),
-              ),
-            ],
-          ),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              BrandedPhoto(
-                asset: sermon.image,
-                scrimOpacity: 0,
-                goldOpacity: 0,
-              ),
-              Positioned(
-                left: 18,
-                top: 16,
-                right: 18,
-                child: Row(
-                  children: [
-                    Pill(
-                      sermon.kind.label,
-                      foreground: TpmColors.night,
-                      background: TpmColors.gold,
-                    ),
-                  ],
-                ),
-              ),
-              const Center(child: _PlayBadge()),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _PlayBadge extends StatelessWidget {
-  const _PlayBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 60,
-      height: 60,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        gradient: TpmColors.portalGoldGradient,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.35),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: const Icon(
-        Icons.play_arrow_rounded,
-        color: TpmColors.night,
-        size: 30,
       ),
     );
   }

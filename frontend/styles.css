@@ -3583,6 +3583,54 @@ body:not(.dark-portal-page) .form-group select:focus {
     font-weight: 700;
 }
 
+.worker-tab-pager {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .worker-tab-nav {
+        display: none;
+    }
+
+    .worker-tab-pager {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 20px 4px;
+        border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .worker-tab-pager-btn {
+        flex: 0 0 auto;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--gold);
+        font-size: 1.4rem;
+        line-height: 1;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+
+    .worker-tab-pager-btn:hover,
+    .worker-tab-pager-btn:active {
+        background: var(--gold);
+        color: #000;
+    }
+
+    .worker-tab-pager-label {
+        flex: 1 1 auto;
+        text-align: center;
+        font-family: var(--font-primary);
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--gold);
+    }
+}
+
 .worker-tab-content {
     padding: 32px 0;
 }

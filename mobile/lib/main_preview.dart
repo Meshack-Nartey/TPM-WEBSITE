@@ -67,35 +67,55 @@ final Map<String, _Preview> _screens = {
   'biometric': _Preview(() => const BiometricScreen(), scaffold: false),
 
   // Member & public
-  'home': _Preview(() => HomeScreen(onSelectTab: (_) {})),
+  'home': _Preview(() => const HomeScreen()),
   'media': _Preview(() => const MediaScreen()),
-  'player': _Preview(() => PlayerScreen(item: MockData.media.first), scaffold: false),
+  'player': _Preview(
+    () => PlayerScreen(item: MockData.media.first),
+    scaffold: false,
+  ),
   'events': _Preview(() => const EventsScreen()),
-  'eventDetail':
-      _Preview(() => EventDetailScreen(event: MockData.events.first), scaffold: false),
+  'eventDetail': _Preview(
+    () => EventDetailScreen(event: MockData.events.first),
+    scaffold: false,
+  ),
   'give': _Preview(() => const GiveScreen()),
   'announcements': _Preview(() => const AnnouncementsScreen(), scaffold: false),
   'annDetail': _Preview(
-      () => AnnouncementDetailScreen(item: MockData.newsFeed.first),
-      scaffold: false),
+    () => AnnouncementDetailScreen(item: MockData.newsFeed.first),
+    scaffold: false,
+  ),
   'branches': _Preview(() => const BranchesScreen(), scaffold: false),
   'books': _Preview(() => const BooksScreen(), scaffold: false),
-  'bookDetail': _Preview(() => BookDetailScreen(book: MockData.books.first), scaffold: false),
+  'bookDetail': _Preview(
+    () => BookDetailScreen(book: MockData.books.first),
+    scaffold: false,
+  ),
   'profile': _Preview(() => const ProfileScreen(), scaffold: false),
   'more': _Preview(() => const MoreScreen()),
   'about': _Preview(() => const AboutScreen(), scaffold: false),
 
   // Leader portal
   'leaderDash': _Preview(() => const LeaderDashboardScreen(), dark: true),
-  'report': _Preview(() => const WeeklyReportScreen(embedded: true), dark: true),
+  'report': _Preview(
+    () => const WeeklyReportScreen(embedded: true),
+    dark: true,
+  ),
   'registry': _Preview(() => const RegistryScreen(embedded: true), dark: true),
-  'registerMember': _Preview(() => const RegisterMemberScreen(), scaffold: false),
-  'memberDetail':
-      _Preview(() => MemberDetailScreen(member: MockData.members.first), scaffold: false),
+  'registerMember': _Preview(
+    () => const RegisterMemberScreen(),
+    scaffold: false,
+  ),
+  'memberDetail': _Preview(
+    () => MemberDetailScreen(member: MockData.members.first),
+    scaffold: false,
+  ),
 
   // Administrator
   'adminDash': _Preview(() => const AdminOverviewScreen(), dark: true),
-  'approvals': _Preview(() => const ApprovalsScreen(embedded: true), dark: true),
+  'approvals': _Preview(
+    () => const ApprovalsScreen(embedded: true),
+    dark: true,
+  ),
   'access': _Preview(() => const AccessScreen(embedded: true), dark: true),
   'lists': _Preview(() => const ManageListsScreen(embedded: true), dark: true),
   'compose': _Preview(() => const ComposeScreen(), scaffold: false),
@@ -105,7 +125,10 @@ final Map<String, _Preview> _screens = {
 
   // Whole shells, with their navigation bars
   'app': _Preview(() => const MemberShell(), scaffold: false),
-  'portal': _Preview(() => const PortalShell(role: AppRole.leader), scaffold: false),
+  'portal': _Preview(
+    () => const PortalShell(role: AppRole.leader),
+    scaffold: false,
+  ),
 };
 
 void main() {
@@ -161,12 +184,13 @@ class _PreviewApp extends StatelessWidget {
         home: preview == null
             ? _Index(unknown: name != 'index' ? name : null)
             : (preview.scaffold
-                ? Scaffold(
-                    backgroundColor:
-                        preview.dark ? TpmColors.night : TpmColors.canvas,
-                    body: SafeArea(child: preview.build()),
-                  )
-                : preview.build()),
+                  ? Scaffold(
+                      backgroundColor: preview.dark
+                          ? TpmColors.night
+                          : TpmColors.canvas,
+                      body: SafeArea(child: preview.build()),
+                    )
+                  : preview.build()),
       ),
     );
   }
@@ -191,7 +215,7 @@ class _Index extends StatelessWidget {
             Text(
               unknown == null
                   ? 'Append ?screen=<name> to the URL. Add &role=leader or '
-                      '&role=admin where it matters.'
+                        '&role=admin where it matters.'
                   : 'No screen called "$unknown".',
               style: TpmText.body(13, height: 1.5),
             ),
@@ -199,8 +223,10 @@ class _Index extends StatelessWidget {
             for (final name in _screens.keys)
               Padding(
                 padding: const EdgeInsets.only(bottom: 6),
-                child: Text('?screen=$name',
-                    style: TpmText.body(13.5, color: TpmColors.navy)),
+                child: Text(
+                  '?screen=$name',
+                  style: TpmText.body(13.5, color: TpmColors.navy),
+                ),
               ),
           ],
         ),
