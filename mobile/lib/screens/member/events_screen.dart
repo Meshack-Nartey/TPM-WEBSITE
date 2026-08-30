@@ -15,7 +15,9 @@ class EventsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.only(top: 20, bottom: 24),
+      // The shell's tab bar floats over the body (extendBody: true), so the
+      // last card needs real clearance or it ends up sitting behind it.
+      padding: const EdgeInsets.only(top: 20, bottom: 110),
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 22),
@@ -32,7 +34,11 @@ class EventsScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.schedule_rounded, color: TpmColors.gold, size: 21),
+                const Icon(
+                  Icons.schedule_rounded,
+                  color: TpmColors.gold,
+                  size: 21,
+                ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
@@ -95,7 +101,11 @@ class _EventRow extends StatelessWidget {
                     children: [
                       Text(
                         event.day!,
-                        style: TpmText.display(22, color: TpmColors.navy, height: 1),
+                        style: TpmText.display(
+                          22,
+                          color: TpmColors.navy,
+                          height: 1,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -108,9 +118,16 @@ class _EventRow extends StatelessWidget {
                 // so beats inventing a day that someone might plan around.
                 : Column(
                     children: [
-                      const Icon(Icons.event_rounded, color: TpmColors.navy, size: 20),
+                      const Icon(
+                        Icons.event_rounded,
+                        color: TpmColors.navy,
+                        size: 20,
+                      ),
                       const SizedBox(height: 4),
-                      Text('TBA', style: TpmText.eyebrow(size: 9.5, tracking: 1.4)),
+                      Text(
+                        'TBA',
+                        style: TpmText.eyebrow(size: 9.5, tracking: 1.4),
+                      ),
                     ],
                   ),
           ),
@@ -119,13 +136,22 @@ class _EventRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Pill(event.tag, foreground: tagFg, background: tagBg, fontSize: 9),
+                Pill(
+                  event.tag,
+                  foreground: tagFg,
+                  background: tagBg,
+                  fontSize: 9,
+                ),
                 const SizedBox(height: 6),
                 Text(event.title, style: TpmText.display(17)),
                 const SizedBox(height: 3),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 13, color: TpmColors.faint),
+                    const Icon(
+                      Icons.location_on_outlined,
+                      size: 13,
+                      color: TpmColors.faint,
+                    ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(

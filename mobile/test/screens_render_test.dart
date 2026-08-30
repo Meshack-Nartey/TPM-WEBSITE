@@ -66,7 +66,10 @@ void main() {
         child: MaterialApp(
           theme: TpmTheme.light(),
           home: wrapInScaffold
-              ? Scaffold(backgroundColor: background, body: SafeArea(child: screen))
+              ? Scaffold(
+                  backgroundColor: background,
+                  body: SafeArea(child: screen),
+                )
               : screen,
         ),
       ),
@@ -111,7 +114,7 @@ void main() {
 
   group('member & public', () {
     testWidgets('home', (t) async {
-      await pumpScreen(t, HomeScreen(onSelectTab: (_) {}));
+      await pumpScreen(t, const HomeScreen());
       expect(t.takeException(), isNull);
     });
 
@@ -325,7 +328,9 @@ void main() {
   });
 
   group('behaviour', () {
-    testWidgets('weekly report queues offline and syncs on reconnect', (t) async {
+    testWidgets('weekly report queues offline and syncs on reconnect', (
+      t,
+    ) async {
       await pumpScreen(
         t,
         const WeeklyReportScreen(embedded: true),

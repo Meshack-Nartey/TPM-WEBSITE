@@ -50,7 +50,7 @@ class _MemberShellState extends State<MemberShell> {
         child: IndexedStack(
           index: _tab.index,
           children: [
-            HomeScreen(onSelectTab: (t) => setState(() => _tab = t)),
+            const HomeScreen(),
             const MediaScreen(),
             const EventsScreen(),
             const GiveScreen(),

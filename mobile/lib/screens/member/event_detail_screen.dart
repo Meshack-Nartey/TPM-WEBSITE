@@ -14,12 +14,36 @@ class EventDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: TpmColors.canvas,
+      // Pinned to the bottom of the screen rather than trailing the
+      // description — it's the one action here, and shouldn't move with
+      // however long the description happens to be.
+      bottomNavigationBar: DecoratedBox(
+        decoration: BoxDecoration(
+          color: TpmColors.canvas,
+          border: Border(
+            top: BorderSide(color: TpmColors.faint.withValues(alpha: 0.25)),
+          ),
+        ),
+        child: SafeArea(
+          minimum: const EdgeInsets.fromLTRB(22, 12, 22, 16),
+          child: TpmButton(
+            label: 'Add to calendar',
+            icon: Icons.calendar_month_rounded,
+            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('“${event.title}” added to your calendar'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            ),
+          ),
+        ),
+      ),
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(child: _Hero(event: event)),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(22, 20, 22, 30),
+              padding: const EdgeInsets.fromLTRB(22, 40, 22, 30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -30,7 +54,7 @@ class EventDetailScreen extends StatelessWidget {
                     label: 'When',
                     value: event.when,
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 18),
                   _DetailRow(
                     icon: Icons.location_on_rounded,
                     tintBg: TpmColors.tintAmber,
@@ -38,20 +62,13 @@ class EventDetailScreen extends StatelessWidget {
                     label: 'Where',
                     value: event.location,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 28),
                   Text(
                     event.description,
-                    style: TpmText.body(14, color: TpmColors.muted, height: 1.65),
-                  ),
-                  const SizedBox(height: 20),
-                  TpmButton(
-                    label: 'Add to calendar',
-                    icon: Icons.calendar_month_rounded,
-                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('“${event.title}” added to your calendar'),
-                        behavior: SnackBarBehavior.floating,
-                      ),
+                    style: TpmText.body(
+                      14,
+                      color: TpmColors.muted,
+                      height: 1.65,
                     ),
                   ),
                 ],
@@ -74,11 +91,15 @@ class _Hero extends StatelessWidget {
     final topInset = MediaQuery.of(context).padding.top;
 
     return SizedBox(
-      height: 200 + topInset,
+      height: 280 + topInset,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          BrandedPhoto(asset: event.image, scrimOpacity: 0.55),
+          BrandedPhoto(
+            asset: event.image,
+            scrimOpacity: 0.55,
+            alignment: const Alignment(0, -0.4),
+          ),
           Positioned(
             top: topInset + 12,
             left: 20,
@@ -99,7 +120,7 @@ class _Hero extends StatelessWidget {
           Positioned(
             left: 22,
             right: 22,
-            bottom: 20,
+            bottom: 28,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -108,7 +129,7 @@ class _Hero extends StatelessWidget {
                   foreground: TpmColors.night,
                   background: TpmColors.gold,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 Text(
                   event.title,
                   style: TpmText.display(27, color: Colors.white, height: 1.15),
@@ -149,12 +170,20 @@ class _DetailRow extends StatelessWidget {
             children: [
               Text(
                 label.toUpperCase(),
-                style: TpmText.eyebrow(color: TpmColors.faint, size: 9.5, tracking: 1.2),
+                style: TpmText.eyebrow(
+                  color: TpmColors.faint,
+                  size: 9.5,
+                  tracking: 1.2,
+                ),
               ),
               const SizedBox(height: 2),
               Text(
                 value,
-                style: TpmText.body(14, color: TpmColors.ink, weight: FontWeight.w600),
+                style: TpmText.body(
+                  14,
+                  color: TpmColors.ink,
+                  weight: FontWeight.w600,
+                ),
               ),
             ],
           ),
