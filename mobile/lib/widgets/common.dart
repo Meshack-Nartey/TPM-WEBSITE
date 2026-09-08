@@ -22,11 +22,11 @@ class Eyebrow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-        text.toUpperCase(),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TpmText.eyebrow(color: color, size: size, tracking: tracking),
-      );
+    text.toUpperCase(),
+    maxLines: 1,
+    overflow: TextOverflow.ellipsis,
+    style: TpmText.eyebrow(color: color, size: size, tracking: tracking),
+  );
 }
 
 /// Section opener used on the light surface: gold eyebrow over a serif title.
@@ -88,7 +88,9 @@ class CircleBackButton extends StatelessWidget {
     return Material(
       color: dark ? TpmColors.nightSurface : TpmColors.tintIndigo,
       shape: dark
-          ? CircleBorder(side: BorderSide(color: Colors.white.withValues(alpha: 0.12)))
+          ? CircleBorder(
+              side: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+            )
           : const CircleBorder(),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -216,15 +218,15 @@ class IconTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: gradient == null ? background : null,
-          gradient: gradient,
-          borderRadius: BorderRadius.circular(radius),
-        ),
-        child: Icon(icon, color: foreground, size: iconSize ?? size * 0.45),
-      );
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      color: gradient == null ? background : null,
+      gradient: gradient,
+      borderRadius: BorderRadius.circular(radius),
+    ),
+    child: Icon(icon, color: foreground, size: iconSize ?? size * 0.45),
+  );
 }
 
 /// Small rounded-full label. Used for tags, statuses and roles everywhere.
@@ -304,8 +306,8 @@ class TpmButton extends StatelessWidget {
     this.height = 52,
     this.radius = 14,
     this.fontSize = 14.5,
-  })  : gradient = TpmColors.portalGoldGradient,
-        foreground = TpmColors.night;
+  }) : gradient = TpmColors.portalGoldGradient,
+       foreground = TpmColors.night;
 
   final String label;
   final VoidCallback? onPressed;
@@ -417,7 +419,11 @@ class TpmOutlineButton extends StatelessWidget {
                       label,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TpmText.body(13.8, color: foreground, weight: FontWeight.w700),
+                      style: TpmText.body(
+                        13.8,
+                        color: foreground,
+                        weight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ],
@@ -436,6 +442,7 @@ class BrandedPhoto extends StatelessWidget {
   const BrandedPhoto({
     super.key,
     required this.asset,
+    this.networkUrl,
     this.fit = BoxFit.cover,
     this.scrimOpacity = 0.45,
     this.goldOpacity = 0.35,
@@ -443,6 +450,11 @@ class BrandedPhoto extends StatelessWidget {
   });
 
   final String asset;
+
+  /// The podcast feed's own per-episode artwork, when there is one — falls
+  /// back to [asset] both while it loads and if the network image errors,
+  /// so a bad thumbnail URL never leaves a blank tile.
+  final String? networkUrl;
   final BoxFit fit;
   final double scrimOpacity;
   final double goldOpacity;
@@ -450,10 +462,23 @@ class BrandedPhoto extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final url = networkUrl;
     return Stack(
       fit: StackFit.expand,
       children: [
-        Image.asset(asset, fit: fit, alignment: alignment),
+        if (url != null)
+          Image.network(
+            url,
+            fit: fit,
+            alignment: alignment,
+            loadingBuilder: (context, child, progress) => progress == null
+                ? child
+                : Image.asset(asset, fit: fit, alignment: alignment),
+            errorBuilder: (context, error, stackTrace) =>
+                Image.asset(asset, fit: fit, alignment: alignment),
+          )
+        else
+          Image.asset(asset, fit: fit, alignment: alignment),
         DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -467,7 +492,9 @@ class BrandedPhoto extends StatelessWidget {
           ),
         ),
         DecoratedBox(
-          decoration: BoxDecoration(gradient: TpmColors.goldGlow(opacity: goldOpacity)),
+          decoration: BoxDecoration(
+            gradient: TpmColors.goldGlow(opacity: goldOpacity),
+          ),
         ),
       ],
     );
@@ -504,8 +531,9 @@ class TpmField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final labelColor =
-        error ? TpmColors.danger : (dark ? Colors.white.withValues(alpha: 0.5) : TpmColors.goldDeep);
+    final labelColor = error
+        ? TpmColors.danger
+        : (dark ? Colors.white.withValues(alpha: 0.5) : TpmColors.goldDeep);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -522,13 +550,16 @@ class TpmField extends StatelessWidget {
             border: Border.all(
               color: error
                   ? TpmColors.danger
-                  : (dark ? Colors.white.withValues(alpha: 0.1) : TpmColors.hairline),
+                  : (dark
+                        ? Colors.white.withValues(alpha: 0.1)
+                        : TpmColors.hairline),
               width: error ? 1.5 : 1,
             ),
           ),
           child: Row(
-            crossAxisAlignment:
-                maxLines > 1 ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+            crossAxisAlignment: maxLines > 1
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
             children: [
               if (icon != null) ...[
                 Padding(
@@ -556,7 +587,9 @@ class TpmField extends StatelessWidget {
                     hintText: hint,
                     hintStyle: TpmText.body(
                       14.5,
-                      color: dark ? Colors.white.withValues(alpha: 0.3) : TpmColors.faint,
+                      color: dark
+                          ? Colors.white.withValues(alpha: 0.3)
+                          : TpmColors.faint,
                     ),
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: icon == null ? 0 : 12,
@@ -598,9 +631,15 @@ class ChoiceChipPill extends StatelessWidget {
     final Color border;
 
     if (dark) {
-      bg = selected ? TpmColors.portalGold.withValues(alpha: 0.12) : TpmColors.nightSurface;
-      fg = selected ? TpmColors.portalGold : Colors.white.withValues(alpha: 0.55);
-      border = selected ? TpmColors.portalGold : Colors.white.withValues(alpha: 0.12);
+      bg = selected
+          ? TpmColors.portalGold.withValues(alpha: 0.12)
+          : TpmColors.nightSurface;
+      fg = selected
+          ? TpmColors.portalGold
+          : Colors.white.withValues(alpha: 0.55);
+      border = selected
+          ? TpmColors.portalGold
+          : Colors.white.withValues(alpha: 0.12);
     } else {
       bg = selected ? TpmColors.navy : TpmColors.surface;
       fg = selected ? Colors.white : TpmColors.subtle;
@@ -651,17 +690,17 @@ class InitialsAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        child: Text(
-          initials,
-          style: TpmText.body(
-            fontSize ?? size * 0.32,
-            color: Colors.white,
-            weight: FontWeight.w700,
-          ),
-        ),
-      );
+    width: size,
+    height: size,
+    alignment: Alignment.center,
+    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    child: Text(
+      initials,
+      style: TpmText.body(
+        fontSize ?? size * 0.32,
+        color: Colors.white,
+        weight: FontWeight.w700,
+      ),
+    ),
+  );
 }

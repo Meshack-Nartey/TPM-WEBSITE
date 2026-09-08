@@ -163,7 +163,7 @@ class MockData {
     title: 'Surround Yourself With Good People',
     meta: founder,
     image: 'assets/media/sunday-service.png',
-    downloaded: true,
+    youtubeId: 'lHagiZ9h09Y',
   );
 
   static const List<String> mediaFilters = [
@@ -173,31 +173,23 @@ class MockData {
     'Podcasts',
   ];
 
+  // The rest of the audio-message library — sermons and teachings the
+  // pastor's office publishes as a podcast — comes live from PodcastApi
+  // rather than being invented here; see MediaScreen.
   static const List<MediaItem> media = [
     MediaItem(
       kind: MediaKind.sermon,
       title: 'Surround Yourself With Good People',
       meta: founder,
       image: 'assets/media/sunday-service.png',
-      downloaded: true,
+      youtubeId: 'lHagiZ9h09Y',
     ),
     MediaItem(
       kind: MediaKind.sermon,
       title: 'Work As Though Unto The Lord',
       meta: founder,
       image: 'assets/media/pure-word.jpg',
-    ),
-    MediaItem(
-      kind: MediaKind.teaching,
-      title: 'Pure Word',
-      meta: 'Teaching series',
-      image: 'assets/media/music.jpg',
-    ),
-    MediaItem(
-      kind: MediaKind.podcast,
-      title: 'TPM Live',
-      meta: 'Streamed on YouTube · @TPMLIVE',
-      image: 'assets/media/podcast.jpg',
+      youtubeId: '-iFztkwOLnc',
     ),
   ];
 

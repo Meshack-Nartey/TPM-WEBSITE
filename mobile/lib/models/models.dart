@@ -42,6 +42,10 @@ class AppUser {
     required this.email,
     required this.role,
     this.branch,
+    this.phone,
+    this.department,
+    this.fellowship,
+    this.dateJoined,
   });
 
   final String id;
@@ -52,6 +56,14 @@ class AppUser {
   final AppRole role;
   final String? branch;
 
+  // The registration form doesn't collect these yet, so a real account's
+  // values are the schema defaults ('') until that changes — treated the
+  // same as null wherever they're displayed.
+  final String? phone;
+  final String? department;
+  final String? fellowship;
+  final String? dateJoined;
+
   factory AppUser.fromJson(Map<String, dynamic> json) => AppUser(
     id: json['id'] as String,
     firstName: json['firstName'] as String? ?? '',
@@ -60,6 +72,10 @@ class AppUser {
     email: json['email'] as String? ?? '',
     role: roleFromApi(json['role'] as String?),
     branch: json['branch'] as String?,
+    phone: json['phone'] as String?,
+    department: json['department'] as String?,
+    fellowship: json['fellowship'] as String?,
+    dateJoined: json['dateJoined'] as String?,
   );
 
   Map<String, dynamic> toJson() => {
@@ -70,6 +86,10 @@ class AppUser {
     'email': email,
     'role': role.name.toUpperCase(),
     'branch': branch,
+    'phone': phone,
+    'department': department,
+    'fellowship': fellowship,
+    'dateJoined': dateJoined,
   };
 }
 
@@ -129,6 +149,10 @@ class MediaItem {
     required this.meta,
     required this.image,
     this.downloaded = false,
+    this.youtubeId,
+    this.audioUrl,
+    this.thumbnailUrl,
+    this.duration,
   });
 
   final MediaKind kind;
@@ -138,6 +162,31 @@ class MediaItem {
 
   /// Saved for offline — shows a green check instead of the download arrow.
   final bool downloaded;
+
+  /// The real video's ID on `@TPMLIVE`, when this message has one. Plays in
+  /// an embedded YouTube player rather than handing off to the YouTube app —
+  /// but per YouTube's terms that also means it can never be downloaded, so
+  /// [downloaded] and the download action are meaningless when this is set.
+  final String? youtubeId;
+
+  /// Direct mp3 URL from the ministry's audio-message podcast feed (hosted
+  /// free on Anchor/Spotify's own CDN). Unlike YouTube, this one genuinely
+  /// can be downloaded for offline listening.
+  final String? audioUrl;
+
+  /// The episode's own artwork from the podcast feed (Anchor/Spotify's
+  /// CDN) — the real cover art the show was published with, rather than
+  /// [image]'s generic stand-in photo.
+  final String? thumbnailUrl;
+
+  /// The feed's own `itunes:duration`, when it has one — used in place of
+  /// the audio player's own reading, which some of these episodes' mp3s
+  /// (missing a proper VBR header) leave it under-reporting by up to an
+  /// hour on files over about 40 minutes long.
+  final Duration? duration;
+
+  bool get hasVideo => youtubeId != null;
+  bool get hasAudio => audioUrl != null;
 }
 
 class EventItem {
@@ -188,12 +237,32 @@ class GivingChannel {
   const GivingChannel({
     required this.name,
     required this.logo,
-    required this.detail,
+    required this.accountName,
+    required this.number,
+    required this.numberLabel,
+    this.isBank = false,
   });
 
   final String name;
   final String logo;
-  final String detail;
+
+  /// Whose account it is. Not always the ministry — the Telecel Cash line is
+  /// held in the founder's name, and saying so avoids a giver second-guessing
+  /// the name that comes up on their phone.
+  final String accountName;
+
+  /// Grouped for reading (`055 447 6730`), not for dialling.
+  final String number;
+
+  /// What the number is called on this channel — a MoMo Pay ID, a phone
+  /// number and a bank account number are not interchangeable.
+  final String numberLabel;
+
+  final bool isBank;
+
+  /// Spaces stripped, so what lands on the clipboard can be pasted straight
+  /// into a transfer form.
+  String get copyValue => number.replaceAll(' ', '');
 }
 
 class Branch {
@@ -203,7 +272,6 @@ class Branch {
     required this.address,
     this.phone,
     this.email,
-    this.photo,
   });
 
   final String name;
@@ -211,9 +279,6 @@ class Branch {
   final String address;
   final String? phone;
   final String? email;
-
-  /// The branch's resident pastor — shown as a small avatar on the card.
-  final String? photo;
 }
 
 /// One of the fifteen worker groups members can serve in — the website's
