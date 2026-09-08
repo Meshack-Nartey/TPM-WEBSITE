@@ -8,9 +8,14 @@ import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import 'player_screen.dart';
 
-/// Sermons, teachings and podcasts. The download state is deliberately visible
-/// on every row — patchy data is the norm, so "do I already have this?" is a
-/// first-class question rather than something buried in a detail screen.
+/// Which source a message plays from — the two are different enough in kind
+/// (a ~1,300-episode audio feed vs. two YouTube videos) that a shared
+/// "category" filter chip row undersold both; a tab each fits better.
+enum _MediaTab { podcasts, youtube }
+
+/// Sermons and audio messages. The download state is deliberately visible on
+/// every podcast row — patchy data is the norm, so "do I already have this?"
+/// is a first-class question rather than something buried in a detail screen.
 class MediaScreen extends StatefulWidget {
   const MediaScreen({super.key});
 
@@ -19,7 +24,7 @@ class MediaScreen extends StatefulWidget {
 }
 
 class _MediaScreenState extends State<MediaScreen> {
-  int _filter = 0;
+  _MediaTab _tab = _MediaTab.podcasts;
   final _search = TextEditingController();
   String _query = '';
 
@@ -61,26 +66,17 @@ class _MediaScreenState extends State<MediaScreen> {
   }
 
   List<MediaItem> get _visible {
-    var items = _items;
-    if (_filter != 0) {
-      final wanted = switch (_filter) {
-        1 => MediaKind.sermon,
-        2 => MediaKind.teaching,
-        _ => MediaKind.podcast,
-      };
-      items = items.where((m) => m.kind == wanted).toList();
-    }
-    if (_query.isNotEmpty) {
-      items = items
-          .where((m) => m.title.toLowerCase().contains(_query))
-          .toList();
-    }
-    return items;
+    final source = _items.where(
+      (m) => _tab == _MediaTab.podcasts ? m.hasAudio : m.hasVideo,
+    );
+    if (_query.isEmpty) return source.toList();
+    return source.where((m) => m.title.toLowerCase().contains(_query)).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final items = _visible;
+    final onPodcasts = _tab == _MediaTab.podcasts;
 
     return ListView(
       // The shell's tab bar floats over the body (extendBody: true), so the
@@ -94,33 +90,39 @@ class _MediaScreenState extends State<MediaScreen> {
         const SizedBox(height: 14),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 22),
-          child: _SearchField(controller: _search),
+          child: Row(
+            children: [
+              ChoiceChipPill(
+                label: 'Podcasts',
+                selected: onPodcasts,
+                expand: true,
+                onTap: () => setState(() => _tab = _MediaTab.podcasts),
+              ),
+              const SizedBox(width: 10),
+              ChoiceChipPill(
+                label: 'YouTube',
+                selected: !onPodcasts,
+                expand: true,
+                onTap: () => setState(() => _tab = _MediaTab.youtube),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 38,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 22),
-            itemCount: MockData.mediaFilters.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 8),
-            itemBuilder: (context, i) => ChoiceChipPill(
-              label: MockData.mediaFilters[i],
-              selected: i == _filter,
-              onTap: () => setState(() => _filter = i),
-            ),
-          ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 22),
+          child: _SearchField(controller: _search, onPodcasts: onPodcasts),
         ),
         const SizedBox(height: 16),
         if (items.isEmpty)
-          _NoMedia(searching: _query.isNotEmpty)
+          _NoMedia(searching: _query.isNotEmpty, onPodcasts: onPodcasts)
         else
           for (final item in items)
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 0, 22, 12),
               child: _MediaRow(item: item),
             ),
-        if (_loadingEpisodes) const _LoadingMoreMessages(),
+        if (onPodcasts && _loadingEpisodes) const _LoadingMoreMessages(),
       ],
     );
   }
@@ -214,12 +216,14 @@ class _LoadingMoreMessages extends StatelessWidget {
 }
 
 class _NoMedia extends StatelessWidget {
-  const _NoMedia({required this.searching});
+  const _NoMedia({required this.searching, required this.onPodcasts});
 
   final bool searching;
+  final bool onPodcasts;
 
   @override
   Widget build(BuildContext context) {
+    final kind = onPodcasts ? 'podcast episodes' : 'videos';
     return Padding(
       padding: const EdgeInsets.fromLTRB(22, 20, 22, 0),
       child: Container(
@@ -242,9 +246,7 @@ class _NoMedia extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Text(
-              searching
-                  ? 'No messages match that search'
-                  : 'Nothing in this category yet',
+              searching ? 'No messages match that search' : 'No $kind yet',
               style: TpmText.body(
                 14.5,
                 color: TpmColors.ink,
@@ -267,9 +269,10 @@ class _NoMedia extends StatelessWidget {
 }
 
 class _SearchField extends StatelessWidget {
-  const _SearchField({required this.controller});
+  const _SearchField({required this.controller, required this.onPodcasts});
 
   final TextEditingController controller;
+  final bool onPodcasts;
 
   @override
   Widget build(BuildContext context) {
@@ -291,7 +294,9 @@ class _SearchField extends StatelessWidget {
               decoration: InputDecoration(
                 isDense: true,
                 border: InputBorder.none,
-                hintText: 'Search sermons, teachings, podcasts…',
+                hintText: onPodcasts
+                    ? 'Search podcast episodes…'
+                    : 'Search videos…',
                 hintStyle: TpmText.body(14.5, color: TpmColors.faint),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 12,

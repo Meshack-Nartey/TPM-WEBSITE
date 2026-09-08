@@ -166,13 +166,6 @@ class MockData {
     youtubeId: 'lHagiZ9h09Y',
   );
 
-  static const List<String> mediaFilters = [
-    'All',
-    'Sermons',
-    'Teachings',
-    'Podcasts',
-  ];
-
   // The rest of the audio-message library — sermons and teachings the
   // pastor's office publishes as a podcast — comes live from PodcastApi
   // rather than being invented here; see MediaScreen.
