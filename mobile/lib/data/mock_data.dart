@@ -294,83 +294,63 @@ class MockData {
     ),
   ];
 
-  /// The real giving channels advertised on the website.
+  /// The real giving accounts, exactly as `frontend/give.html` publishes them.
+  /// Anyone changing a number here must change it there too.
   static const List<GivingChannel> givingChannels = [
+    GivingChannel(
+      name: 'MTN Momo Pay ID',
+      logo: 'assets/give/mtn-momo.png',
+      accountName: ministryName,
+      number: '074 329',
+      numberLabel: 'Pay ID',
+    ),
     GivingChannel(
       name: 'MTN Mobile Money',
       logo: 'assets/give/mtn-momo.png',
-      detail: 'Merchant details on the giving page',
+      accountName: ministryName,
+      number: '055 447 6730',
+      numberLabel: 'Number',
     ),
     GivingChannel(
       name: 'Telecel Cash',
       logo: 'assets/give/telecel-cash.png',
-      detail: 'Merchant details on the giving page',
+      accountName: 'Ofori Andrews',
+      number: '050 091 0191',
+      numberLabel: 'Number',
     ),
     GivingChannel(
-      name: 'Stanbic Bank',
+      name: 'Stanbic Bank Ghana',
       logo: 'assets/give/stanbic-bank.png',
-      detail: 'Account details on the giving page',
+      accountName: ministryName,
+      number: '904 000 970 3211',
+      numberLabel: 'Account Number',
+      isBank: true,
     ),
   ];
+
+  /// Shown under the accounts. The ministry has no automatic reconciliation,
+  /// so a giver telling them is the only way a gift gets acknowledged.
+  static const String givingNote =
+      'After sending, please let us know through the contact page so we can '
+      'acknowledge your gift and keep accurate records. God bless you!';
 
   // ---- Branches: the nine SPRING congregations ----
   static const List<Branch> branches = [
     Branch(
       name: 'DAYSPRING',
-      region: 'Head office',
+      region: 'Branch',
       address: officeAddress,
       phone: officePhone,
       email: officeEmail,
-      photo: 'assets/branches/dayspring.jpg',
     ),
-    Branch(
-      name: 'GLORYSPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/gloryspring.webp',
-    ),
-    Branch(
-      name: 'GOODNEWSSPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/goodnewsspring.webp',
-    ),
-    Branch(
-      name: 'FAITHSPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/faithspring.webp',
-    ),
-    Branch(
-      name: 'LOYALTYSPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/loyaltyspring.jpg',
-    ),
-    Branch(
-      name: 'GRACESPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/gracespring.webp',
-    ),
-    Branch(
-      name: 'UNITYSPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/unityspring.webp',
-    ),
-    Branch(
-      name: 'PEACESPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/peacespring.webp',
-    ),
-    Branch(
-      name: 'SALVATIONSPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/salvationspring.webp',
-    ),
+    Branch(name: 'GLORYSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'GOODNEWSSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'FAITHSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'LOYALTYSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'GRACESPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'UNITYSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'PEACESPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'SALVATIONSPRING', region: 'Branch', address: 'Kumasi'),
   ];
 
   static List<String> get branchNames => branches.map((b) => b.name).toList();

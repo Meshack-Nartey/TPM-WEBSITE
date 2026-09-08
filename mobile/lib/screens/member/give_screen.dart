@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
@@ -7,17 +8,21 @@ import '../../widgets/common.dart';
 
 /// Giving, handled honestly.
 ///
-/// In-app payment isn't built yet, so the screen says so plainly and hands off
-/// to the existing web giving page rather than dressing up a dead end. The real
-/// MTN MoMo / Telecel Cash / Stanbic marks are shown up front so people can see
-/// their channel is supported before they leave the app.
+/// In-app payment isn't built yet, so rather than bouncing people out to the
+/// web this screen carries the ministry's actual MoMo and bank accounts, each
+/// with a one-tap copy — the same numbers `frontend/give.html` publishes.
 class GiveScreen extends StatelessWidget {
   const GiveScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final momo = MockData.givingChannels.where((c) => !c.isBank);
+    final banks = MockData.givingChannels.where((c) => c.isBank);
+
     return ListView(
-      padding: const EdgeInsets.only(top: 20, bottom: 24),
+      // The shell's tab bar floats over the body (extendBody: true), so the
+      // last card needs real clearance or it ends up sitting behind it.
+      padding: const EdgeInsets.only(top: 20, bottom: 110),
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 22),
@@ -25,10 +30,28 @@ class GiveScreen extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         const _GiveOptionsGrid(),
+        const SizedBox(height: 22),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 22),
+          child: Eyebrow('Mobile Money'),
+        ),
         const SizedBox(height: 12),
-        const _WebHandoffCard(),
-        const SizedBox(height: 14),
-        const _ChannelStrip(),
+        for (final channel in momo) ...[
+          _AccountCard(channel: channel),
+          const SizedBox(height: 10),
+        ],
+        const SizedBox(height: 10),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 22),
+          child: Eyebrow('Bank Transfer'),
+        ),
+        const SizedBox(height: 12),
+        for (final channel in banks) ...[
+          _AccountCard(channel: channel),
+          const SizedBox(height: 10),
+        ],
+        const SizedBox(height: 4),
+        const _GivingNote(),
         const SizedBox(height: 14),
         const _ComingLater(),
       ],
@@ -98,7 +121,11 @@ class _GiveTile extends StatelessWidget {
             option.label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TpmText.body(14.5, color: TpmColors.ink, weight: FontWeight.w700),
+            style: TpmText.body(
+              14.5,
+              color: TpmColors.ink,
+              weight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 3),
           Text(
@@ -113,65 +140,85 @@ class _GiveTile extends StatelessWidget {
   }
 }
 
-class _WebHandoffCard extends StatelessWidget {
-  const _WebHandoffCard();
+/// One real account, with the number sized to be read off the screen and
+/// copied without typing it out.
+class _AccountCard extends StatelessWidget {
+  const _AccountCard({required this.channel});
+
+  final GivingChannel channel;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 22),
       child: TpmCard(
-        radius: 20,
-        padding: const EdgeInsets.all(20),
-        shadow: TpmShadows.raised,
+        radius: 18,
+        padding: const EdgeInsets.all(16),
         border: Border.all(color: TpmColors.navy.withValues(alpha: 0.06)),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const IconTile(
-                  icon: Icons.shield_rounded,
-                  background: TpmColors.tintBlue,
-                  foreground: TpmColors.navy,
+                Container(
+                  width: 46,
+                  height: 46,
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: TpmColors.surface,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: TpmColors.hairline),
+                  ),
+                  child: Image.asset(
+                    channel.logo,
+                    fit: BoxFit.contain,
+                    semanticLabel: channel.name,
+                  ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Secure giving on the web',
+                        channel.name,
                         style: TpmText.body(
                           14.5,
                           color: TpmColors.ink,
                           weight: FontWeight.w700,
                         ),
                       ),
-                      Text('Opens the TPM giving page', style: TpmText.body(11.5)),
+                      const SizedBox(height: 2),
+                      Text(
+                        channel.accountName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TpmText.body(11.5),
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 14),
-            Text(
-              "For now, giving happens on our trusted web portal — you'll continue "
-              "in an in-app browser and return here when you're done.",
-              style: TpmText.body(12.8, color: TpmColors.muted, height: 1.6),
-            ),
-            const SizedBox(height: 16),
-            TpmButton(
-              label: 'Continue to giving',
-              icon: Icons.open_in_new_rounded,
-              gradient: TpmColors.goldGradient,
-              foreground: TpmColors.night,
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Opens transformationpm.org/give in an in-app browser'),
-                  behavior: SnackBarBehavior.floating,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Eyebrow(channel.numberLabel, size: 9.5, tracking: 1.2),
+                      const SizedBox(height: 3),
+                      Text(
+                        channel.number,
+                        style: TpmText.display(19, color: TpmColors.navy),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                _CopyButton(channel: channel),
+              ],
             ),
           ],
         ),
@@ -180,43 +227,91 @@ class _WebHandoffCard extends StatelessWidget {
   }
 }
 
-/// The channels already advertised on the website, shown with their real marks.
-class _ChannelStrip extends StatelessWidget {
-  const _ChannelStrip();
+class _CopyButton extends StatelessWidget {
+  const _CopyButton({required this.channel});
+
+  final GivingChannel channel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: TpmColors.tintAmber,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () async {
+          await Clipboard.setData(ClipboardData(text: channel.copyValue));
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${channel.name} ${channel.numberLabel} copied'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.copy_rounded,
+                size: 15,
+                color: TpmColors.goldDeep,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'Copy',
+                style: TpmText.body(
+                  12.5,
+                  color: TpmColors.goldDeep,
+                  weight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Nothing reconciles these transfers automatically, so the ask to tell the
+/// office is the actual process, not a courtesy.
+class _GivingNote extends StatelessWidget {
+  const _GivingNote();
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 22),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Eyebrow('Accepted channels'),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              for (var i = 0; i < MockData.givingChannels.length; i++) ...[
-                if (i > 0) const SizedBox(width: 10),
-                Expanded(
-                  child: Container(
-                    height: 62,
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: TpmColors.surface,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: TpmColors.hairline),
-                    ),
-                    child: Image.asset(
-                      MockData.givingChannels[i].logo,
-                      fit: BoxFit.contain,
-                      semanticLabel: MockData.givingChannels[i].name,
-                    ),
-                  ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: TpmColors.tintBlue,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(
+              Icons.notifications_active_rounded,
+              size: 18,
+              color: TpmColors.navy,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                MockData.givingNote,
+                style: TpmText.body(
+                  12.5,
+                  color: TpmColors.inkSoft,
+                  height: 1.6,
                 ),
-              ],
-            ],
-          ),
-        ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -253,7 +348,11 @@ class _ComingLater extends StatelessWidget {
                 children: [
                   Text(
                     'In-app giving — coming later',
-                    style: TpmText.body(13, color: TpmColors.subtle, weight: FontWeight.w700),
+                    style: TpmText.body(
+                      13,
+                      color: TpmColors.subtle,
+                      weight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(

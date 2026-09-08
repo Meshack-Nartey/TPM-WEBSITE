@@ -32,107 +32,77 @@ class MoreScreen extends StatelessWidget {
         Icons.info_rounded,
         TpmColors.tintBlue,
         TpmColors.navy,
-        const AboutScreen()
+        const AboutScreen(),
       ),
       (
         'Announcements',
         Icons.newspaper_rounded,
         TpmColors.tintIndigo,
         TpmColors.navy,
-        const AnnouncementsScreen()
+        const AnnouncementsScreen(),
       ),
       (
         'Books & Resources',
         Icons.menu_book_rounded,
         TpmColors.tintViolet,
         TpmColors.violet,
-        const BooksScreen()
+        const BooksScreen(),
       ),
       (
-        'Find us / Branches',
+        'Branches',
         Icons.map_rounded,
         TpmColors.tintBlue,
         TpmColors.navy,
-        const BranchesScreen()
+        const BranchesScreen(),
       ),
       (
         'Missions',
         Icons.public_rounded,
         TpmColors.tintGreen,
         TpmColors.green,
-        const MissionsScreen()
+        const MissionsScreen(),
       ),
       (
         'My Profile',
         Icons.person_rounded,
         TpmColors.tintAmber,
         TpmColors.goldDeep,
-        const ProfileScreen()
+        const ProfileScreen(),
       ),
     ];
 
     return ListView(
-      padding: const EdgeInsets.only(top: 20, bottom: 24),
+      // The shell's tab bar floats over the body (extendBody: true), so the
+      // last card needs real clearance or it ends up sitting behind it.
+      padding: const EdgeInsets.only(top: 20, bottom: 110),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 22),
-          child: Text('More', style: TpmText.display(27)),
+          child: Text(
+            'More',
+            textAlign: TextAlign.center,
+            style: TpmText.display(27),
+          ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 18),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 22),
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              color: TpmColors.surface,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: TpmShadows.card,
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: items.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.05,
             ),
-            child: Column(
-              children: [
-                for (var i = 0; i < items.length; i++)
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () => pushScreen(context, items[i].$5),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        decoration: BoxDecoration(
-                          border: i == 0
-                              ? null
-                              : const Border(top: BorderSide(color: TpmColors.divider)),
-                        ),
-                        child: Row(
-                          children: [
-                            IconTile(
-                              icon: items[i].$2,
-                              background: items[i].$3,
-                              foreground: items[i].$4,
-                              size: 34,
-                              radius: 10,
-                              iconSize: 17,
-                            ),
-                            const SizedBox(width: 13),
-                            Expanded(
-                              child: Text(
-                                items[i].$1,
-                                style: TpmText.body(
-                                  14.5,
-                                  color: TpmColors.ink,
-                                  weight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            const Icon(
-                              Icons.chevron_right_rounded,
-                              color: Color(0xFFCBD5E1),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
+            itemBuilder: (context, i) => _MoreTile(
+              label: items[i].$1,
+              icon: items[i].$2,
+              tintBg: items[i].$3,
+              tintFg: items[i].$4,
+              onTap: () => pushScreen(context, items[i].$5),
             ),
           ),
         ),
@@ -144,10 +114,10 @@ class MoreScreen extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 22),
-          child: TextButton(
-            onPressed: () {
+        Center(
+          child: _SignOutButton(
+            signedIn: session.isSignedIn,
+            onTap: () {
               session.signOut();
               // MemberShell replaced the whole stack on entry (see
               // MemberShell.enter), so it's the only route there is —
@@ -157,13 +127,120 @@ class MoreScreen extends StatelessWidget {
                 (route) => false,
               );
             },
-            child: Text(
-              session.isSignedIn ? 'Sign out' : 'Sign in',
-              style: TpmText.body(13.5, color: TpmColors.subtle, weight: FontWeight.w600),
-            ),
           ),
         ),
       ],
+    );
+  }
+}
+
+/// A destructive action should not read like every other quiet text link —
+/// signing out gets a filled, danger-tinted pill instead. Signing in isn't
+/// destructive, so it keeps a plain, low-emphasis look.
+class _SignOutButton extends StatelessWidget {
+  const _SignOutButton({required this.signedIn, required this.onTap});
+
+  final bool signedIn;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!signedIn) {
+      return TextButton(
+        onPressed: onTap,
+        child: Text(
+          'Sign in',
+          style: TpmText.body(
+            13.5,
+            color: TpmColors.subtle,
+            weight: FontWeight.w600,
+          ),
+        ),
+      );
+    }
+
+    return Material(
+      color: TpmColors.danger.withValues(alpha: 0.12),
+      borderRadius: BorderRadius.circular(99),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 11),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.logout_rounded,
+                size: 16,
+                color: TpmColors.danger,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Sign out',
+                style: TpmText.body(
+                  13.5,
+                  color: TpmColors.danger,
+                  weight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// One centered tile in the More grid — icon above label, the whole square
+/// tappable rather than a chevron-terminated row.
+class _MoreTile extends StatelessWidget {
+  const _MoreTile({
+    required this.label,
+    required this.icon,
+    required this.tintBg,
+    required this.tintFg,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final Color tintBg;
+  final Color tintFg;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return TpmCard(
+      radius: 18,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconTile(
+            icon: icon,
+            background: tintBg,
+            foreground: tintFg,
+            size: 44,
+            radius: 13,
+            iconSize: 21,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TpmText.body(
+              13,
+              color: TpmColors.ink,
+              weight: FontWeight.w600,
+              height: 1.25,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -221,7 +298,10 @@ class _PortalEntry extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, color: TpmColors.portalGold),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: TpmColors.portalGold,
+              ),
             ],
           ),
         ),

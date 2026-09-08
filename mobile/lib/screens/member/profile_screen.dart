@@ -44,7 +44,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 16),
             const _IdentityCard(),
             const SizedBox(height: 14),
-            _DetailsCard(onRequest: _showRequestSheet),
+            _DetailsCard(
+              user: AppSession.of(context).user,
+              onRequest: _showRequestSheet,
+            ),
             const SizedBox(height: 14),
             _NotificationsCard(
               values: _notifications,
@@ -177,9 +180,31 @@ class _IdentityCard extends StatelessWidget {
 }
 
 class _DetailsCard extends StatelessWidget {
-  const _DetailsCard({required this.onRequest});
+  const _DetailsCard({required this.user, required this.onRequest});
 
+  final AppUser? user;
   final VoidCallback onRequest;
+
+  /// The signed-in account's own fields when there is one — the guest and
+  /// role-preview paths (no real account) fall back to the design board's
+  /// sample member, same as [_IdentityCard]. Optional fields the
+  /// registration form doesn't collect yet (phone, fellowship, ...) show as
+  /// "Not set" for a real account rather than a fabricated example value.
+  List<ProfileField> get _fields {
+    final u = user;
+    if (u == null) return MockData.profileFields;
+
+    String orNotSet(String? value) =>
+        value?.trim().isNotEmpty == true ? value! : 'Not set';
+
+    return [
+      ProfileField(label: 'Full name', value: orNotSet(u.fullName)),
+      ProfileField(label: 'Email', value: orNotSet(u.email)),
+      ProfileField(label: 'Phone', value: orNotSet(u.phone)),
+      ProfileField(label: 'Branch', value: orNotSet(u.branch)),
+      ProfileField(label: 'Fellowship', value: orNotSet(u.fellowship)),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +224,7 @@ class _DetailsCard extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(16, 12, 16, 6),
               child: Eyebrow('Personal details', size: 10),
             ),
-            for (final field in MockData.profileFields)
+            for (final field in _fields)
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
