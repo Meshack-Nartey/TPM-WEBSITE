@@ -34,12 +34,12 @@ class TpmColors {
   static const Color goldDeep = Color(0xFFB8941F);
 
   // ---- Portal / work mode (dark) ----
-  static const Color night = Color(0xFF080808);
-  // A card only ~9 shades lighter than the page it sits on reads as one flat
-  // black field rather than a card — these sit further up so cards actually
-  // separate from the background instead of just implying one via a border.
-  static const Color nightSurface = Color(0xFF19191A);
-  static const Color nightRaised = Color(0xFF222224);
+  // A proper graphite dark mode (in the range iOS/Material system dark
+  // themes use) rather than near-black — near-black plus low-opacity white
+  // text was reading as illegibly dark rather than "a dark theme."
+  static const Color night = Color(0xFF19191C);
+  static const Color nightSurface = Color(0xFF232327);
+  static const Color nightRaised = Color(0xFF2E2E33);
   static const Color nightCanvas = Color(0xFF0F1420);
   static const Color portalGold = Color(0xFFC9A84C);
   static const Color portalGoldDeep = Color(0xFFA07830);
