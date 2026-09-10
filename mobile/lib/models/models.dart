@@ -105,6 +105,7 @@ String initialsOf(String fullName) {
 
 class Announcement {
   const Announcement({
+    this.id,
     required this.tag,
     required this.title,
     this.excerpt = '',
@@ -112,6 +113,10 @@ class Announcement {
     this.body = '',
     this.flyer,
   });
+
+  /// Null for the design board's mock entries — set for anything that came
+  /// from the real API.
+  final String? id;
 
   final String tag;
   final String title;
@@ -122,8 +127,28 @@ class Announcement {
   final String body;
 
   /// The event's printed flyer, when one exists — shown in place of the tag
-  /// pill so the announcement reads the same as it does on the website.
+  /// pill so the announcement reads the same as it does on the website. Real
+  /// announcements never carry one; the API has no field for it yet.
   final String? flyer;
+
+  /// The real API only stores one block of text (`body`) — the list's
+  /// shorter teaser is derived from it here rather than being a second
+  /// field someone has to fill in separately.
+  factory Announcement.fromJson(Map<String, dynamic> json) {
+    final body = json['body'] as String? ?? '';
+    const excerptLength = 120;
+    final excerpt = body.length > excerptLength
+        ? '${body.substring(0, excerptLength).trimRight()}…'
+        : body;
+    return Announcement(
+      id: json['id'] as String?,
+      tag: json['tag'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      excerpt: excerpt,
+      date: json['date'] as String? ?? '',
+      body: body,
+    );
+  }
 }
 
 enum MediaKind { sermon, teaching, podcast }

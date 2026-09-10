@@ -7,6 +7,7 @@ import '../models/models.dart';
 import '../screens/admin/access_screen.dart';
 import '../screens/admin/admin_overview_screen.dart';
 import '../screens/admin/approvals_screen.dart';
+import '../screens/admin/compose_screen.dart';
 import '../screens/admin/manage_lists_screen.dart';
 import '../screens/leader/leader_dashboard_screen.dart';
 import '../screens/leader/register_member_screen.dart';
@@ -293,13 +294,20 @@ class _PortalMoreScreen extends StatelessWidget {
           Icons.tune_rounded,
           () => pushScreen(context, const ManageListsScreen()),
         )
-      else
+      else ...[
         (
           'Register new member',
           'Add someone to this branch',
           Icons.person_add_rounded,
           () => pushScreen(context, const RegisterMemberScreen()),
         ),
+        (
+          'Compose announcement',
+          'Post to the whole church — the media team\'s job',
+          Icons.campaign_rounded,
+          () => pushScreen(context, const ComposeScreen()),
+        ),
+      ],
       (
         'Data states & rigor',
         'Loading · empty · error · sync',

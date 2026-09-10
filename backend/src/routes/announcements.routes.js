@@ -8,10 +8,10 @@ import { validateBody } from '../middleware/validate.js';
 
 const router = Router();
 
-// GET /api/announcements  — readable by any authenticated user.
+// GET /api/announcements  — public, same as the news feed on the website;
+// a guest browsing the app before ever signing in should still see it.
 router.get(
   '/',
-  authenticate,
   asyncHandler(async (_req, res) => {
     const announcements = await prisma.announcement.findMany({
       where: { active: true },
@@ -30,11 +30,13 @@ const schema = z.object({
   sortOrder: z.coerce.number().int().optional().default(0),
 });
 
-// Create / update / delete are admin-only.
+// Create / update / delete: admins, and leaders (the media team runs this
+// day to day — restricting it to admins only meant every flyer had to go
+// through the pastor's office).
 router.post(
   '/',
   authenticate,
-  requireRole('ADMIN'),
+  requireRole('LEADER', 'ADMIN'),
   validateBody(schema),
   asyncHandler(async (req, res) => {
     const announcement = await prisma.announcement.create({ data: req.body });
@@ -45,7 +47,7 @@ router.post(
 router.patch(
   '/:id',
   authenticate,
-  requireRole('ADMIN'),
+  requireRole('LEADER', 'ADMIN'),
   validateBody(schema.partial()),
   asyncHandler(async (req, res) => {
     const announcement = await prisma.announcement.update({
@@ -59,7 +61,7 @@ router.patch(
 router.delete(
   '/:id',
   authenticate,
-  requireRole('ADMIN'),
+  requireRole('LEADER', 'ADMIN'),
   asyncHandler(async (req, res) => {
     await prisma.announcement.delete({ where: { id: req.params.id } });
     res.json({ ok: true });

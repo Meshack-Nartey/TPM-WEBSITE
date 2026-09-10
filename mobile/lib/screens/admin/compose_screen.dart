@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../app/session.dart';
 import '../../data/mock_data.dart';
+import '../../services/announcements_api.dart';
+import '../../services/auth_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 
-/// Where announcements and events on the member surface come from.
+/// Where announcements on the member surface come from.
 ///
-/// Audience is a first-class field, not a setting buried behind a gear. A post
-/// that goes to every branch reads very differently from one meant for Kumasi
-/// Central, and the office should have to look at that choice before publishing.
+/// Events aren't wired here — the API has no way to create one yet, only
+/// announcements — so picking "Event" explains that rather than pretending
+/// to publish something that goes nowhere.
 class ComposeScreen extends StatefulWidget {
   const ComposeScreen({super.key});
 
@@ -19,6 +22,61 @@ class ComposeScreen extends StatefulWidget {
 class _ComposeScreenState extends State<ComposeScreen> {
   bool _isAnnouncement = true;
   int _tag = 0;
+  bool _publishing = false;
+  String? _error;
+
+  final _titleController = TextEditingController();
+  final _messageController = TextEditingController();
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _publish() async {
+    final title = _titleController.text.trim();
+    final message = _messageController.text.trim();
+    if (title.isEmpty || message.isEmpty) {
+      setState(() => _error = 'Give it a title and a message.');
+      return;
+    }
+
+    final token = AppSession.of(context).token;
+    if (token == null) {
+      setState(() => _error = 'Sign in to publish.');
+      return;
+    }
+
+    setState(() {
+      _publishing = true;
+      _error = null;
+    });
+
+    try {
+      await const AnnouncementsApi().create(
+        token: token,
+        tag: MockData.composeTags[_tag],
+        title: title,
+        body: message,
+      );
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Announcement published to all branches'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _publishing = false;
+        _error = e.message;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +98,11 @@ class _ComposeScreenState extends State<ComposeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Eyebrow('New post', color: TpmColors.portalGold, size: 10),
+                      const Eyebrow(
+                        'New post',
+                        color: TpmColors.portalGold,
+                        size: 10,
+                      ),
                       const SizedBox(height: 3),
                       Text(
                         'Publish',
@@ -73,6 +135,43 @@ class _ComposeScreenState extends State<ComposeScreen> {
                 ),
               ],
             ),
+            if (!_isAnnouncement) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: TpmColors.warning.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(13),
+                  border: Border.all(
+                    color: TpmColors.warning.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.info_outline_rounded,
+                      size: 16,
+                      color: TpmColors.warning,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        "Events aren't published from here yet — post this "
+                        'as an announcement instead for now.',
+                        style: TpmText.body(
+                          12,
+                          color: TpmColors.portalInk,
+                          weight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             _FieldLabel('Tag'),
             const SizedBox(height: 8),
@@ -90,20 +189,33 @@ class _ComposeScreenState extends State<ComposeScreen> {
               ],
             ),
             const SizedBox(height: 16),
-            const TpmField(
+            TpmField(
               label: 'Title',
               hint: 'Give it a clear title',
               dark: true,
+              controller: _titleController,
             ),
             const SizedBox(height: 16),
-            const TpmField(
+            TpmField(
               label: 'Message',
               hint: 'Write the announcement…',
               dark: true,
               maxLines: 5,
+              controller: _messageController,
             ),
             const SizedBox(height: 16),
             const _AudienceRow(),
+            if (_error != null) ...[
+              const SizedBox(height: 14),
+              Text(
+                _error!,
+                style: TpmText.body(
+                  12.5,
+                  color: TpmColors.danger,
+                  weight: FontWeight.w600,
+                ),
+              ),
+            ],
             const SizedBox(height: 22),
             Row(
               children: [
@@ -120,21 +232,12 @@ class _ComposeScreenState extends State<ComposeScreen> {
                 Expanded(
                   flex: 3,
                   child: TpmButton.gold(
-                    label: 'Publish',
+                    label: _publishing ? 'Publishing…' : 'Publish',
                     icon: Icons.send_rounded,
                     height: 50,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '${_isAnnouncement ? 'Announcement' : 'Event'} published '
-                            'to all branches',
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    },
+                    onPressed: (!_isAnnouncement || _publishing)
+                        ? null
+                        : _publish,
                   ),
                 ),
               ],
@@ -153,13 +256,13 @@ class _FieldLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-        text.toUpperCase(),
-        style: TpmText.eyebrow(
-          color: Colors.white.withValues(alpha: 0.5),
-          size: 10,
-          tracking: 1.2,
-        ),
-      );
+    text.toUpperCase(),
+    style: TpmText.eyebrow(
+      color: Colors.white.withValues(alpha: 0.5),
+      size: 10,
+      tracking: 1.2,
+    ),
+  );
 }
 
 class _AudienceRow extends StatelessWidget {
@@ -176,7 +279,11 @@ class _AudienceRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.public_rounded, size: 17, color: TpmColors.portalGold),
+          const Icon(
+            Icons.public_rounded,
+            size: 17,
+            color: TpmColors.portalGold,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
