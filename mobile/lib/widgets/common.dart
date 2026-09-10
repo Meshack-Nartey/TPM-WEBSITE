@@ -467,15 +467,11 @@ class BrandedPhoto extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         if (url != null)
-          Image.network(
-            url,
+          _RetryingNetworkImage(
+            url: url,
+            asset: asset,
             fit: fit,
             alignment: alignment,
-            loadingBuilder: (context, child, progress) => progress == null
-                ? child
-                : Image.asset(asset, fit: fit, alignment: alignment),
-            errorBuilder: (context, error, stackTrace) =>
-                Image.asset(asset, fit: fit, alignment: alignment),
           )
         else
           Image.asset(asset, fit: fit, alignment: alignment),
@@ -497,6 +493,95 @@ class BrandedPhoto extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// A network image that gives a flaky connection a couple of chances before
+/// settling on the local fallback. Plain `Image.network` doesn't retry on
+/// its own — once a URL fails to load, Flutter's image cache remembers that
+/// failure for the rest of the session, so a thumbnail that lost the race
+/// against a brief connection drop would otherwise stay broken until the
+/// app restarts.
+class _RetryingNetworkImage extends StatefulWidget {
+  const _RetryingNetworkImage({
+    required this.url,
+    required this.asset,
+    required this.fit,
+    required this.alignment,
+  });
+
+  final String url;
+  final String asset;
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+
+  @override
+  State<_RetryingNetworkImage> createState() => _RetryingNetworkImageState();
+}
+
+class _RetryingNetworkImageState extends State<_RetryingNetworkImage> {
+  static const _maxAttempts = 3;
+
+  int _attempt = 0;
+  bool _gaveUp = false;
+  bool _retryScheduled = false;
+
+  void _retry() {
+    if (!mounted) return;
+    PaintingBinding.instance.imageCache.evict(NetworkImage(widget.url));
+    setState(() {
+      _attempt++;
+      _retryScheduled = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_gaveUp) {
+      return Image.asset(
+        widget.asset,
+        fit: widget.fit,
+        alignment: widget.alignment,
+      );
+    }
+
+    return Image.network(
+      widget.url,
+      // Forces a fresh ImageProvider (and so a fresh load attempt) each
+      // retry — reusing the same one just returns the cached failure.
+      key: ValueKey(_attempt),
+      fit: widget.fit,
+      alignment: widget.alignment,
+      loadingBuilder: (context, child, progress) => progress == null
+          ? child
+          : Image.asset(
+              widget.asset,
+              fit: widget.fit,
+              alignment: widget.alignment,
+            ),
+      errorBuilder: (context, error, stackTrace) {
+        if (!_retryScheduled) {
+          _retryScheduled = true;
+          if (_attempt < _maxAttempts) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Future.delayed(
+                Duration(milliseconds: 500 * (_attempt + 1)),
+                _retry,
+              );
+            });
+          } else {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) setState(() => _gaveUp = true);
+            });
+          }
+        }
+        return Image.asset(
+          widget.asset,
+          fit: widget.fit,
+          alignment: widget.alignment,
+        );
+      },
     );
   }
 }
