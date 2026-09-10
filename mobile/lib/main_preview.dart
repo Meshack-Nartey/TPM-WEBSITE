@@ -106,7 +106,7 @@ final Map<String, _Preview> _screens = {
     scaffold: false,
   ),
   'memberDetail': _Preview(
-    () => MemberDetailScreen(member: MockData.members.first),
+    () => MemberDetailScreen(member: MockData.sampleMember),
     scaffold: false,
   ),
 

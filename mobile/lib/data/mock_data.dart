@@ -661,6 +661,28 @@ class MockData {
   // ---- Registry (invented people; the real system seeds none) ----
   static const String registrySubtitle = 'DAYSPRING · 486 members';
 
+  /// For the design-board preview and screen-render tests only — the real
+  /// Member Registry (leader portal) fetches actual members from the API.
+  static const Member sampleMember = Member(
+    id: 'preview',
+    firstName: 'Kwame',
+    middleName: '',
+    lastName: 'Asante',
+    fullName: 'Kwame Asante',
+    dob: '',
+    gender: '',
+    phone: '+233 24 000 0000',
+    email: 'kwame@email.com',
+    address: '',
+    branch: 'DAYSPRING',
+    department: 'Ushering',
+    fellowship: '',
+    dateJoined: 'March 2021',
+    membershipStatus: 'Worker',
+    emergencyContactName: '',
+    emergencyContactPhone: '',
+  );
+
   static final List<MemberRecord> members = [
     MemberRecord(
       name: 'Kwame Asante',

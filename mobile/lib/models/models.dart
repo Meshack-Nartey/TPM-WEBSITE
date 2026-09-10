@@ -353,6 +353,156 @@ class MemberRecord {
   }
 }
 
+/// A person in the branch registry, as `backend/src/routes/members.routes.js`
+/// returns them — the real record [MemberRecord] stands in for on the design
+/// board.
+class Member {
+  const Member({
+    required this.id,
+    required this.firstName,
+    required this.middleName,
+    required this.lastName,
+    required this.fullName,
+    required this.dob,
+    required this.gender,
+    required this.phone,
+    required this.email,
+    required this.address,
+    required this.branch,
+    required this.department,
+    required this.fellowship,
+    required this.dateJoined,
+    required this.membershipStatus,
+    required this.emergencyContactName,
+    required this.emergencyContactPhone,
+  });
+
+  final String id;
+  final String firstName;
+  final String middleName;
+  final String lastName;
+  final String fullName;
+  final String dob;
+  final String gender;
+  final String phone;
+  final String email;
+  final String address;
+  final String branch;
+  final String department;
+  final String fellowship;
+  final String dateJoined;
+  final String membershipStatus;
+  final String emergencyContactName;
+  final String emergencyContactPhone;
+
+  factory Member.fromJson(Map<String, dynamic> json) => Member(
+    id: json['id'] as String,
+    firstName: json['firstName'] as String? ?? '',
+    middleName: json['middleName'] as String? ?? '',
+    lastName: json['lastName'] as String? ?? '',
+    fullName: json['fullName'] as String? ?? '',
+    dob: json['dob'] as String? ?? '',
+    gender: json['gender'] as String? ?? '',
+    phone: json['phone'] as String? ?? '',
+    email: json['email'] as String? ?? '',
+    address: json['address'] as String? ?? '',
+    branch: json['branch'] as String? ?? '',
+    department: json['department'] as String? ?? '',
+    fellowship: json['fellowship'] as String? ?? '',
+    dateJoined: json['dateJoined'] as String? ?? '',
+    membershipStatus: json['membershipStatus'] as String? ?? '',
+    emergencyContactName: json['emergencyContactName'] as String? ?? '',
+    emergencyContactPhone: json['emergencyContactPhone'] as String? ?? '',
+  );
+
+  String get initials {
+    final parts = fullName
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty);
+    return parts.take(2).map((p) => p[0].toUpperCase()).join();
+  }
+}
+
+/// A meeting/attendance/tithe/souls record a leader submits, as
+/// `backend/src/routes/reports.routes.js` returns it.
+class ReportRecord {
+  const ReportRecord({
+    required this.id,
+    required this.meetingType,
+    required this.branch,
+    required this.date,
+    required this.attMale,
+    required this.attFemale,
+    required this.tithe,
+    required this.soulsMale,
+    required this.soulsFemale,
+    required this.notes,
+  });
+
+  final String id;
+  final String meetingType;
+  final String branch;
+  final String date;
+  final int attMale;
+  final int attFemale;
+  final double tithe;
+  final int soulsMale;
+  final int soulsFemale;
+  final String notes;
+
+  int get attendance => attMale + attFemale;
+  int get souls => soulsMale + soulsFemale;
+
+  factory ReportRecord.fromJson(Map<String, dynamic> json) => ReportRecord(
+    id: json['id'] as String? ?? '',
+    meetingType: json['meetingType'] as String? ?? '',
+    branch: json['branch'] as String? ?? '',
+    date: json['date'] as String? ?? '',
+    attMale: (json['attMale'] as num?)?.toInt() ?? 0,
+    attFemale: (json['attFemale'] as num?)?.toInt() ?? 0,
+    tithe: (json['tithe'] as num?)?.toDouble() ?? 0,
+    soulsMale: (json['soulsMale'] as num?)?.toInt() ?? 0,
+    soulsFemale: (json['soulsFemale'] as num?)?.toInt() ?? 0,
+    notes: json['notes'] as String? ?? '',
+  );
+}
+
+/// The leader/admin dashboard's real aggregates, from
+/// `backend/src/routes/statistics.routes.js` — scoped to the caller's own
+/// branch for a leader, church-wide for an admin.
+class DashboardStatistics {
+  const DashboardStatistics({
+    required this.totalMembers,
+    required this.attendanceThisWeek,
+    required this.titheThisMonth,
+    required this.soulsWon,
+    required this.attendanceTrend,
+  });
+
+  final int totalMembers;
+  final int attendanceThisWeek;
+  final double titheThisMonth;
+  final int soulsWon;
+
+  /// Headcount for each of the most recent distinct report dates — not
+  /// necessarily calendar weeks, just however often reports actually land.
+  final List<int> attendanceTrend;
+
+  factory DashboardStatistics.fromJson(Map<String, dynamic> json) {
+    final stats = json['statistics'] as Map<String, dynamic>? ?? const {};
+    final trend = json['attendanceTrends'] as Map<String, dynamic>? ?? const {};
+    final data = trend['data'] as List? ?? const [];
+    return DashboardStatistics(
+      totalMembers: (stats['totalMembers'] as num?)?.toInt() ?? 0,
+      attendanceThisWeek: (stats['attendanceThisWeek'] as num?)?.toInt() ?? 0,
+      titheThisMonth: (stats['titheThisMonth'] as num?)?.toDouble() ?? 0,
+      soulsWon: (stats['soulsWon'] as num?)?.toInt() ?? 0,
+      attendanceTrend: data.map((v) => (v as num?)?.toInt() ?? 0).toList(),
+    );
+  }
+}
+
 /// A member-initiated change to their own details, waiting on the pastor's
 /// office to approve or reject it.
 class ApprovalRequest {
@@ -402,14 +552,17 @@ class StatTile {
     required this.label,
     required this.value,
     required this.icon,
-    required this.trend,
+    this.trend,
     this.up = true,
   });
 
   final String label;
   final String value;
   final IconData icon;
-  final String trend;
+
+  /// A "vs last period" change, e.g. "+9%" — null when there's nothing to
+  /// compare against (a real figure with no prior-period aggregate yet).
+  final String? trend;
   final bool up;
 }
 

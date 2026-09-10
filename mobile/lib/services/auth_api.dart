@@ -7,7 +7,11 @@ import '../models/models.dart';
 /// Thrown for anything the API rejected, or that couldn't be reached at all —
 /// the message is written to be shown to the user directly.
 class ApiException implements Exception {
-  ApiException(this.message, {this.fieldErrors = const {}});
+  ApiException(
+    this.message, {
+    this.fieldErrors = const {},
+    this.isNetworkError = false,
+  });
 
   final String message;
 
@@ -16,6 +20,12 @@ class ApiException implements Exception {
   /// present — so the offending field can be highlighted, not just named
   /// in the message text.
   final Map<String, String> fieldErrors;
+
+  /// True when the request never reached the server at all (no signal, API
+  /// down) — as opposed to reaching it and being rejected. Callers that can
+  /// queue-and-retry (e.g. the weekly report) use this to tell "try again
+  /// later" apart from "this data was invalid."
+  final bool isNetworkError;
 
   @override
   String toString() => message;
@@ -65,7 +75,10 @@ class AuthApi {
 
   /// Dev-only shortcut — see `backend/src/routes/auth.routes.js` for why this
   /// resets the password from the email alone rather than a verified link.
-  Future<void> forgotPassword({required String email, required String newPassword}) {
+  Future<void> forgotPassword({
+    required String email,
+    required String newPassword,
+  }) {
     return _postRaw('/api/auth/forgot-password', {
       'email': email,
       'newPassword': newPassword,
@@ -78,11 +91,14 @@ class AuthApi {
   }
 
   AuthResult _asAuthResult(Map<String, dynamic> data) => AuthResult(
-        token: data['token'] as String,
-        user: AppUser.fromJson(data['user'] as Map<String, dynamic>),
-      );
+    token: data['token'] as String,
+    user: AppUser.fromJson(data['user'] as Map<String, dynamic>),
+  );
 
-  Future<Map<String, dynamic>> _postRaw(String path, Map<String, dynamic> body) async {
+  Future<Map<String, dynamic>> _postRaw(
+    String path,
+    Map<String, dynamic> body,
+  ) async {
     http.Response response;
     try {
       response = await http
@@ -95,6 +111,7 @@ class AuthApi {
     } catch (_) {
       throw ApiException(
         "Can't reach the server. Make sure the API is running on this network.",
+        isNetworkError: true,
       );
     }
 
