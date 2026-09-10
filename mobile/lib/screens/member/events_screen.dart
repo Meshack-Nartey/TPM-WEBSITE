@@ -82,9 +82,7 @@ class _EventsCarousel extends StatefulWidget {
 }
 
 class _EventsCarouselState extends State<_EventsCarousel> {
-  late final PageController _controller = PageController(
-    viewportFraction: 0.88,
-  );
+  late final PageController _controller = PageController();
   double _page = 0;
 
   @override
@@ -108,16 +106,12 @@ class _EventsCarouselState extends State<_EventsCarousel> {
     return Column(
       children: [
         SizedBox(
-          height: 300,
+          height: 440,
           child: PageView.builder(
             controller: _controller,
-            padEnds: false,
             itemCount: events.length,
             itemBuilder: (context, i) => Padding(
-              padding: EdgeInsets.only(
-                left: i == 0 ? 22 : 8,
-                right: i == events.length - 1 ? 22 : 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 22),
               child: _EventBannerCard(event: events[i]),
             ),
           ),
