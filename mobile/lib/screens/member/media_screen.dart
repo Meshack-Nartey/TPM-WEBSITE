@@ -4,13 +4,14 @@ import '../../app/navigation.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
 import '../../services/podcast_api.dart';
+import '../../services/youtube_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import 'player_screen.dart';
 
 /// Which source a message plays from — the two are different enough in kind
-/// (a ~1,300-episode audio feed vs. two YouTube videos) that a shared
-/// "category" filter chip row undersold both; a tab each fits better.
+/// (a ~1,300-episode audio feed vs. the channel's own recent uploads) that a
+/// shared "category" filter chip row undersold both; a tab each fits better.
 enum _MediaTab { podcasts, youtube }
 
 /// Sermons and audio messages. The download state is deliberately visible on
@@ -28,11 +29,13 @@ class _MediaScreenState extends State<MediaScreen> {
   final _search = TextEditingController();
   String _query = '';
 
-  /// The two YouTube sermon videos are known up front; the ~1,300-episode
-  /// audio-message feed is fetched once and appended when it lands, rather
-  /// than blocking the whole screen behind that network call.
+  /// A couple of known videos render immediately; the ~1,300-episode audio
+  /// feed and the channel's own recent uploads (livestreams included, once
+  /// one goes up as a video) are each fetched once and merged in as they
+  /// land, rather than blocking the whole screen behind either call.
   List<MediaItem> _items = MockData.media;
   bool _loadingEpisodes = true;
+  bool _loadingVideos = true;
 
   @override
   void initState() {
@@ -41,6 +44,7 @@ class _MediaScreenState extends State<MediaScreen> {
       () => setState(() => _query = _search.text.trim().toLowerCase()),
     );
     _loadEpisodes();
+    _loadVideos();
   }
 
   @override
@@ -54,7 +58,7 @@ class _MediaScreenState extends State<MediaScreen> {
       final episodes = await const PodcastApi().fetchEpisodes();
       if (!mounted) return;
       setState(() {
-        _items = [...MockData.media, ...episodes];
+        _items = [..._items, ...episodes];
         _loadingEpisodes = false;
       });
     } on PodcastApiException {
@@ -62,6 +66,26 @@ class _MediaScreenState extends State<MediaScreen> {
       // The two YouTube items still work; only the fetched episodes are
       // missing, so this fails quiet rather than blocking the screen.
       setState(() => _loadingEpisodes = false);
+    }
+  }
+
+  Future<void> _loadVideos() async {
+    try {
+      final videos = await const YoutubeApi().fetchVideos();
+      if (!mounted) return;
+      setState(() {
+        final known = _items.map((m) => m.youtubeId).toSet();
+        _items = [
+          ..._items,
+          ...videos.where((m) => !known.contains(m.youtubeId)),
+        ];
+        _loadingVideos = false;
+      });
+    } on YoutubeApiException {
+      if (!mounted) return;
+      // The two seeded videos still work; only the live channel fetch is
+      // missing, so this fails quiet rather than blocking the screen.
+      setState(() => _loadingVideos = false);
     }
   }
 
@@ -122,7 +146,8 @@ class _MediaScreenState extends State<MediaScreen> {
               padding: const EdgeInsets.fromLTRB(22, 0, 22, 12),
               child: _MediaRow(item: item),
             ),
-        if (onPodcasts && _loadingEpisodes) const _LoadingMoreMessages(),
+        if (onPodcasts ? _loadingEpisodes : _loadingVideos)
+          const _LoadingMoreMessages(),
       ],
     );
   }
