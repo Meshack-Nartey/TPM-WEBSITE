@@ -151,11 +151,20 @@ class _MediaRow extends StatelessWidget {
                   BrandedPhoto(
                     asset: item.image,
                     networkUrl: item.thumbnailUrl,
-                    scrimOpacity: 0.35,
+                    // The podcast feed's own artwork is legible on its own —
+                    // a scrim behind it only muddies the real banner colour.
+                    // Video thumbnails still need one, to keep the play icon
+                    // readable over whatever frame the sermon happens to be.
+                    scrimOpacity: item.kind == MediaKind.podcast ? 0 : 0.35,
                   ),
-                  Center(
-                    child: Icon(item.kind.icon, color: Colors.white, size: 20),
-                  ),
+                  if (item.kind != MediaKind.podcast)
+                    Center(
+                      child: Icon(
+                        item.kind.icon,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
                 ],
               ),
             ),
