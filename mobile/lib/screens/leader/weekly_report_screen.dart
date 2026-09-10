@@ -213,7 +213,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
     final branch = AppSession.of(context).user?.branch;
 
     final body = ListView(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 30),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 110),
       children: [
         Row(
           children: [

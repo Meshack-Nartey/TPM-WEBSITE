@@ -35,8 +35,11 @@ class TpmColors {
 
   // ---- Portal / work mode (dark) ----
   static const Color night = Color(0xFF080808);
-  static const Color nightSurface = Color(0xFF111111);
-  static const Color nightRaised = Color(0xFF181818);
+  // A card only ~9 shades lighter than the page it sits on reads as one flat
+  // black field rather than a card — these sit further up so cards actually
+  // separate from the background instead of just implying one via a border.
+  static const Color nightSurface = Color(0xFF19191A);
+  static const Color nightRaised = Color(0xFF222224);
   static const Color nightCanvas = Color(0xFF0F1420);
   static const Color portalGold = Color(0xFFC9A84C);
   static const Color portalGoldDeep = Color(0xFFA07830);
@@ -72,10 +75,13 @@ class TpmColors {
 
   /// Warm highlight dropped over navy artwork so gold reads through the blue.
   static RadialGradient goldGlow({double opacity = 0.35}) => RadialGradient(
-        center: const Alignment(0.55, -0.5),
-        radius: 0.9,
-        colors: [gold.withValues(alpha: opacity), Colors.transparent],
-      );
+    center: const Alignment(0.55, -0.5),
+    radius: 0.9,
+    colors: [
+      gold.withValues(alpha: opacity),
+      Colors.transparent,
+    ],
+  );
 }
 
 /// Shared elevation. The light surface uses a navy-tinted shadow rather than
@@ -118,13 +124,12 @@ class TpmText {
     Color color = TpmColors.ink,
     FontWeight weight = FontWeight.w700,
     double? height,
-  }) =>
-      GoogleFonts.playfairDisplay(
-        fontSize: size,
-        fontWeight: weight,
-        color: color,
-        height: height,
-      );
+  }) => GoogleFonts.playfairDisplay(
+    fontSize: size,
+    fontWeight: weight,
+    color: color,
+    height: height,
+  );
 
   static TextStyle body(
     double size, {
@@ -132,27 +137,25 @@ class TpmText {
     FontWeight weight = FontWeight.w400,
     double? height,
     double? letterSpacing,
-  }) =>
-      GoogleFonts.montserrat(
-        fontSize: size,
-        fontWeight: weight,
-        color: color,
-        height: height,
-        letterSpacing: letterSpacing,
-      );
+  }) => GoogleFonts.montserrat(
+    fontSize: size,
+    fontWeight: weight,
+    color: color,
+    height: height,
+    letterSpacing: letterSpacing,
+  );
 
   /// The gold uppercase eyebrow that opens almost every section.
   static TextStyle eyebrow({
     Color color = TpmColors.goldDeep,
     double size = 10.5,
     double tracking = 2,
-  }) =>
-      GoogleFonts.montserrat(
-        fontSize: size,
-        fontWeight: FontWeight.w700,
-        color: color,
-        letterSpacing: tracking,
-      );
+  }) => GoogleFonts.montserrat(
+    fontSize: size,
+    fontWeight: FontWeight.w700,
+    color: color,
+    letterSpacing: tracking,
+  );
 }
 
 class TpmTheme {
@@ -164,18 +167,20 @@ class TpmTheme {
       useMaterial3: true,
       brightness: Brightness.light,
       scaffoldBackgroundColor: TpmColors.canvas,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: TpmColors.navy,
-        brightness: Brightness.light,
-      ).copyWith(
-        primary: TpmColors.navy,
-        secondary: TpmColors.gold,
-        surface: TpmColors.surface,
-      ),
+      colorScheme:
+          ColorScheme.fromSeed(
+            seedColor: TpmColors.navy,
+            brightness: Brightness.light,
+          ).copyWith(
+            primary: TpmColors.navy,
+            secondary: TpmColors.gold,
+            surface: TpmColors.surface,
+          ),
     );
     return base.copyWith(
-      textTheme: GoogleFonts.montserratTextTheme(base.textTheme)
-          .apply(bodyColor: TpmColors.ink, displayColor: TpmColors.ink),
+      textTheme: GoogleFonts.montserratTextTheme(
+        base.textTheme,
+      ).apply(bodyColor: TpmColors.ink, displayColor: TpmColors.ink),
       splashFactory: InkSparkle.splashFactory,
     );
   }
@@ -186,18 +191,21 @@ class TpmTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: TpmColors.night,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: TpmColors.portalGold,
-        brightness: Brightness.dark,
-      ).copyWith(
-        primary: TpmColors.portalGold,
-        secondary: TpmColors.gold,
-        surface: TpmColors.nightSurface,
-      ),
+      colorScheme:
+          ColorScheme.fromSeed(
+            seedColor: TpmColors.portalGold,
+            brightness: Brightness.dark,
+          ).copyWith(
+            primary: TpmColors.portalGold,
+            secondary: TpmColors.gold,
+            surface: TpmColors.nightSurface,
+          ),
     );
     return base.copyWith(
-      textTheme: GoogleFonts.montserratTextTheme(base.textTheme)
-          .apply(bodyColor: TpmColors.portalInk, displayColor: TpmColors.portalInk),
+      textTheme: GoogleFonts.montserratTextTheme(base.textTheme).apply(
+        bodyColor: TpmColors.portalInk,
+        displayColor: TpmColors.portalInk,
+      ),
       splashFactory: InkSparkle.splashFactory,
     );
   }

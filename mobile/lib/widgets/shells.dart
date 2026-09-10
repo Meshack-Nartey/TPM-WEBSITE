@@ -309,7 +309,7 @@ class _PortalMoreScreen extends StatelessWidget {
     ];
 
     return ListView(
-      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      padding: const EdgeInsets.only(top: 8, bottom: 110),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

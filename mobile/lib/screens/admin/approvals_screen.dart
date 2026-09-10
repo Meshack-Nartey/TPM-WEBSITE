@@ -39,7 +39,7 @@ class _ApprovalsScreenState extends State<ApprovalsScreen> {
   @override
   Widget build(BuildContext context) {
     final body = ListView(
-      padding: const EdgeInsets.only(top: 20, bottom: 24),
+      padding: const EdgeInsets.only(top: 20, bottom: 110),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -76,7 +76,10 @@ class _ApprovalsScreenState extends State<ApprovalsScreen> {
     );
 
     if (widget.embedded) return body;
-    return Scaffold(backgroundColor: TpmColors.night, body: SafeArea(child: body));
+    return Scaffold(
+      backgroundColor: TpmColors.night,
+      body: SafeArea(child: body),
+    );
   }
 }
 

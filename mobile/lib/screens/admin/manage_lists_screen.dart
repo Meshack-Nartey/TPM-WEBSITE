@@ -16,16 +16,23 @@ class ManageListsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final body = ListView(
-      padding: const EdgeInsets.only(top: 20, bottom: 24),
+      padding: const EdgeInsets.only(top: 20, bottom: 110),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Eyebrow("Pastor's Office", color: TpmColors.portalGold, size: 10),
+              const Eyebrow(
+                "Pastor's Office",
+                color: TpmColors.portalGold,
+                size: 10,
+              ),
               const SizedBox(height: 3),
-              Text('Manage', style: TpmText.display(24, color: TpmColors.portalInk)),
+              Text(
+                'Manage',
+                style: TpmText.display(24, color: TpmColors.portalInk),
+              ),
             ],
           ),
         ),
@@ -88,7 +95,10 @@ class ManageListsScreen extends StatelessWidget {
     );
 
     if (embedded) return body;
-    return Scaffold(backgroundColor: TpmColors.night, body: SafeArea(child: body));
+    return Scaffold(
+      backgroundColor: TpmColors.night,
+      body: SafeArea(child: body),
+    );
   }
 }
 
@@ -120,7 +130,11 @@ class _PublishCard extends StatelessWidget {
                   color: TpmColors.night.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(11),
                 ),
-                child: const Icon(Icons.edit_note_rounded, color: TpmColors.night, size: 20),
+                child: const Icon(
+                  Icons.edit_note_rounded,
+                  color: TpmColors.night,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(

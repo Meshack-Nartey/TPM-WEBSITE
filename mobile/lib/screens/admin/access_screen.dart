@@ -20,9 +20,10 @@ class _AccessScreenState extends State<AccessScreen> {
 
   List<AccessUser> get _visible {
     return switch (_tab) {
-      0 => MockData.accessList
-          .where((u) => u.role == 'Member' || u.role == 'Worker')
-          .toList(),
+      0 =>
+        MockData.accessList
+            .where((u) => u.role == 'Member' || u.role == 'Worker')
+            .toList(),
       1 => MockData.accessList.where((u) => u.role == 'Leader').toList(),
       _ => MockData.accessList.where((u) => u.role == 'Admin').toList(),
     };
@@ -33,14 +34,18 @@ class _AccessScreenState extends State<AccessScreen> {
     final users = _visible;
 
     final body = ListView(
-      padding: const EdgeInsets.only(top: 20, bottom: 24),
+      padding: const EdgeInsets.only(top: 20, bottom: 110),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Eyebrow('Church-wide', color: TpmColors.portalGold, size: 10),
+              const Eyebrow(
+                'Church-wide',
+                color: TpmColors.portalGold,
+                size: 10,
+              ),
               const SizedBox(height: 3),
               Text(
                 'Access Management',
@@ -94,7 +99,10 @@ class _AccessScreenState extends State<AccessScreen> {
     );
 
     if (widget.embedded) return body;
-    return Scaffold(backgroundColor: TpmColors.night, body: SafeArea(child: body));
+    return Scaffold(
+      backgroundColor: TpmColors.night,
+      body: SafeArea(child: body),
+    );
   }
 }
 

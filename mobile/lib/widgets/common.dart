@@ -179,7 +179,7 @@ class PortalCard extends StatelessWidget {
         color: color,
         borderRadius: BorderRadius.circular(radius),
         border: Border.all(
-          color: borderColor ?? Colors.white.withValues(alpha: 0.06),
+          color: borderColor ?? Colors.white.withValues(alpha: 0.1),
         ),
       ),
       child: Material(
