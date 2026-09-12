@@ -27,11 +27,13 @@ class _ComposeScreenState extends State<ComposeScreen> {
 
   final _titleController = TextEditingController();
   final _messageController = TextEditingController();
+  final _flyerController = TextEditingController();
 
   @override
   void dispose() {
     _titleController.dispose();
     _messageController.dispose();
+    _flyerController.dispose();
     super.dispose();
   }
 
@@ -60,6 +62,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
         tag: MockData.composeTags[_tag],
         title: title,
         body: message,
+        flyer: _flyerController.text.trim(),
       );
       if (!mounted) return;
       Navigator.of(context).pop();
@@ -202,6 +205,21 @@ class _ComposeScreenState extends State<ComposeScreen> {
               dark: true,
               maxLines: 5,
               controller: _messageController,
+            ),
+            const SizedBox(height: 16),
+            TpmField(
+              label: 'Flyer image URL (optional)',
+              hint: 'A link to a hosted image',
+              dark: true,
+              controller: _flyerController,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Adding a flyer also puts this post in the Home screen carousel.',
+              style: TpmText.body(
+                11.5,
+                color: Colors.white.withValues(alpha: 0.4),
+              ),
             ),
             const SizedBox(height: 16),
             const _AudienceRow(),

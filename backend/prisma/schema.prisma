@@ -128,6 +128,10 @@ model Announcement {
   title     String
   body      String
   date      String?
+  // A flyer image URL — when set, the Home carousel and detail screen show
+  // this instead of the tag pill, matching how flyer-backed posts already
+  // read on the website. Optional: most announcements are text-only.
+  flyer     String?
   active    Boolean  @default(true)
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())

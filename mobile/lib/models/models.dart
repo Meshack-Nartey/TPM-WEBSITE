@@ -150,8 +150,10 @@ class Announcement {
   final String body;
 
   /// The event's printed flyer, when one exists — shown in place of the tag
-  /// pill so the announcement reads the same as it does on the website. Real
-  /// announcements never carry one; the API has no field for it yet.
+  /// pill so the announcement reads the same as it does on the website, and
+  /// what makes it eligible for the Home screen's carousel (see
+  /// `MockData.carousel`'s real-API equivalent, `AnnouncementsApi.fetch`
+  /// filtered to `flyer != null`).
   final String? flyer;
 
   /// The real API only stores one block of text (`body`) — the list's
@@ -170,6 +172,7 @@ class Announcement {
       excerpt: excerpt,
       date: json['date'] as String? ?? '',
       body: body,
+      flyer: json['flyer'] as String?,
     );
   }
 }

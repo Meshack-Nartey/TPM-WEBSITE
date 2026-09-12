@@ -50,11 +50,16 @@ class AnnouncementsApi {
     required String tag,
     required String title,
     required String body,
+    String? flyer,
   }) async {
-    final data = await ApiClient(token: token, baseUrl: baseUrl).post(
-      '/api/announcements',
-      {'tag': tag, 'title': title, 'body': body, 'date': _today()},
-    );
+    final data = await ApiClient(token: token, baseUrl: baseUrl)
+        .post('/api/announcements', {
+          'tag': tag,
+          'title': title,
+          'body': body,
+          'date': _today(),
+          if (flyer != null && flyer.isNotEmpty) 'flyer': flyer,
+        });
     return Announcement.fromJson(data['announcement'] as Map<String, dynamic>);
   }
 

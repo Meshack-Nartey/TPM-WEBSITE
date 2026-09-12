@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 
 import '../../app/navigation.dart';
 import '../../data/mock_data.dart';
+import '../../models/models.dart';
+import '../../services/announcements_api.dart';
+import '../../services/auth_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import 'announcement_detail_screen.dart';
@@ -229,13 +232,38 @@ class _AnnouncementTickerState extends State<_AnnouncementTicker> {
   int _index = 0;
   bool _dismissed = false;
 
+  /// Starts as the mock fallback and is replaced by real flyer-bearing
+  /// announcements once they load — see [_load].
+  List<Announcement> _carousel = MockData.carousel;
+
   @override
   void initState() {
     super.initState();
-    if (MockData.carousel.length > 1) {
+    _restartTicker();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final all = await const AnnouncementsApi().fetch();
+      final flyered = all.where((a) => a.flyer != null).toList();
+      if (!mounted || flyered.isEmpty) return;
+      setState(() {
+        _carousel = flyered;
+        _index = 0;
+      });
+      _restartTicker();
+    } on ApiException {
+      // Keep the fallback list.
+    }
+  }
+
+  void _restartTicker() {
+    _ticker?.cancel();
+    if (_carousel.length > 1) {
       _ticker = Timer.periodic(const Duration(seconds: 5), (_) {
         if (!mounted) return;
-        setState(() => _index = (_index + 1) % MockData.carousel.length);
+        setState(() => _index = (_index + 1) % _carousel.length);
       });
     }
   }
@@ -248,8 +276,8 @@ class _AnnouncementTickerState extends State<_AnnouncementTicker> {
 
   @override
   Widget build(BuildContext context) {
-    if (_dismissed || MockData.carousel.isEmpty) return const SizedBox.shrink();
-    final item = MockData.carousel[_index];
+    if (_dismissed || _carousel.isEmpty) return const SizedBox.shrink();
+    final item = _carousel[_index];
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(18),

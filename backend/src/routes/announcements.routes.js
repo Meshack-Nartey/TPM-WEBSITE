@@ -26,6 +26,7 @@ const schema = z.object({
   title: z.string().trim().min(1),
   body: z.string().trim().min(1),
   date: z.string().trim().optional().default(''),
+  flyer: z.string().trim().optional(),
   active: z.boolean().optional().default(true),
   sortOrder: z.coerce.number().int().optional().default(0),
 });
