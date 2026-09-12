@@ -52,18 +52,18 @@ void main() {
   /// A leader session with a real (fake) token, for the two behaviour tests
   /// below that exercise API-backed screens — `signInAs` alone leaves the
   /// token null, which those screens correctly treat as "no real account."
-  Future<AppSession> leaderSession() async {
+  Future<AppSession> leaderSession({AppRole role = AppRole.leader}) async {
     SharedPreferences.setMockInitialValues({});
     final session = AppSession();
     await session.signInWithAuth(
       'test-token',
-      const AppUser(
+      AppUser(
         id: 'leader-1',
         firstName: 'Test',
-        lastName: 'Leader',
-        fullName: 'Test Leader',
+        lastName: role == AppRole.admin ? 'Admin' : 'Leader',
+        fullName: role == AppRole.admin ? 'Test Admin' : 'Test Leader',
         email: 'leader@test.dev',
-        role: AppRole.leader,
+        role: role,
         branch: 'DAYSPRING',
       ),
     );
@@ -409,12 +409,48 @@ void main() {
     });
 
     testWidgets('approving a request clears it from the queue', (t) async {
+      const requests = [
+        ApprovalRequest(
+          id: '1',
+          name: 'Abena Osei',
+          branch: '',
+          field: 'Phone',
+          oldValue: '+233 24 111 1111',
+          newValue: '+233 20 222 2222',
+          avatarColor: Color(0xFF1E3A8A),
+        ),
+        ApprovalRequest(
+          id: '2',
+          name: 'Yaw Darko',
+          branch: '',
+          field: 'Branch',
+          oldValue: 'GLORYSPRING',
+          newValue: 'FAITHSPRING',
+          avatarColor: Color(0xFF1E3A8A),
+        ),
+        ApprovalRequest(
+          id: '3',
+          name: 'Efua Mensah',
+          branch: '',
+          field: 'Email',
+          oldValue: 'efua@old.com',
+          newValue: 'efua.m@email.com',
+          avatarColor: Color(0xFF1E3A8A),
+        ),
+      ];
+
       await pumpScreen(
         t,
-        const ApprovalsScreen(embedded: true),
+        ApprovalsScreen(
+          embedded: true,
+          fetchPending: (token) async => requests,
+          decide: (token, id, approve) async {},
+        ),
         role: AppRole.admin,
         background: TpmColors.night,
+        session: await leaderSession(role: AppRole.admin),
       );
+      await t.pump();
 
       expect(find.text('PENDING · 3'), findsOneWidget);
 

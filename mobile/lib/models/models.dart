@@ -46,6 +46,7 @@ class AppUser {
     this.department,
     this.fellowship,
     this.dateJoined,
+    this.active = true,
   });
 
   final String id;
@@ -64,6 +65,13 @@ class AppUser {
   final String? fellowship;
   final String? dateJoined;
 
+  /// False for an account the pastor's office has deactivated — still
+  /// exists, just can't sign in. Only meaningful on the admin's Access
+  /// screen; the signed-in user's own session is always active.
+  final bool active;
+
+  String get initials => initialsOf(fullName);
+
   factory AppUser.fromJson(Map<String, dynamic> json) => AppUser(
     id: json['id'] as String,
     firstName: json['firstName'] as String? ?? '',
@@ -76,6 +84,7 @@ class AppUser {
     department: json['department'] as String?,
     fellowship: json['fellowship'] as String?,
     dateJoined: json['dateJoined'] as String?,
+    active: json['active'] as bool? ?? true,
   );
 
   Map<String, dynamic> toJson() => {
@@ -90,6 +99,7 @@ class AppUser {
     'department': department,
     'fellowship': fellowship,
     'dateJoined': dateJoined,
+    'active': active,
   };
 }
 
@@ -503,6 +513,7 @@ class DashboardStatistics {
     required this.titheThisMonth,
     required this.soulsWon,
     required this.attendanceTrend,
+    this.branchRanks = const [],
   });
 
   final int totalMembers;
@@ -514,16 +525,41 @@ class DashboardStatistics {
   /// necessarily calendar weeks, just however often reports actually land.
   final List<int> attendanceTrend;
 
+  /// Attendance by branch, strongest first — empty for a leader (their own
+  /// scoped query only ever has one branch to compare), populated for an
+  /// admin, whose query spans every branch.
+  final List<BranchRank> branchRanks;
+
   factory DashboardStatistics.fromJson(Map<String, dynamic> json) {
     final stats = json['statistics'] as Map<String, dynamic>? ?? const {};
     final trend = json['attendanceTrends'] as Map<String, dynamic>? ?? const {};
     final data = trend['data'] as List? ?? const [];
+    final comparisons =
+        json['branchComparisons'] as Map<String, dynamic>? ?? const {};
+    final labels = (comparisons['labels'] as List? ?? const [])
+        .map((l) => l as String)
+        .toList();
+    final attendance = (comparisons['attendance'] as List? ?? const [])
+        .map((v) => (v as num?)?.toInt() ?? 0)
+        .toList();
+    final maxAttendance = attendance.isEmpty
+        ? 1
+        : attendance.reduce((a, b) => a > b ? a : b);
+    final branchRanks = [
+      for (var i = 0; i < labels.length && i < attendance.length; i++)
+        BranchRank(
+          name: labels[i],
+          value: attendance[i],
+          fraction: maxAttendance <= 0 ? 0 : attendance[i] / maxAttendance,
+        ),
+    ];
     return DashboardStatistics(
       totalMembers: (stats['totalMembers'] as num?)?.toInt() ?? 0,
       attendanceThisWeek: (stats['attendanceThisWeek'] as num?)?.toInt() ?? 0,
       titheThisMonth: (stats['titheThisMonth'] as num?)?.toDouble() ?? 0,
       soulsWon: (stats['soulsWon'] as num?)?.toInt() ?? 0,
       attendanceTrend: data.map((v) => (v as num?)?.toInt() ?? 0).toList(),
+      branchRanks: branchRanks,
     );
   }
 }
@@ -532,6 +568,7 @@ class DashboardStatistics {
 /// office to approve or reject it.
 class ApprovalRequest {
   const ApprovalRequest({
+    required this.id,
     required this.name,
     required this.branch,
     required this.field,
@@ -540,6 +577,7 @@ class ApprovalRequest {
     required this.avatarColor,
   });
 
+  final String id;
   final String name;
   final String branch;
   final String field;
@@ -551,6 +589,21 @@ class ApprovalRequest {
     final parts = name.trim().split(RegExp(r'\s+'));
     return parts.map((w) => w[0]).take(2).join();
   }
+
+  /// `branch` has no equivalent on `ProfileRequest` — it only ever records
+  /// who asked and what changed, not where they're based.
+  factory ApprovalRequest.fromJson(
+    Map<String, dynamic> json,
+    Color avatarColor,
+  ) => ApprovalRequest(
+    id: json['id'] as String,
+    name: json['memberName'] as String? ?? '',
+    branch: '',
+    field: json['field'] as String? ?? '',
+    oldValue: json['oldValue'] as String? ?? '—',
+    newValue: json['newValue'] as String? ?? '',
+    avatarColor: avatarColor,
+  );
 }
 
 class AccessUser {

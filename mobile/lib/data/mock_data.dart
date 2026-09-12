@@ -774,33 +774,6 @@ class MockData {
     BranchRank(name: 'GRACESPRING', value: 268, fraction: 0.55),
   ];
 
-  static final List<ApprovalRequest> approvals = [
-    ApprovalRequest(
-      name: 'Abena Osei',
-      branch: 'DAYSPRING',
-      field: 'Phone',
-      oldValue: '+233 24 111 1111',
-      newValue: '+233 20 222 2222',
-      avatarColor: avatarFor(1),
-    ),
-    ApprovalRequest(
-      name: 'Yaw Darko',
-      branch: 'GLORYSPRING',
-      field: 'Branch',
-      oldValue: 'GLORYSPRING',
-      newValue: 'FAITHSPRING',
-      avatarColor: avatarFor(2),
-    ),
-    ApprovalRequest(
-      name: 'Efua Mensah',
-      branch: 'PEACESPRING',
-      field: 'Email',
-      oldValue: 'efua@old.com',
-      newValue: 'efua.m@email.com',
-      avatarColor: avatarFor(3),
-    ),
-  ];
-
   static const List<String> accessTabs = ['Members', 'Leaders', 'Admins'];
 
   static final List<AccessUser> accessList = [
