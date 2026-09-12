@@ -699,3 +699,79 @@ class ManageListEntry {
   final String count;
   final IconData icon;
 }
+
+/// One row from `backend/src/routes/lookups.routes.js` — a reference value
+/// (a branch, department, fellowship or basenia name) that appears in
+/// dropdowns elsewhere in the app.
+class LookupEntry {
+  const LookupEntry({
+    required this.id,
+    required this.category,
+    required this.value,
+    this.sortOrder = 0,
+  });
+
+  final String id;
+  final String category;
+  final String value;
+  final int sortOrder;
+
+  factory LookupEntry.fromJson(Map<String, dynamic> json) => LookupEntry(
+    id: json['id'] as String,
+    category: json['category'] as String,
+    value: json['value'] as String,
+    sortOrder: json['sortOrder'] as int? ?? 0,
+  );
+}
+
+/// One entry in the church leadership directory (`backend`'s `Leader`
+/// model) — pastors and branch leaders featured on the public site and
+/// manageable from here.
+class ChurchLeader {
+  const ChurchLeader({
+    required this.id,
+    required this.name,
+    this.title = '',
+    this.branch = '',
+    this.fellowship = '',
+    this.quote = '',
+    this.bio = '',
+    this.highlights = const [],
+    this.photo = '',
+    this.email = '',
+    this.phone = '',
+    this.sortOrder = 0,
+  });
+
+  final String id;
+  final String name;
+  final String title;
+  final String branch;
+  final String fellowship;
+  final String quote;
+  final String bio;
+  final List<String> highlights;
+  final String photo;
+  final String email;
+  final String phone;
+  final int sortOrder;
+
+  String get initials => initialsOf(name);
+
+  factory ChurchLeader.fromJson(Map<String, dynamic> json) => ChurchLeader(
+    id: json['id'] as String,
+    name: json['name'] as String,
+    title: json['title'] as String? ?? '',
+    branch: json['branch'] as String? ?? '',
+    fellowship: json['fellowship'] as String? ?? '',
+    quote: json['quote'] as String? ?? '',
+    bio: json['bio'] as String? ?? '',
+    highlights:
+        (json['highlights'] as List?)?.map((e) => e as String).toList() ??
+        const [],
+    photo: json['photo'] as String? ?? '',
+    email: json['email'] as String? ?? '',
+    phone: json['phone'] as String? ?? '',
+    sortOrder: json['sortOrder'] as int? ?? 0,
+  );
+}
