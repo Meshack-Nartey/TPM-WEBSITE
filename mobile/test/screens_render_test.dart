@@ -385,6 +385,7 @@ void main() {
 
       expect(find.text('Ready to submit'), findsOneWidget);
 
+      await t.enterText(find.widgetWithText(TextField, 'e.g. 238'), '120');
       await t.tap(find.text('Submit report'));
       await t.pump();
 

@@ -47,6 +47,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
   SyncStatus _status = SyncStatus.idle;
   int _meetingType = 0;
   String? _error;
+  bool _attendanceError = false;
   int _queuedCount = 0;
 
   /// Starts as the seed-matching fallback so the picker works even if the
@@ -182,6 +183,15 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
   }
 
   Future<void> _submit() async {
+    final attendance = int.tryParse(_attendanceController.text.trim());
+    if (attendance == null || attendance < 0) {
+      setState(() {
+        _attendanceError = true;
+        _error = 'Enter total attendance.';
+      });
+      return;
+    }
+
     final session = AppSession.of(context);
     final token = session.token;
     if (token == null) {
@@ -192,6 +202,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
     final body = _buildBody(session.user?.branch ?? '');
     setState(() {
       _status = SyncStatus.syncing;
+      _attendanceError = false;
       _error = null;
     });
 
@@ -298,6 +309,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           icon: Icons.groups_rounded,
           dark: true,
           controller: _attendanceController,
+          error: _attendanceError,
         ),
         const SizedBox(height: 14),
         TpmField(
