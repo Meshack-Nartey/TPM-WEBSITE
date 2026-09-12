@@ -13,4 +13,18 @@ class BooksApi {
     final rows = data['books'] as List? ?? const [];
     return rows.map((r) => Book.fromJson(r as Map<String, dynamic>)).toList();
   }
+
+  Future<Book> create(Map<String, dynamic> fields) async {
+    final data = await ApiClient(token: token).post('/api/books', fields);
+    return Book.fromJson(data['book'] as Map<String, dynamic>);
+  }
+
+  Future<Book> update(String id, Map<String, dynamic> fields) async {
+    final data = await ApiClient(token: token).patch('/api/books/$id', fields);
+    return Book.fromJson(data['book'] as Map<String, dynamic>);
+  }
+
+  Future<void> delete(String id) {
+    return ApiClient(token: token).delete('/api/books/$id');
+  }
 }

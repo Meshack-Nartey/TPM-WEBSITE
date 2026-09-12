@@ -4,13 +4,19 @@ import '../../app/navigation.dart';
 import '../../app/session.dart';
 import '../../models/models.dart';
 import '../../services/auth_api.dart';
+import '../../services/books_api.dart';
+import '../../services/branches_api.dart';
+import '../../services/events_api.dart';
+import '../../services/giving_channels_api.dart';
 import '../../services/leaders_api.dart';
 import '../../services/lookups_api.dart';
+import '../../services/worker_groups_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import 'compose_screen.dart';
 import 'leaders_directory_screen.dart';
 import 'lookup_list_screen.dart';
+import 'manage_content_screens.dart';
 
 /// The office's admin drawer. Publishing sits at the top as a full-width gold
 /// card rather than a list row, because it is the action people come here for.
@@ -31,6 +37,11 @@ class _ManageListsScreenState extends State<ManageListsScreen> {
   int? _branchCount;
   int? _departmentCount;
   int? _fellowshipBaseniaCount;
+  int? _branchDirectoryCount;
+  int? _workerGroupDetailCount;
+  int? _givingChannelCount;
+  int? _bookCount;
+  int? _eventCount;
 
   @override
   void didChangeDependencies() {
@@ -48,6 +59,11 @@ class _ManageListsScreenState extends State<ManageListsScreen> {
       final results = await Future.wait([
         LeadersApi(token: token).fetch(),
         LookupsApi(token: token).fetch(),
+        BranchesApi(token: token).fetch(),
+        WorkerGroupsApi(token: token).fetch(),
+        GivingChannelsApi(token: token).fetch(),
+        BooksApi(token: token).fetch(),
+        EventsApi(token: token).fetch(),
       ]);
       if (!mounted) return;
       final leaders = results[0] as List<ChurchLeader>;
@@ -61,6 +77,11 @@ class _ManageListsScreenState extends State<ManageListsScreen> {
         _fellowshipBaseniaCount = lookups
             .where((l) => l.category == 'fellowship' || l.category == 'basenia')
             .length;
+        _branchDirectoryCount = (results[2] as List<Branch>).length;
+        _workerGroupDetailCount = (results[3] as List<WorkerGroup>).length;
+        _givingChannelCount = (results[4] as List<GivingChannel>).length;
+        _bookCount = (results[5] as List<Book>).length;
+        _eventCount = (results[6] as List<EventItem>).length;
       });
     } on ApiException {
       // Counts stay as "—" — the destination screens surface the real error.
@@ -110,7 +131,7 @@ class _ManageListsScreenState extends State<ManageListsScreen> {
           },
         ),
         _row(
-          label: 'Branches',
+          label: 'Branch names',
           count: _branchCount == null ? '—' : '$_branchCount branches',
           icon: Icons.location_on_rounded,
           onTap: () async {
@@ -128,7 +149,7 @@ class _ManageListsScreenState extends State<ManageListsScreen> {
           },
         ),
         _row(
-          label: 'Worker groups',
+          label: 'Worker group names',
           count: _departmentCount == null
               ? '—'
               : '$_departmentCount departments',
@@ -165,6 +186,69 @@ class _ManageListsScreenState extends State<ManageListsScreen> {
                 ],
               ),
             );
+            _load();
+          },
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Eyebrow(
+            'App content',
+            color: Colors.white.withValues(alpha: 0.5),
+            size: 10,
+          ),
+        ),
+        const SizedBox(height: 10),
+        _row(
+          label: 'Branch directory',
+          count: _branchDirectoryCount == null
+              ? 'Address & contact per branch'
+              : '$_branchDirectoryCount branches',
+          icon: Icons.map_rounded,
+          onTap: () async {
+            await pushScreen(context, branchDirectoryScreen());
+            _load();
+          },
+        ),
+        _row(
+          label: 'Worker group details',
+          count: _workerGroupDetailCount == null
+              ? 'Photo & description per group'
+              : '$_workerGroupDetailCount groups',
+          icon: Icons.groups_3_rounded,
+          onTap: () async {
+            await pushScreen(context, workerGroupDirectoryScreen());
+            _load();
+          },
+        ),
+        _row(
+          label: 'Giving channels',
+          count: _givingChannelCount == null
+              ? 'MoMo & bank accounts'
+              : '$_givingChannelCount channels',
+          icon: Icons.payments_rounded,
+          onTap: () async {
+            await pushScreen(context, givingChannelsScreen());
+            _load();
+          },
+        ),
+        _row(
+          label: 'Books & Resources',
+          count: _bookCount == null ? 'The books shelf' : '$_bookCount books',
+          icon: Icons.menu_book_rounded,
+          onTap: () async {
+            await pushScreen(context, booksManageScreen());
+            _load();
+          },
+        ),
+        _row(
+          label: 'Events',
+          count: _eventCount == null
+              ? 'The events carousel'
+              : '$_eventCount events',
+          icon: Icons.event_rounded,
+          onTap: () async {
+            await pushScreen(context, eventsManageScreen());
             _load();
           },
         ),

@@ -14,4 +14,18 @@ class EventsApi {
         .map((r) => EventItem.fromJson(r as Map<String, dynamic>))
         .toList();
   }
+
+  Future<EventItem> create(Map<String, dynamic> fields) async {
+    final data = await ApiClient(token: token).post('/api/events', fields);
+    return EventItem.fromJson(data['event'] as Map<String, dynamic>);
+  }
+
+  Future<EventItem> update(String id, Map<String, dynamic> fields) async {
+    final data = await ApiClient(token: token).patch('/api/events/$id', fields);
+    return EventItem.fromJson(data['event'] as Map<String, dynamic>);
+  }
+
+  Future<void> delete(String id) {
+    return ApiClient(token: token).delete('/api/events/$id');
+  }
 }

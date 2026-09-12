@@ -16,4 +16,22 @@ class WorkerGroupsApi {
         .map((r) => WorkerGroup.fromJson(r as Map<String, dynamic>))
         .toList();
   }
+
+  Future<WorkerGroup> create(Map<String, dynamic> fields) async {
+    final data = await ApiClient(
+      token: token,
+    ).post('/api/worker-groups', fields);
+    return WorkerGroup.fromJson(data['workerGroup'] as Map<String, dynamic>);
+  }
+
+  Future<WorkerGroup> update(String id, Map<String, dynamic> fields) async {
+    final data = await ApiClient(
+      token: token,
+    ).patch('/api/worker-groups/$id', fields);
+    return WorkerGroup.fromJson(data['workerGroup'] as Map<String, dynamic>);
+  }
+
+  Future<void> delete(String id) {
+    return ApiClient(token: token).delete('/api/worker-groups/$id');
+  }
 }

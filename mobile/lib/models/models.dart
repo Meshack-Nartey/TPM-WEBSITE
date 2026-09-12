@@ -239,6 +239,7 @@ class MediaItem {
 
 class EventItem {
   const EventItem({
+    this.id,
     this.day,
     this.month,
     required this.tag,
@@ -248,6 +249,10 @@ class EventItem {
     required this.description,
     required this.image,
   });
+
+  /// Null for the design board's sample events — set for anything fetched
+  /// from `GET /api/events`, and required to edit/delete it from Manage.
+  final String? id;
 
   /// Null when the date has not been announced. Several of the ministry's
   /// events are genuinely "Date: TBA", and showing an invented day would be
@@ -265,6 +270,7 @@ class EventItem {
   bool get isDated => day != null && month != null;
 
   factory EventItem.fromJson(Map<String, dynamic> json) => EventItem(
+    id: json['id'] as String?,
     day: json['day'] as String?,
     month: json['month'] as String?,
     tag: json['tag'] as String? ?? '',
@@ -294,6 +300,7 @@ class GiveOption {
 
 class GivingChannel {
   const GivingChannel({
+    this.id,
     required this.name,
     required this.logo,
     required this.accountName,
@@ -301,6 +308,10 @@ class GivingChannel {
     required this.numberLabel,
     this.isBank = false,
   });
+
+  /// Null for the design board's sample channels — set for anything fetched
+  /// from `GET /api/giving-channels`.
+  final String? id;
 
   final String name;
   final String logo;
@@ -324,6 +335,7 @@ class GivingChannel {
   String get copyValue => number.replaceAll(' ', '');
 
   factory GivingChannel.fromJson(Map<String, dynamic> json) => GivingChannel(
+    id: json['id'] as String?,
     name: json['name'] as String,
     logo: json['logo'] as String? ?? '',
     accountName: json['accountName'] as String? ?? '',
@@ -335,12 +347,17 @@ class GivingChannel {
 
 class Branch {
   const Branch({
+    this.id,
     required this.name,
     required this.region,
     required this.address,
     this.phone,
     this.email,
   });
+
+  /// Null for the design board's sample branches — set for anything fetched
+  /// from `GET /api/branches`.
+  final String? id;
 
   final String name;
   final String region;
@@ -349,6 +366,7 @@ class Branch {
   final String? email;
 
   factory Branch.fromJson(Map<String, dynamic> json) => Branch(
+    id: json['id'] as String?,
     name: json['name'] as String,
     region: json['region'] as String? ?? '',
     address: json['address'] as String? ?? '',
@@ -361,16 +379,22 @@ class Branch {
 /// "Get Involved" tabs, ported over with the same photo and copy.
 class WorkerGroup {
   const WorkerGroup({
+    this.id,
     required this.name,
     required this.photo,
     required this.blurb,
   });
+
+  /// Null for the design board's sample groups — set for anything fetched
+  /// from `GET /api/worker-groups`.
+  final String? id;
 
   final String name;
   final String photo;
   final String blurb;
 
   factory WorkerGroup.fromJson(Map<String, dynamic> json) => WorkerGroup(
+    id: json['id'] as String?,
     name: json['name'] as String,
     photo: json['photo'] as String? ?? '',
     blurb: json['blurb'] as String? ?? '',
@@ -391,13 +415,23 @@ class ServiceTime {
 }
 
 class Book {
-  const Book({required this.title, required this.author, required this.cover});
+  const Book({
+    this.id,
+    required this.title,
+    required this.author,
+    required this.cover,
+  });
+
+  /// Null for the design board's sample books — set for anything fetched
+  /// from `GET /api/books`.
+  final String? id;
 
   final String title;
   final String author;
   final String cover;
 
   factory Book.fromJson(Map<String, dynamic> json) => Book(
+    id: json['id'] as String?,
     title: json['title'] as String,
     author: json['author'] as String? ?? '',
     cover: json['cover'] as String? ?? '',
