@@ -78,6 +78,19 @@ const GIVING_CHANNELS = [
   { name: 'Stanbic Bank Ghana', logo: 'assets/give/stanbic-bank.png', accountName: MINISTRY_NAME, number: '904 000 970 3211', numberLabel: 'Account Number', isBank: true },
 ];
 
+const FOUNDER = 'Apostle Andrews Amoh Ofori';
+
+// The Books & Resources shelf.
+const BOOKS = [
+  { title: 'Daily Drops of Transformation', author: `Volume I · ${FOUNDER}`, cover: 'assets/books/ddot-1.png' },
+  { title: 'Daily Drops of Transformation', author: `Volume II · ${FOUNDER}`, cover: 'assets/books/ddot-2.jpg' },
+  { title: 'Crossing the Red Sea', author: FOUNDER, cover: 'assets/books/red-sea.jpg' },
+  { title: 'New Believer’s Handbook', author: 'TPM Discipleship', cover: 'assets/books/cover-3.png' },
+  { title: 'Prayer & Fasting Guide', author: 'TPM Discipleship', cover: 'assets/books/cover-4.png' },
+  { title: 'Worker’s Commitment Guide', author: 'TPM Discipleship', cover: 'assets/books/cover-5.png' },
+  { title: 'TPM Welcome Guide', author: 'TPM Discipleship', cover: 'assets/books/cover-6.png' },
+];
+
 // NOTE: No sample leaders, announcements, reports, or members are seeded.
 // The database starts clean — all operational data comes from real leader input.
 // Only essential config is seeded: reference lists, invite codes, and one admin.
@@ -127,6 +140,17 @@ async function main() {
     });
   }
   console.log('✓ Giving channels seeded');
+
+  // Books (no natural unique key — two titles share a name across volumes —
+  // so this only seeds once, on an empty table, rather than upserting).
+  if ((await prisma.book.count()) === 0) {
+    await prisma.book.createMany({
+      data: BOOKS.map((b, i) => ({ ...b, sortOrder: i })),
+    });
+    console.log('✓ Books seeded');
+  } else {
+    console.log('• Books already seeded');
+  }
 
   // Invite codes (idempotent via unique code).
   const leaderCode = (process.env.SEED_LEADER_CODE || 'TPM-LEADER-2026').toUpperCase();

@@ -385,6 +385,12 @@ class Book {
   final String title;
   final String author;
   final String cover;
+
+  factory Book.fromJson(Map<String, dynamic> json) => Book(
+    title: json['title'] as String,
+    author: json['author'] as String? ?? '',
+    cover: json['cover'] as String? ?? '',
+  );
 }
 
 /// A person in the branch registry. Not necessarily a portal account holder —
