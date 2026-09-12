@@ -152,6 +152,32 @@ model Leader {
   updatedAt  DateTime @updatedAt
 }
 
+// Public-facing branch directory (address/contact) — richer than the
+// `Lookup` "branch" category, which is just the name used in dropdowns.
+model BranchInfo {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  region    String
+  address   String
+  phone     String?
+  email     String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// "Get Involved" worker-group descriptions shown on About — richer than the
+// `Lookup` "department" category, which is just the name.
+model WorkerGroupInfo {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  photo     String
+  blurb     String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // Reference lists: branches, departments, fellowships, basenias,
 // membership statuses, meeting types, genders.
 model Lookup {

@@ -1,16 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../app/session.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
+import '../../services/auth_api.dart';
+import '../../services/branches_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 
 /// Where to find us. Directions, phone, email and WhatsApp are all one tap from
 /// the branch card — WhatsApp especially, since that is how most branches
 /// actually field questions.
-class BranchesScreen extends StatelessWidget {
+class BranchesScreen extends StatefulWidget {
   const BranchesScreen({super.key});
+
+  @override
+  State<BranchesScreen> createState() => _BranchesScreenState();
+}
+
+class _BranchesScreenState extends State<BranchesScreen> {
+  bool _loaded = false;
+  List<Branch> _branches = MockData.branches;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_loaded) {
+      _loaded = true;
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    final token = AppSession.of(context).token;
+    if (token == null) return; // Guest preview — the sample branches stand in.
+    try {
+      final branches = await BranchesApi(token: token).fetch();
+      if (!mounted || branches.isEmpty) return;
+      setState(() => _branches = branches);
+    } on ApiException {
+      // Keep the fallback list.
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +62,7 @@ class BranchesScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            for (final branch in MockData.branches)
+            for (final branch in _branches)
               Padding(
                 padding: const EdgeInsets.fromLTRB(22, 0, 22, 12),
                 child: _BranchCard(branch: branch),

@@ -327,6 +327,14 @@ class Branch {
   final String address;
   final String? phone;
   final String? email;
+
+  factory Branch.fromJson(Map<String, dynamic> json) => Branch(
+    name: json['name'] as String,
+    region: json['region'] as String? ?? '',
+    address: json['address'] as String? ?? '',
+    phone: json['phone'] as String?,
+    email: json['email'] as String?,
+  );
 }
 
 /// One of the fifteen worker groups members can serve in — the website's
@@ -341,6 +349,12 @@ class WorkerGroup {
   final String name;
   final String photo;
   final String blurb;
+
+  factory WorkerGroup.fromJson(Map<String, dynamic> json) => WorkerGroup(
+    name: json['name'] as String,
+    photo: json['photo'] as String? ?? '',
+    blurb: json['blurb'] as String? ?? '',
+  );
 }
 
 /// One of the ministry's weekly gatherings.
