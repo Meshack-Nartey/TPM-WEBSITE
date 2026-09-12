@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/session.dart';
 import '../../data/mock_data.dart';
 import '../../services/auth_api.dart';
+import '../../services/lookups_api.dart';
 import '../../services/members_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
@@ -22,10 +23,34 @@ class _RegisterMemberScreenState extends State<RegisterMemberScreen> {
   bool _saving = false;
   String? _error;
 
+  /// Starts as the seed-matching fallback so the picker is never empty;
+  /// replaced once the real list loads.
+  List<String> _memberStatuses = MockData.memberStatuses;
+
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _groupController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStatuses();
+  }
+
+  Future<void> _loadStatuses() async {
+    try {
+      final grouped = await const PublicLookups().fetch();
+      final statuses = grouped['membershipStatuses'];
+      if (!mounted || statuses == null || statuses.isEmpty) return;
+      setState(() {
+        _memberStatuses = statuses;
+        if (_status >= statuses.length) _status = 0;
+      });
+    } on ApiException {
+      // Keep the fallback list.
+    }
+  }
 
   @override
   void dispose() {
@@ -69,13 +94,13 @@ class _RegisterMemberScreenState extends State<RegisterMemberScreen> {
         email: _emailController.text.trim(),
         department: _groupController.text.trim(),
         branch: session.user?.branch ?? '',
-        membershipStatus: MockData.memberStatuses[_status],
+        membershipStatus: _memberStatuses[_status],
       );
       if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Saved as ${MockData.memberStatuses[_status]}'),
+          content: Text('Saved as ${_memberStatuses[_status]}'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -171,10 +196,10 @@ class _RegisterMemberScreenState extends State<RegisterMemberScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                for (var i = 0; i < MockData.memberStatuses.length; i++) ...[
+                for (var i = 0; i < _memberStatuses.length; i++) ...[
                   if (i > 0) const SizedBox(width: 8),
                   ChoiceChipPill(
-                    label: MockData.memberStatuses[i],
+                    label: _memberStatuses[i],
                     selected: i == _status,
                     dark: true,
                     expand: true,

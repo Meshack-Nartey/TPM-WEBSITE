@@ -4,6 +4,7 @@ import '../../app/session.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
 import '../../services/auth_api.dart';
+import '../../services/lookups_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/shells.dart';
@@ -30,12 +31,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _error;
   Map<String, String> _fieldErrors = const {};
 
+  /// Starts as the seed-matching fallback so the picker is never empty;
+  /// replaced once the real list loads.
+  List<String> _branchNames = MockData.branchNames;
+
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _inviteCodeController = TextEditingController();
 
   bool get _needsInviteCode => widget.role != AppRole.member;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBranches();
+  }
+
+  Future<void> _loadBranches() async {
+    try {
+      final grouped = await const PublicLookups().fetch();
+      final branches = grouped['branches'];
+      if (!mounted || branches == null || branches.isEmpty) return;
+      setState(() => _branchNames = branches);
+    } on ApiException {
+      // Keep the fallback list — nothing else to do here.
+    }
+  }
 
   @override
   void dispose() {
@@ -68,14 +90,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 6),
               Text('Create account', style: TpmText.display(27)),
               const SizedBox(height: 4),
-              Text('Join the TPM family in a few steps.', style: TpmText.body(13.8)),
+              Text(
+                'Join the TPM family in a few steps.',
+                style: TpmText.body(13.8),
+              ),
               const SizedBox(height: 22),
               TpmField(
                 label: 'Full name',
                 hint: 'Ama Boateng',
                 icon: Icons.person_outline_rounded,
                 controller: _nameController,
-                error: _fieldErrors.containsKey('firstName') ||
+                error:
+                    _fieldErrors.containsKey('firstName') ||
                     _fieldErrors.containsKey('lastName'),
               ),
               const SizedBox(height: 14),
@@ -97,7 +123,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 trailing: GestureDetector(
                   onTap: () => setState(() => _obscure = !_obscure),
                   child: Icon(
-                    _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    _obscure
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     size: 18,
                     color: TpmColors.faint,
                   ),
@@ -116,13 +144,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 14),
               _BranchPicker(
                 value: _branch,
+                branchNames: _branchNames,
                 onChanged: (b) => setState(() => _branch = b),
               ),
               if (_error != null) ...[
                 const SizedBox(height: 14),
                 Text(
                   _error!,
-                  style: TpmText.body(12.5, color: TpmColors.danger, weight: FontWeight.w600),
+                  style: TpmText.body(
+                    12.5,
+                    color: TpmColors.danger,
+                    weight: FontWeight.w600,
+                  ),
                 ),
               ],
               const SizedBox(height: 24),
@@ -188,7 +221,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     // The API wants first/last separately; the form asks for one field.
     final parts = fullName.split(RegExp(r'\s+'));
     final firstName = parts.first;
-    final lastName = parts.length > 1 ? parts.sublist(1).join(' ') : parts.first;
+    final lastName = parts.length > 1
+        ? parts.sublist(1).join(' ')
+        : parts.first;
 
     setState(() {
       _loading = true;
@@ -221,9 +256,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 }
 
 class _BranchPicker extends StatelessWidget {
-  const _BranchPicker({required this.value, required this.onChanged});
+  const _BranchPicker({
+    required this.value,
+    required this.branchNames,
+    required this.onChanged,
+  });
 
   final String? value;
+  final List<String> branchNames;
   final ValueChanged<String> onChanged;
 
   @override
@@ -233,7 +273,11 @@ class _BranchPicker extends StatelessWidget {
       children: [
         Text(
           'HOME BRANCH',
-          style: TpmText.eyebrow(color: TpmColors.goldDeep, size: 10, tracking: 1.2),
+          style: TpmText.eyebrow(
+            color: TpmColors.goldDeep,
+            size: 10,
+            tracking: 1.2,
+          ),
         ),
         const SizedBox(height: 7),
         Material(
@@ -250,7 +294,11 @@ class _BranchPicker extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.location_on_outlined, size: 17, color: TpmColors.faint),
+                  const Icon(
+                    Icons.location_on_outlined,
+                    size: 17,
+                    color: TpmColors.faint,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -261,7 +309,11 @@ class _BranchPicker extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Icon(Icons.expand_more_rounded, size: 18, color: TpmColors.faint),
+                  const Icon(
+                    Icons.expand_more_rounded,
+                    size: 18,
+                    color: TpmColors.faint,
+                  ),
                 ],
               ),
             ),
@@ -297,7 +349,7 @@ class _BranchPicker extends StatelessWidget {
                 child: ListView(
                   shrinkWrap: true,
                   children: [
-                    for (final branch in MockData.branchNames)
+                    for (final branch in branchNames)
                       ListTile(
                         leading: const Icon(
                           Icons.location_on_outlined,

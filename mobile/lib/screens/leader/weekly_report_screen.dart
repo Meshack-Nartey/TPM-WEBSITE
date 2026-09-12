@@ -8,6 +8,7 @@ import '../../data/mock_data.dart';
 import '../../models/models.dart';
 import '../../services/api_client.dart';
 import '../../services/auth_api.dart';
+import '../../services/lookups_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 
@@ -48,6 +49,10 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
   String? _error;
   int _queuedCount = 0;
 
+  /// Starts as the seed-matching fallback so the picker works even if the
+  /// leader is offline when this screen opens — see the class doc.
+  List<String> _meetingTypes = MockData.meetingTypes;
+
   final _attendanceController = TextEditingController();
   final _titheController = TextEditingController();
   final _soulsController = TextEditingController();
@@ -60,6 +65,21 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
     if (!_loaded) {
       _loaded = true;
       _trySyncQueue();
+      _loadMeetingTypes();
+    }
+  }
+
+  Future<void> _loadMeetingTypes() async {
+    try {
+      final grouped = await const PublicLookups().fetch();
+      final types = grouped['meetingTypes'];
+      if (!mounted || types == null || types.isEmpty) return;
+      setState(() {
+        _meetingTypes = types;
+        if (_meetingType >= types.length) _meetingType = 0;
+      });
+    } on ApiException {
+      // Keep the fallback list — this screen has to work offline.
     }
   }
 
@@ -138,7 +158,7 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           ].join('\n');
 
     return {
-      'meetingType': MockData.meetingTypes[_meetingType],
+      'meetingType': _meetingTypes[_meetingType],
       'branch': branch,
       'date': DateTime.now().toIso8601String().substring(0, 10),
       // The form collects one combined headcount rather than a gender
@@ -261,10 +281,10 @@ class _WeeklyReportScreenState extends State<WeeklyReportScreen> {
           height: 38,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: MockData.meetingTypes.length,
+            itemCount: _meetingTypes.length,
             separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (context, i) => ChoiceChipPill(
-              label: MockData.meetingTypes[i],
+              label: _meetingTypes[i],
               selected: i == _meetingType,
               dark: true,
               onTap: () => setState(() => _meetingType = i),
