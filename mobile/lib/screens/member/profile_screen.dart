@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/session.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
+import '../../services/auth_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 
@@ -19,9 +20,58 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late final List<bool> _notifications = MockData.notificationSettings
-      .map((n) => n.enabled)
-      .toList();
+  /// Keys line up 1:1 with `MockData.notificationSettings`'s labels, and
+  /// with `AppUser`'s three `notify*` fields.
+  static const _keys = [
+    'notifyServiceReminders',
+    'notifyNewSermons',
+    'notifyEventsAndCamps',
+  ];
+
+  late final List<bool> _notifications = _fromUser(
+    AppSession.of(context).user,
+  );
+  bool _saving = false;
+
+  static List<bool> _fromUser(AppUser? user) {
+    if (user == null) {
+      return MockData.notificationSettings.map((n) => n.enabled).toList();
+    }
+    return [
+      user.notifyServiceReminders,
+      user.notifyNewSermons,
+      user.notifyEventsAndCamps,
+    ];
+  }
+
+  Future<void> _toggle(int i, bool value) async {
+    final session = AppSession.of(context);
+    final token = session.token;
+    final previous = _notifications[i];
+    setState(() => _notifications[i] = value);
+
+    if (token == null) return; // Guest/preview — nothing to persist.
+
+    setState(() => _saving = true);
+    try {
+      final user = await const AuthApi().updateNotifications(
+        token: token,
+        prefs: {_keys[i]: value},
+      );
+      if (!mounted) return;
+      await session.updateUser(user);
+      setState(() => _saving = false);
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _notifications[i] = previous;
+        _saving = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +101,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 14),
             _NotificationsCard(
               values: _notifications,
-              onChanged: (i, v) => setState(() => _notifications[i] = v),
+              enabled: !_saving,
+              onChanged: _toggle,
             ),
             const SizedBox(height: 14),
             const _SavedCard(),
@@ -296,9 +347,14 @@ class _DetailsCard extends StatelessWidget {
 }
 
 class _NotificationsCard extends StatelessWidget {
-  const _NotificationsCard({required this.values, required this.onChanged});
+  const _NotificationsCard({
+    required this.values,
+    required this.onChanged,
+    this.enabled = true,
+  });
 
   final List<bool> values;
+  final bool enabled;
   final void Function(int index, bool value) onChanged;
 
   @override
@@ -340,7 +396,7 @@ class _NotificationsCard extends StatelessWidget {
                       value: values[i],
                       activeThumbColor: Colors.white,
                       activeTrackColor: TpmColors.navy,
-                      onChanged: (v) => onChanged(i, v),
+                      onChanged: enabled ? (v) => onChanged(i, v) : null,
                     ),
                   ],
                 ),

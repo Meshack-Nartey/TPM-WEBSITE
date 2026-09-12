@@ -110,6 +110,26 @@ router.get(
   })
 );
 
+const notificationsSchema = z.object({
+  notifyServiceReminders: z.boolean().optional(),
+  notifyNewSermons: z.boolean().optional(),
+  notifyEventsAndCamps: z.boolean().optional(),
+});
+
+// PATCH /api/auth/me/notifications — self-service, any signed-in role.
+router.patch(
+  '/me/notifications',
+  authenticate,
+  validateBody(notificationsSchema),
+  asyncHandler(async (req, res) => {
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: req.body,
+    });
+    res.json({ user: publicUser(user) });
+  })
+);
+
 // POST /api/auth/forgot-password
 //
 // DEV-ONLY SHORTCUT: resets the password for a known email with no proof of

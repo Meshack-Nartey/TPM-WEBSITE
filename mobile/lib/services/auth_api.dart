@@ -95,6 +95,41 @@ class AuthApi {
     user: AppUser.fromJson(data['user'] as Map<String, dynamic>),
   );
 
+  /// PATCH `/api/auth/me/notifications` — self-service, any signed-in role.
+  Future<AppUser> updateNotifications({
+    required String token,
+    required Map<String, bool> prefs,
+  }) async {
+    final data = await _patchRaw('/api/auth/me/notifications', prefs, token);
+    return AppUser.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
+  Future<Map<String, dynamic>> _patchRaw(
+    String path,
+    Map<String, dynamic> body,
+    String token,
+  ) async {
+    http.Response response;
+    try {
+      response = await http
+          .patch(
+            Uri.parse('$baseUrl$path'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 10));
+    } catch (_) {
+      throw ApiException(
+        "Can't reach the server. Make sure the API is running on this network.",
+        isNetworkError: true,
+      );
+    }
+    return _parse(response);
+  }
+
   Future<Map<String, dynamic>> _postRaw(
     String path,
     Map<String, dynamic> body,
@@ -114,7 +149,10 @@ class AuthApi {
         isNetworkError: true,
       );
     }
+    return _parse(response);
+  }
 
+  Map<String, dynamic> _parse(http.Response response) {
     Map<String, dynamic> data;
     try {
       data = jsonDecode(response.body) as Map<String, dynamic>;

@@ -47,6 +47,9 @@ class AppUser {
     this.fellowship,
     this.dateJoined,
     this.active = true,
+    this.notifyServiceReminders = true,
+    this.notifyNewSermons = true,
+    this.notifyEventsAndCamps = false,
   });
 
   final String id;
@@ -70,6 +73,10 @@ class AppUser {
   /// screen; the signed-in user's own session is always active.
   final bool active;
 
+  final bool notifyServiceReminders;
+  final bool notifyNewSermons;
+  final bool notifyEventsAndCamps;
+
   String get initials => initialsOf(fullName);
 
   factory AppUser.fromJson(Map<String, dynamic> json) => AppUser(
@@ -85,6 +92,9 @@ class AppUser {
     fellowship: json['fellowship'] as String?,
     dateJoined: json['dateJoined'] as String?,
     active: json['active'] as bool? ?? true,
+    notifyServiceReminders: json['notifyServiceReminders'] as bool? ?? true,
+    notifyNewSermons: json['notifyNewSermons'] as bool? ?? true,
+    notifyEventsAndCamps: json['notifyEventsAndCamps'] as bool? ?? false,
   );
 
   Map<String, dynamic> toJson() => {
@@ -100,6 +110,9 @@ class AppUser {
     'fellowship': fellowship,
     'dateJoined': dateJoined,
     'active': active,
+    'notifyServiceReminders': notifyServiceReminders,
+    'notifyNewSermons': notifyNewSermons,
+    'notifyEventsAndCamps': notifyEventsAndCamps,
   };
 }
 

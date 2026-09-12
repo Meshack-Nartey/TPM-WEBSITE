@@ -38,6 +38,12 @@ model User {
   fellowship   String?
   dateJoined   String?
   active       Boolean  @default(true)
+
+  // Push-notification preferences, set from the Profile screen.
+  notifyServiceReminders Boolean @default(true)
+  notifyNewSermons       Boolean @default(true)
+  notifyEventsAndCamps   Boolean @default(false)
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

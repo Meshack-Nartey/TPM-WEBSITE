@@ -59,6 +59,17 @@ class AppSession extends ChangeNotifier {
     await prefs.setString(_userKey, jsonEncode(user.toJson()));
   }
 
+  /// Replaces the signed-in user's data in place — e.g. after saving a
+  /// profile field the server echoes back — without touching the token.
+  Future<void> updateUser(AppUser user) async {
+    if (_token == null) return;
+    _user = user;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userKey, jsonEncode(user.toJson()));
+  }
+
   /// Loads a previously-persisted session, if there is one. Called once at
   /// app start, before the first frame — see `main.dart`.
   Future<void> restore() async {
