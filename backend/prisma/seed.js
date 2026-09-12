@@ -68,6 +68,16 @@ const WORKER_GROUPS = [
   { name: "The Pastor's Office", photo: 'assets/team/pastors-office.jpg', blurb: "Provides administrative and pastoral support to TPM's leadership — scheduling, correspondence, and day-to-day coordination." },
 ];
 
+const MINISTRY_NAME = 'Transformation Project Ministries';
+
+// The office's real MoMo/bank accounts, shown on the Give screen.
+const GIVING_CHANNELS = [
+  { name: 'MTN Momo Pay ID', logo: 'assets/give/mtn-momo.png', accountName: MINISTRY_NAME, number: '074 329', numberLabel: 'Pay ID' },
+  { name: 'MTN Mobile Money', logo: 'assets/give/mtn-momo.png', accountName: MINISTRY_NAME, number: '055 447 6730', numberLabel: 'Number' },
+  { name: 'Telecel Cash', logo: 'assets/give/telecel-cash.png', accountName: 'Ofori Andrews', number: '050 091 0191', numberLabel: 'Number' },
+  { name: 'Stanbic Bank Ghana', logo: 'assets/give/stanbic-bank.png', accountName: MINISTRY_NAME, number: '904 000 970 3211', numberLabel: 'Account Number', isBank: true },
+];
+
 // NOTE: No sample leaders, announcements, reports, or members are seeded.
 // The database starts clean — all operational data comes from real leader input.
 // Only essential config is seeded: reference lists, invite codes, and one admin.
@@ -106,6 +116,17 @@ async function main() {
     });
   }
   console.log('✓ Worker groups seeded');
+
+  // Giving channels (idempotent via unique name).
+  for (let i = 0; i < GIVING_CHANNELS.length; i++) {
+    const { name, ...data } = GIVING_CHANNELS[i];
+    await prisma.givingChannel.upsert({
+      where: { name },
+      update: { ...data, sortOrder: i },
+      create: { name, ...data, sortOrder: i },
+    });
+  }
+  console.log('✓ Giving channels seeded');
 
   // Invite codes (idempotent via unique code).
   const leaderCode = (process.env.SEED_LEADER_CODE || 'TPM-LEADER-2026').toUpperCase();

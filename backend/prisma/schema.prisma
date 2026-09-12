@@ -178,6 +178,51 @@ model WorkerGroupInfo {
   updatedAt DateTime @updatedAt
 }
 
+// Real MoMo/bank accounts shown on the Give screen — the office's actual
+// giving channels, editable without a code deploy.
+model GivingChannel {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  logo        String
+  accountName String
+  number      String
+  numberLabel String
+  isBank      Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// A book/resource shown on the Books & Resources screen.
+model Book {
+  id        String   @id @default(cuid())
+  title     String
+  author    String
+  cover     String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// An upcoming (or past) church event shown on the Events screen.
+model Event {
+  id          String   @id @default(cuid())
+  tag         String
+  title       String
+  location    String
+  // Free text, e.g. "Fri 26 – Sun 28 Aug, 6:00 AM – 6:00 PM" — several of
+  // the ministry's events are genuinely "Date: TBA", which a real DateTime
+  // column can't represent honestly.
+  when        String
+  day         String?
+  month       String?
+  description String
+  image       String
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 // Reference lists: branches, departments, fellowships, basenias,
 // membership statuses, meeting types, genders.
 model Lookup {

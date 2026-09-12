@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../app/session.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
+import '../../services/auth_api.dart';
+import '../../services/giving_channels_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 
@@ -11,13 +14,42 @@ import '../../widgets/common.dart';
 /// In-app payment isn't built yet, so rather than bouncing people out to the
 /// web this screen carries the ministry's actual MoMo and bank accounts, each
 /// with a one-tap copy — the same numbers `frontend/give.html` publishes.
-class GiveScreen extends StatelessWidget {
+class GiveScreen extends StatefulWidget {
   const GiveScreen({super.key});
 
   @override
+  State<GiveScreen> createState() => _GiveScreenState();
+}
+
+class _GiveScreenState extends State<GiveScreen> {
+  bool _loaded = false;
+  List<GivingChannel> _channels = MockData.givingChannels;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_loaded) {
+      _loaded = true;
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    final token = AppSession.of(context).token;
+    if (token == null) return; // Guest preview — the sample accounts stand in.
+    try {
+      final channels = await GivingChannelsApi(token: token).fetch();
+      if (!mounted || channels.isEmpty) return;
+      setState(() => _channels = channels);
+    } on ApiException {
+      // Keep the fallback list.
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final momo = MockData.givingChannels.where((c) => !c.isBank);
-    final banks = MockData.givingChannels.where((c) => c.isBank);
+    final momo = _channels.where((c) => !c.isBank);
+    final banks = _channels.where((c) => c.isBank);
 
     return ListView(
       // The shell's tab bar floats over the body (extendBody: true), so the

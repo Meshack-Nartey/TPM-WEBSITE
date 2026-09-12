@@ -18,6 +18,7 @@ import leadersRoutes from './routes/leaders.routes.js';
 import lookupsRoutes from './routes/lookups.routes.js';
 import branchesRoutes from './routes/branches.routes.js';
 import workerGroupsRoutes from './routes/workerGroups.routes.js';
+import givingChannelsRoutes from './routes/givingChannels.routes.js';
 
 export function createApp() {
   const app = express();
@@ -61,6 +62,7 @@ export function createApp() {
   app.use('/api/lookups', lookupsRoutes);
   app.use('/api/branches', branchesRoutes);
   app.use('/api/worker-groups', workerGroupsRoutes);
+  app.use('/api/giving-channels', givingChannelsRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

@@ -311,6 +311,15 @@ class GivingChannel {
   /// Spaces stripped, so what lands on the clipboard can be pasted straight
   /// into a transfer form.
   String get copyValue => number.replaceAll(' ', '');
+
+  factory GivingChannel.fromJson(Map<String, dynamic> json) => GivingChannel(
+    name: json['name'] as String,
+    logo: json['logo'] as String? ?? '',
+    accountName: json['accountName'] as String? ?? '',
+    number: json['number'] as String? ?? '',
+    numberLabel: json['numberLabel'] as String? ?? '',
+    isBank: json['isBank'] as bool? ?? false,
+  );
 }
 
 class Branch {
