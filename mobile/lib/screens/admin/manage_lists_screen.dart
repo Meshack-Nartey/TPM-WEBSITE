@@ -91,7 +91,7 @@ class _ManageListsScreenState extends State<ManageListsScreen> {
   @override
   Widget build(BuildContext context) {
     final body = ListView(
-      padding: const EdgeInsets.only(top: 20, bottom: 110),
+      padding: const EdgeInsets.only(top: 28, bottom: 110),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

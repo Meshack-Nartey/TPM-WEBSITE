@@ -39,7 +39,7 @@ class _SignInScreenState extends State<SignInScreen> {
       backgroundColor: TpmColors.canvas,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(26, 24, 26, 34),
+          padding: const EdgeInsets.fromLTRB(26, 30, 26, 34),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -55,7 +55,10 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 22),
               Text('Welcome back', style: TpmText.display(28)),
               const SizedBox(height: 4),
-              Text('Sign in to continue your journey.', style: TpmText.body(13.8)),
+              Text(
+                'Sign in to continue your journey.',
+                style: TpmText.body(13.8),
+              ),
               const SizedBox(height: 24),
               TpmField(
                 label: 'Email',
@@ -75,7 +78,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 trailing: GestureDetector(
                   onTap: () => setState(() => _obscure = !_obscure),
                   child: Icon(
-                    _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    _obscure
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
                     size: 18,
                     color: TpmColors.faint,
                   ),
@@ -86,11 +91,17 @@ class _SignInScreenState extends State<SignInScreen> {
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
                   onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const ForgotPasswordScreen(),
+                    ),
                   ),
                   child: Text(
                     'Forgot password?',
-                    style: TpmText.body(12.5, color: TpmColors.navy, weight: FontWeight.w600),
+                    style: TpmText.body(
+                      12.5,
+                      color: TpmColors.navy,
+                      weight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -98,7 +109,11 @@ class _SignInScreenState extends State<SignInScreen> {
                 const SizedBox(height: 14),
                 Text(
                   _error!,
-                  style: TpmText.body(12.5, color: TpmColors.danger, weight: FontWeight.w600),
+                  style: TpmText.body(
+                    12.5,
+                    color: TpmColors.danger,
+                    weight: FontWeight.w600,
+                  ),
                 ),
               ],
               const SizedBox(height: 22),
@@ -117,12 +132,19 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(height: 22),
               Row(
                 children: [
-                  const Expanded(child: Divider(color: TpmColors.hairline, height: 1)),
+                  const Expanded(
+                    child: Divider(color: TpmColors.hairline, height: 1),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text('or', style: TpmText.body(12, color: TpmColors.faint)),
+                    child: Text(
+                      'or',
+                      style: TpmText.body(12, color: TpmColors.faint),
+                    ),
                   ),
-                  const Expanded(child: Divider(color: TpmColors.hairline, height: 1)),
+                  const Expanded(
+                    child: Divider(color: TpmColors.hairline, height: 1),
+                  ),
                 ],
               ),
               const SizedBox(height: 22),
@@ -133,7 +155,9 @@ class _SignInScreenState extends State<SignInScreen> {
                   Flexible(
                     child: GestureDetector(
                       onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const WelcomeScreen(),
+                        ),
                       ),
                       child: Text(
                         'Create an account',
@@ -156,7 +180,11 @@ class _SignInScreenState extends State<SignInScreen> {
                 },
                 child: Text(
                   'Continue as guest',
-                  style: TpmText.body(13, color: TpmColors.faint, weight: FontWeight.w600),
+                  style: TpmText.body(
+                    13,
+                    color: TpmColors.faint,
+                    weight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -188,7 +216,10 @@ class _SignInScreenState extends State<SignInScreen> {
     });
 
     try {
-      final result = await const AuthApi().login(email: email, password: password);
+      final result = await const AuthApi().login(
+        email: email,
+        password: password,
+      );
       if (!context.mounted) return;
       await AppSession.of(context).signInWithAuth(result.token, result.user);
       if (!context.mounted) return;

@@ -54,7 +54,7 @@ class _BooksScreenState extends State<BooksScreen> {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(22, 12, 22, 0),
+                padding: const EdgeInsets.fromLTRB(22, 18, 22, 0),
                 child: ScreenTitle(
                   eyebrow: 'Grow deeper',
                   title: 'Books & Resources',

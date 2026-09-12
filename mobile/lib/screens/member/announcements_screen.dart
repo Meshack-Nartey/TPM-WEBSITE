@@ -62,7 +62,7 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
           onRefresh: _load,
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(top: 20, bottom: 24),
+            padding: const EdgeInsets.only(top: 28, bottom: 24),
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 22),

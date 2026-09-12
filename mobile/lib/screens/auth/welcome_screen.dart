@@ -20,7 +20,7 @@ class WelcomeScreen extends StatelessWidget {
       backgroundColor: TpmColors.canvas,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(26, 20, 26, 34),
+          padding: const EdgeInsets.fromLTRB(26, 28, 26, 34),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -34,7 +34,11 @@ class WelcomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 22),
-              Text('Continue as', textAlign: TextAlign.center, style: TpmText.display(28)),
+              Text(
+                'Continue as',
+                textAlign: TextAlign.center,
+                style: TpmText.display(28),
+              ),
               const SizedBox(height: 4),
               Text(
                 'Pick the role that describes you and you\'ll set up your account next.',
@@ -42,11 +46,17 @@ class WelcomeScreen extends StatelessWidget {
                 style: TpmText.body(13.8),
               ),
               const SizedBox(height: 32),
-              for (final role in const [AppRole.member, AppRole.leader, AppRole.admin]) ...[
+              for (final role in const [
+                AppRole.member,
+                AppRole.leader,
+                AppRole.admin,
+              ]) ...[
                 _RoleTile(
                   role: role,
                   onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => RegisterScreen(role: role)),
+                    MaterialPageRoute(
+                      builder: (_) => RegisterScreen(role: role),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -79,7 +89,11 @@ class WelcomeScreen extends StatelessWidget {
                 },
                 child: Text(
                   'Continue as guest',
-                  style: TpmText.body(13.8, color: TpmColors.ink, weight: FontWeight.bold),
+                  style: TpmText.body(
+                    13.8,
+                    color: TpmColors.ink,
+                    weight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -124,7 +138,10 @@ class _RoleTile extends StatelessWidget {
               children: [
                 Text(role.label, style: TpmText.display(16.5, height: 1.2)),
                 const SizedBox(height: 2),
-                Text(role.blurb, style: TpmText.body(12.5, color: TpmColors.muted)),
+                Text(
+                  role.blurb,
+                  style: TpmText.body(12.5, color: TpmColors.muted),
+                ),
               ],
             ),
           ),

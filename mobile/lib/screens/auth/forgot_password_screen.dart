@@ -38,7 +38,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       backgroundColor: TpmColors.canvas,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(26, 18, 26, 34),
+          padding: const EdgeInsets.fromLTRB(26, 26, 26, 34),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -83,7 +83,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   trailing: GestureDetector(
                     onTap: () => setState(() => _obscure = !_obscure),
                     child: Icon(
-                      _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                      _obscure
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
                       size: 18,
                       color: TpmColors.faint,
                     ),
@@ -93,7 +95,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   const SizedBox(height: 14),
                   Text(
                     _error!,
-                    style: TpmText.body(12.5, color: TpmColors.danger, weight: FontWeight.w600),
+                    style: TpmText.body(
+                      12.5,
+                      color: TpmColors.danger,
+                      weight: FontWeight.w600,
+                    ),
                   ),
                 ],
                 const SizedBox(height: 22),

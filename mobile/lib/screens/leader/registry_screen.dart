@@ -110,7 +110,7 @@ class _RegistryScreenState extends State<RegistryScreen> {
     final branch = AppSession.of(context).user?.branch;
 
     final body = ListView(
-      padding: const EdgeInsets.only(top: 20, bottom: 110),
+      padding: const EdgeInsets.only(top: 28, bottom: 110),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

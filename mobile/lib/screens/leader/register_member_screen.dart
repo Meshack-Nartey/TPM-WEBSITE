@@ -121,7 +121,7 @@ class _RegisterMemberScreenState extends State<RegisterMemberScreen> {
       backgroundColor: TpmColors.night,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 34),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 34),
           children: [
             Row(
               children: [

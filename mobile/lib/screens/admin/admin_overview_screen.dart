@@ -68,7 +68,7 @@ class _AdminOverviewScreenState extends State<AdminOverviewScreen> {
       onRefresh: _load,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.only(top: 20, bottom: 110),
+        padding: const EdgeInsets.only(top: 28, bottom: 110),
         children: [
           const PortalHeader(
             eyebrow: "Pastor's Office · Church-wide",

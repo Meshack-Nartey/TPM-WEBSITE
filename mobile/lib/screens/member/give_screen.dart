@@ -54,7 +54,7 @@ class _GiveScreenState extends State<GiveScreen> {
     return ListView(
       // The shell's tab bar floats over the body (extendBody: true), so the
       // last card needs real clearance or it ends up sitting behind it.
-      padding: const EdgeInsets.only(top: 20, bottom: 110),
+      padding: const EdgeInsets.only(top: 28, bottom: 110),
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 22),

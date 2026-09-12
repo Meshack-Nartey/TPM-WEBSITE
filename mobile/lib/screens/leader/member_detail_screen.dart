@@ -88,7 +88,7 @@ class _Header extends StatelessWidget {
         : (member.fellowship.isNotEmpty ? member.fellowship : 'Member');
 
     return Container(
-      padding: EdgeInsets.fromLTRB(20, topInset + 12, 20, 22),
+      padding: EdgeInsets.fromLTRB(20, topInset + 18, 20, 22),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topCenter,

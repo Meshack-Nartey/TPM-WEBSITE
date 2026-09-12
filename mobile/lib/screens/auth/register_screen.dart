@@ -74,7 +74,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: TpmColors.canvas,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(26, 18, 26, 34),
+          padding: const EdgeInsets.fromLTRB(26, 26, 26, 34),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

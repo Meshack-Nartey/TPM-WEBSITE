@@ -138,7 +138,7 @@ class _ContentListScreenState<T> extends State<ContentListScreen<T>> {
           onRefresh: _load,
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 34),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 34),
             children: [
               Row(
                 children: [
@@ -483,7 +483,7 @@ class _ContentFormScreenState<T> extends State<_ContentFormScreen<T>> {
       backgroundColor: TpmColors.night,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 34),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 34),
           children: [
             Row(
               children: [

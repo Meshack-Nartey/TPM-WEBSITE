@@ -79,7 +79,7 @@ class _LeadersDirectoryScreenState extends State<LeadersDirectoryScreen> {
           onRefresh: _load,
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 34),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 34),
             children: [
               Row(
                 children: [
