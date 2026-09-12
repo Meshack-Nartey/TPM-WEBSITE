@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../app/navigation.dart';
+import '../../app/session.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
+import '../../services/auth_api.dart';
+import '../../services/events_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import 'event_detail_screen.dart';
@@ -85,12 +88,36 @@ class _EventsCarouselState extends State<_EventsCarousel> {
   late final PageController _controller = PageController();
   double _page = 0;
 
+  bool _loaded = false;
+  List<EventItem> _events = MockData.events;
+
   @override
   void initState() {
     super.initState();
     _controller.addListener(
       () => setState(() => _page = _controller.page ?? 0),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_loaded) {
+      _loaded = true;
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    final token = AppSession.of(context).token;
+    if (token == null) return; // Guest preview — the sample events stand in.
+    try {
+      final events = await EventsApi(token: token).fetch();
+      if (!mounted || events.isEmpty) return;
+      setState(() => _events = events);
+    } on ApiException {
+      // Keep the fallback list.
+    }
   }
 
   @override
@@ -101,7 +128,7 @@ class _EventsCarouselState extends State<_EventsCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    final events = MockData.events;
+    final events = _events;
 
     return Column(
       children: [

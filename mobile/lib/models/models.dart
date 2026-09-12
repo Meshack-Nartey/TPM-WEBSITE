@@ -263,6 +263,17 @@ class EventItem {
   final String image;
 
   bool get isDated => day != null && month != null;
+
+  factory EventItem.fromJson(Map<String, dynamic> json) => EventItem(
+    day: json['day'] as String?,
+    month: json['month'] as String?,
+    tag: json['tag'] as String? ?? '',
+    title: json['title'] as String? ?? '',
+    location: json['location'] as String? ?? '',
+    when: json['when'] as String? ?? '',
+    description: json['description'] as String? ?? '',
+    image: json['image'] as String? ?? '',
+  );
 }
 
 class GiveOption {

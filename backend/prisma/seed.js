@@ -91,6 +91,45 @@ const BOOKS = [
   { title: 'TPM Welcome Guide', author: 'TPM Discipleship', cover: 'assets/books/cover-6.png' },
 ];
 
+// Upcoming/ongoing church events shown on the Events screen.
+const EVENTS = [
+  {
+    day: '26–28', month: 'Aug', tag: 'Prayer', title: '3 Days Fasting and Prayers',
+    location: 'All branches · Google Meet',
+    when: '26th–28th August · 6:00 AM–6:00 PM daily',
+    description: `Three days set apart to seek God for great favor, dubbed "Great Favor" — with ${FOUNDER}. Prayer meetings hold in person, 6:00 AM to 6:00 PM daily, with an additional session on Google Meet at 10:00 PM each night.`,
+    image: 'assets/flyers/fasting-and-prayers.png',
+  },
+  {
+    day: '04', month: 'Sep', tag: 'Special Gathering', title: 'TPM Waits: Grace Over Grades',
+    location: 'All branches',
+    when: 'Friday 4th September 2026 · 6:00 PM–12:00 AM',
+    description: 'TPM Waits returns with "Grace Over Grades" — a night of worship and prayer for students heading back to school, trusting God for grace that outworks effort.',
+    image: 'assets/flyers/tpm-waits.png',
+  },
+  {
+    day: '05', month: 'Sep', tag: 'Conference', title: 'Transformation Conference',
+    location: 'All branches',
+    when: 'Saturday 5th September 2026 · 8:00 AM',
+    description: 'Our flagship gathering across all branches, themed "The Fullness of the Holy Spirit" — a full day of worship, the Word, and impartation.',
+    image: 'assets/flyers/tc.png',
+  },
+  {
+    day: '06', month: 'Sep', tag: 'Sunday', title: 'Transformation Sunday',
+    location: 'All branches',
+    when: 'Sunday 6th September 2026 · 8:30 AM',
+    description: 'Transformation Sunday closes out the weekend, themed "The Kingdom Life" — come expecting a fresh encounter with God.',
+    image: 'assets/flyers/ts.png',
+  },
+  {
+    day: 'FRI', month: 'Weekly', tag: 'Weekly Service', title: 'Love Therapy',
+    location: 'All branches',
+    when: 'Every Friday · 6:00 PM',
+    description: 'Our weekly Friday gathering. Come as you are, and bring someone who needs the family of God this week.',
+    image: 'assets/photos/communion.jpg',
+  },
+];
+
 // NOTE: No sample leaders, announcements, reports, or members are seeded.
 // The database starts clean — all operational data comes from real leader input.
 // Only essential config is seeded: reference lists, invite codes, and one admin.
@@ -150,6 +189,16 @@ async function main() {
     console.log('✓ Books seeded');
   } else {
     console.log('• Books already seeded');
+  }
+
+  // Events (no natural unique key, same idempotency approach as Books).
+  if ((await prisma.event.count()) === 0) {
+    await prisma.event.createMany({
+      data: EVENTS.map((e, i) => ({ ...e, sortOrder: i })),
+    });
+    console.log('✓ Events seeded');
+  } else {
+    console.log('• Events already seeded');
   }
 
   // Invite codes (idempotent via unique code).
