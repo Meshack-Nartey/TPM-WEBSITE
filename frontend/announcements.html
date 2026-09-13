@@ -72,6 +72,49 @@
             width: 100%;
             height: auto;
         }
+
+        .ann-card--text {
+            padding: 22px;
+        }
+
+        .ann-card--text .ann-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: rgba(212,175,55,0.15);
+            color: var(--gold);
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .ann-card--text h3 {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .ann-card--text p {
+            color: rgba(255,255,255,0.65);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .ann-card--text .ann-date {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.76rem;
+        }
+
+        .ann-empty, .ann-error {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.4);
+        }
     </style>
 </head>
 <body>
@@ -105,23 +148,7 @@
         </div>
 
         <div class="announcements-grid-section" id="announcementsGrid">
-
-            <div class="ann-card">
-                <img src="assets/images/flyers/tc.png" alt="Transformation Conference flyer">
-            </div>
-
-            <div class="ann-card">
-                <img src="assets/images/flyers/ts.png" alt="Program flyer">
-            </div>
-
-            <div class="ann-card">
-                <img src="assets/images/flyers/tpm-waits.png" alt="TPM Waits flyer">
-            </div>
-
-            <div class="ann-card">
-                <img src="assets/images/flyers/fasting-and-prayers.png" alt="Fasting and Prayers flyer">
-            </div>
-
+            <div class="ann-empty">Loading announcements…</div>
         </div>
     </div>
 
@@ -163,5 +190,56 @@
     <script src="script.js" defer></script>
     <script src="search-data.js" defer></script>
     <script src="search.js" defer></script>
+    <script>
+        // Local dev only — see backend/.env CORS_ORIGINS; the deployed
+        // backend isn't live yet (Railway deferred, per the app's own notes).
+        (function () {
+            const API_BASE = 'http://localhost:4000';
+            const grid = document.getElementById('announcementsGrid');
+
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str == null ? '' : String(str);
+                return div.innerHTML;
+            }
+
+            function renderCard(item) {
+                if (item.flyer) {
+                    const card = document.createElement('div');
+                    card.className = 'ann-card';
+                    card.innerHTML = '<img src="' + escapeHtml(item.flyer) + '" alt="' + escapeHtml(item.title) + ' flyer">';
+                    return card;
+                }
+                const card = document.createElement('div');
+                card.className = 'ann-card ann-card--text';
+                card.innerHTML =
+                    '<span class="ann-tag">' + escapeHtml(item.tag) + '</span>' +
+                    '<h3>' + escapeHtml(item.title) + '</h3>' +
+                    '<p>' + escapeHtml(item.body) + '</p>' +
+                    '<div class="ann-date">' + escapeHtml(item.date || '') + '</div>';
+                return card;
+            }
+
+            fetch(API_BASE + '/api/announcements')
+                .then(function (res) {
+                    if (!res.ok) throw new Error('Request failed');
+                    return res.json();
+                })
+                .then(function (data) {
+                    const items = data.announcements || [];
+                    grid.innerHTML = '';
+                    if (items.length === 0) {
+                        grid.innerHTML = '<div class="ann-empty">Nothing posted yet — check back soon.</div>';
+                        return;
+                    }
+                    items.forEach(function (item) {
+                        grid.appendChild(renderCard(item));
+                    });
+                })
+                .catch(function () {
+                    grid.innerHTML = '<div class="ann-error">Couldn\'t load announcements right now. Please try again later.</div>';
+                });
+        })();
+    </script>
 </body>
 </html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="assets/images/TPM LOGO ONE.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal — Transformation Project Ministries</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:       #080808;
+            --surface:  #111111;
+            --surface2: #181818;
+            --border:   rgba(255,255,255,0.06);
+            --gold:     #c9a84c;
+            --gold-bg:  rgba(201,168,76,0.1);
+            --text:     #f0f0f0;
+            --text-dim: rgba(255,255,255,0.55);
+            --text-muted: rgba(255,255,255,0.28);
+            --r:        10px;
+            --r-lg:     16px;
+            --font-body: 'Montserrat', sans-serif;
+            --font-display: 'Playfair Display', serif;
+        }
+
+        body { font-family: var(--font-body); background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+        /* ── AUTH ─────────────────────────────────── */
+        .ap-auth {
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 40px 20px;
+            background:
+                radial-gradient(ellipse at 10% 10%, rgba(201,168,76,0.07) 0%, transparent 55%),
+                radial-gradient(ellipse at 90% 90%, rgba(30,58,138,0.09) 0%, transparent 55%),
+                var(--bg);
+        }
+
+        .ap-auth-card {
+            width: 100%; max-width: 440px;
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: var(--r-lg);
+            padding: 40px 36px;
+            box-shadow: 0 32px 64px rgba(0,0,0,0.6);
+        }
+
+        .ap-auth-logo { text-align: center; margin-bottom: 26px; }
+        .ap-auth-logo img { height: 44px; object-fit: contain; }
+        .ap-auth-logo-sub { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2.5px; color: var(--gold); margin-top: 8px; }
+
+        .ap-auth-h   { font-family: var(--font-display); font-size: 1.5rem; color: var(--text); text-align: center; margin-bottom: 4px; }
+        .ap-auth-sub { font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-bottom: 24px; }
+
+        .ap-field { margin-bottom: 14px; }
+        .ap-field label { display: block; font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-muted); margin-bottom: 6px; }
+        .ap-field input, .ap-field select, .ap-field textarea {
+            width: 100%; background: var(--surface2);
+            border: 1px solid rgba(255,255,255,0.09); border-radius: var(--r);
+            padding: 11px 14px; font-size: 0.85rem; color: var(--text);
+            font-family: var(--font-body); outline: none; transition: border-color 0.2s; -webkit-appearance: none;
+        }
+        .ap-field textarea { resize: vertical; min-height: 90px; }
+        .ap-field input:focus, .ap-field select:focus, .ap-field textarea:focus { border-color: rgba(201,168,76,0.5); }
+        .ap-field input::placeholder, .ap-field textarea::placeholder { color: rgba(255,255,255,0.2); }
+        .ap-field-hint { font-size: 0.68rem; color: var(--text-muted); margin-top: 6px; line-height: 1.5; }
+
+        .ap-btn {
+            padding: 11px 22px; border: none; border-radius: var(--r);
+            background: linear-gradient(135deg, #c9a84c, #a07830);
+            color: #fff; font-family: var(--font-body); font-size: 0.82rem;
+            font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;
+            cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+        }
+        .ap-btn:hover { opacity: 0.88; }
+        .ap-btn:active { transform: scale(0.99); }
+        .ap-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .ap-btn.full { width: 100%; }
+        .ap-btn.ghost {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
+            color: var(--text-dim); font-weight: 600;
+        }
+        .ap-btn.ghost:hover { background: rgba(255,255,255,0.08); color: var(--text); opacity: 1; }
+        .ap-btn.danger { background: rgba(220,60,60,0.12); border: 1px solid rgba(220,60,60,0.3); color: #f87171; }
+        .ap-btn.danger:hover { background: rgba(220,60,60,0.2); opacity: 1; }
+
+        .ap-msg { padding: 10px 14px; border-radius: var(--r); font-size: 0.79rem; margin-bottom: 14px; display: none; }
+        .ap-msg.err { background: rgba(220,60,60,0.12); border: 1px solid rgba(220,60,60,0.25); color: #f87171; display: block; }
+        .ap-msg.ok  { background: rgba(60,180,100,0.12); border: 1px solid rgba(60,180,100,0.25); color: #6ee7a0; display: block; }
+
+        /* ── SHELL ────────────────────────────────── */
+        .ap-topbar {
+            padding: 14px 28px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 14px;
+            background: var(--surface);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .ap-topbar img { height: 28px; object-fit: contain; }
+        .ap-topbar-title { font-family: var(--font-display); font-size: 1rem; }
+        .ap-topbar-sub { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.8px; color: var(--gold); }
+        .ap-topbar-user { margin-left: auto; font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 12px; }
+
+        .ap-content { max-width: 880px; margin: 0 auto; padding: 32px 24px 80px; }
+
+        .ap-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--r-lg); padding: 24px; margin-bottom: 22px;
+        }
+        .ap-card-title { font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 4px; }
+        .ap-card-sub { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 20px; }
+
+        .ap-list { display: flex; flex-direction: column; gap: 10px; }
+        .ap-row {
+            display: flex; align-items: center; gap: 14px;
+            padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--r);
+            background: var(--surface2);
+        }
+        .ap-row-thumb {
+            width: 46px; height: 46px; border-radius: 8px; object-fit: cover; flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+        }
+        .ap-row-thumb-empty {
+            width: 46px; height: 46px; border-radius: 8px; flex-shrink: 0;
+            background: var(--gold-bg); display: flex; align-items: center; justify-content: center;
+            color: var(--gold); font-size: 0.65rem; font-weight: 700; text-align: center;
+        }
+        .ap-row-main { flex: 1; min-width: 0; }
+        .ap-row-title { font-size: 0.86rem; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ap-row-meta { font-size: 0.71rem; color: var(--text-muted); margin-top: 2px; }
+        .ap-tag {
+            display: inline-block; padding: 2px 8px; border-radius: 20px;
+            background: var(--gold-bg); color: var(--gold); font-size: 0.62rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px; margin-right: 6px;
+        }
+
+        .ap-empty { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.84rem; }
+
+        .ap-hidden { display: none !important; }
+
+        @media (max-width: 560px) {
+            .ap-topbar-user span:not(.ap-logout-label) { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══ LOGIN SCREEN ═══ -->
+    <div class="ap-auth" id="authScreen">
+        <div class="ap-auth-card">
+            <div class="ap-auth-logo">
+                <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
+                <div class="ap-auth-logo-sub">Admin Portal</div>
+            </div>
+            <h1 class="ap-auth-h">Sign in</h1>
+            <p class="ap-auth-sub">Leaders and administrators only.</p>
+
+            <div class="ap-msg" id="loginMsg"></div>
+
+            <form id="loginForm">
+                <div class="ap-field">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required autocomplete="username">
+                </div>
+                <div class="ap-field">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="ap-btn full" id="loginBtn">Sign in</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div id="dashboard" class="ap-hidden">
+        <div class="ap-topbar">
+            <img src="assets/images/TPM LOGO WHITE.png" alt="TPM Logo">
+            <div>
+                <div class="ap-topbar-title">Admin Portal</div>
+                <div class="ap-topbar-sub">Announcements</div>
+            </div>
+            <div class="ap-topbar-user">
+                <span id="userLabel"></span>
+                <button class="ap-btn ghost" id="logoutBtn"><span class="ap-logout-label">Sign out</span></button>
+            </div>
+        </div>
+
+        <div class="ap-content">
+            <div class="ap-card">
+                <div class="ap-card-title">Post an announcement</div>
+                <div class="ap-card-sub">Adding a flyer image URL also puts this in the mobile app's Home carousel and this site's Announcements page.</div>
+
+                <div class="ap-msg" id="postMsg"></div>
+
+                <form id="postForm">
+                    <div class="ap-field">
+                        <label for="postTag">Tag</label>
+                        <select id="postTag">
+                            <option>Upcoming Event</option>
+                            <option>Camp</option>
+                            <option>Weekly Service</option>
+                            <option>Conference</option>
+                            <option>Prayer</option>
+                        </select>
+                    </div>
+                    <div class="ap-field">
+                        <label for="postTitle">Title</label>
+                        <input type="text" id="postTitle" required placeholder="Give it a clear title">
+                    </div>
+                    <div class="ap-field">
+                        <label for="postBody">Message</label>
+                        <textarea id="postBody" required placeholder="Write the announcement…"></textarea>
+                    </div>
+                    <div class="ap-field">
+                        <label for="postFlyer">Flyer image URL (optional)</label>
+                        <input type="url" id="postFlyer" placeholder="https://…">
+                        <div class="ap-field-hint">Paste a link to an image already hosted somewhere (e.g. your own hosting, Imgur, Google Drive's shareable link). There's no upload here yet — just a link.</div>
+                    </div>
+                    <button type="submit" class="ap-btn full" id="postBtn">Publish</button>
+                </form>
+            </div>
+
+            <div class="ap-card">
+                <div class="ap-card-title">Published announcements</div>
+                <div class="ap-card-sub">Newest first. Removing one takes it out of the app and this site immediately.</div>
+                <div id="listMsg" class="ap-msg"></div>
+                <div id="announcementList" class="ap-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Local dev only — see backend/.env CORS_ORIGINS; the deployed backend
+        // isn't live yet (see the app's memory notes: Railway deferred).
+        const API_BASE = 'http://localhost:4000';
+        const SESSION_KEY = 'tpm_admin_portal_session';
+
+        const authScreen = document.getElementById('authScreen');
+        const dashboard = document.getElementById('dashboard');
+        const loginForm = document.getElementById('loginForm');
+        const loginMsg = document.getElementById('loginMsg');
+        const loginBtn = document.getElementById('loginBtn');
+        const userLabel = document.getElementById('userLabel');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const postForm = document.getElementById('postForm');
+        const postMsg = document.getElementById('postMsg');
+        const postBtn = document.getElementById('postBtn');
+        const listMsg = document.getElementById('listMsg');
+        const announcementList = document.getElementById('announcementList');
+
+        function getSession() {
+            try {
+                const raw = sessionStorage.getItem(SESSION_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function setSession(session) {
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+        }
+
+        function clearSession() {
+            sessionStorage.removeItem(SESSION_KEY);
+        }
+
+        function showMsg(el, text, type) {
+            el.textContent = text;
+            el.className = 'ap-msg ' + type;
+        }
+
+        function hideMsg(el) {
+            el.className = 'ap-msg';
+            el.textContent = '';
+        }
+
+        async function apiFetch(path, options) {
+            options = options || {};
+            const session = getSession();
+            const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
+            if (session && session.token) headers.Authorization = 'Bearer ' + session.token;
+
+            let response;
+            try {
+                response = await fetch(API_BASE + path, Object.assign({}, options, { headers }));
+            } catch (e) {
+                throw new Error("Can't reach the server. Make sure the API is running.");
+            }
+
+            let data = {};
+            try {
+                data = await response.json();
+            } catch (e) {
+                // Empty body (e.g. a 204/ok delete) — fine.
+            }
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Something went wrong.');
+            }
+            return data;
+        }
+
+        function showDashboard(session) {
+            authScreen.classList.add('ap-hidden');
+            dashboard.classList.remove('ap-hidden');
+            userLabel.textContent = session.user.fullName + ' · ' + session.user.role;
+            loadAnnouncements();
+        }
+
+        function showAuth() {
+            dashboard.classList.add('ap-hidden');
+            authScreen.classList.remove('ap-hidden');
+        }
+
+        loginForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            hideMsg(loginMsg);
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing in…';
+            try {
+                const data = await apiFetch('/api/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password }),
+                });
+                if (data.user.role !== 'LEADER' && data.user.role !== 'ADMIN') {
+                    throw new Error("This account can't publish announcements — sign in as a leader or administrator.");
+                }
+                setSession({ token: data.token, user: data.user });
+                showDashboard({ token: data.token, user: data.user });
+            } catch (err) {
+                showMsg(loginMsg, err.message, 'err');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign in';
+            }
+        });
+
+        logoutBtn.addEventListener('click', function () {
+            clearSession();
+            showAuth();
+        });
+
+        postForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            hideMsg(postMsg);
+            const tag = document.getElementById('postTag').value;
+            const title = document.getElementById('postTitle').value.trim();
+            const body = document.getElementById('postBody').value.trim();
+            const flyer = document.getElementById('postFlyer').value.trim();
+
+            if (!title || !body) {
+                showMsg(postMsg, 'Give it a title and a message.', 'err');
+                return;
+            }
+
+            postBtn.disabled = true;
+            postBtn.textContent = 'Publishing…';
+            try {
+                const payload = { tag, title, body, date: todayLabel() };
+                if (flyer) payload.flyer = flyer;
+                await apiFetch('/api/announcements', {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                });
+                showMsg(postMsg, 'Published to the app and the website.', 'ok');
+                postForm.reset();
+                loadAnnouncements();
+            } catch (err) {
+                showMsg(postMsg, err.message, 'err');
+            } finally {
+                postBtn.disabled = false;
+                postBtn.textContent = 'Publish';
+            }
+        });
+
+        function todayLabel() {
+            const months = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const now = new Date();
+            return months[now.getMonth() + 1] + ' ' + now.getDate() + ', ' + now.getFullYear();
+        }
+
+        async function loadAnnouncements() {
+            hideMsg(listMsg);
+            announcementList.innerHTML = '';
+            try {
+                const data = await apiFetch('/api/announcements');
+                const items = data.announcements || [];
+                if (items.length === 0) {
+                    announcementList.innerHTML = '<div class="ap-empty">Nothing published yet.</div>';
+                    return;
+                }
+                items.forEach(function (item) {
+                    announcementList.appendChild(renderRow(item));
+                });
+            } catch (err) {
+                showMsg(listMsg, err.message, 'err');
+            }
+        }
+
+        function renderRow(item) {
+            const row = document.createElement('div');
+            row.className = 'ap-row';
+
+            const thumb = document.createElement(item.flyer ? 'img' : 'div');
+            if (item.flyer) {
+                thumb.className = 'ap-row-thumb';
+                thumb.src = item.flyer;
+                thumb.alt = item.title;
+            } else {
+                thumb.className = 'ap-row-thumb-empty';
+                thumb.textContent = 'TEXT';
+            }
+            row.appendChild(thumb);
+
+            const main = document.createElement('div');
+            main.className = 'ap-row-main';
+            main.innerHTML =
+                '<div class="ap-row-title">' + escapeHtml(item.title) + '</div>' +
+                '<div class="ap-row-meta"><span class="ap-tag">' + escapeHtml(item.tag) + '</span>' +
+                escapeHtml(item.date || '') + '</div>';
+            row.appendChild(main);
+
+            const del = document.createElement('button');
+            del.className = 'ap-btn danger';
+            del.textContent = 'Remove';
+            del.addEventListener('click', function () { deleteAnnouncement(item.id, del); });
+            row.appendChild(del);
+
+            return row;
+        }
+
+        async function deleteAnnouncement(id, button) {
+            if (!confirm('Remove this announcement? This can\'t be undone.')) return;
+            button.disabled = true;
+            button.textContent = 'Removing…';
+            try {
+                await apiFetch('/api/announcements/' + id, { method: 'DELETE' });
+                loadAnnouncements();
+            } catch (err) {
+                showMsg(listMsg, err.message, 'err');
+                button.disabled = false;
+                button.textContent = 'Remove';
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str == null ? '' : String(str);
+            return div.innerHTML;
+        }
+
+        // Restore a session from a previous visit, if there is one.
+        (function init() {
+            const session = getSession();
+            if (session && session.token) {
+                showDashboard(session);
+            } else {
+                showAuth();
+            }
+        })();
+    </script>
+</body>
+</html>
