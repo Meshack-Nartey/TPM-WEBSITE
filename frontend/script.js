@@ -670,7 +670,14 @@ function initAnnouncementSlider() {
     navContainer.innerHTML = '';
 
     const cards = Array.from(track.querySelectorAll('.announce-card'));
-    if (cards.length === 0) return;
+    const panel = document.getElementById('heroAnnouncements');
+    if (cards.length === 0) {
+        // Nothing to show (no flyers posted) — hide the whole panel rather
+        // than leaving an empty badge/frame with no content in it.
+        if (panel) panel.style.display = 'none';
+        return;
+    }
+    if (panel) panel.style.display = '';
 
     let current = 0;
     let timer;
@@ -728,7 +735,6 @@ function initAnnouncementSlider() {
     // this function (see the comment above) doesn't stack a second listener
     // on the same button.
     const closeBtn = document.getElementById('closeHeroAnnouncements');
-    const panel = document.getElementById('heroAnnouncements');
     if (closeBtn && panel && !closeBtn._announceCloseBound) {
         closeBtn._announceCloseBound = true;
         closeBtn.addEventListener('click', (e) => {

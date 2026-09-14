@@ -83,29 +83,18 @@
              stacked block so they scale as a unit instead of drifting apart
              on short viewports. -->
         <div class="hero-focus">
-            <!-- Flyer Slider — one flyer showing at a time.
-                 Add or swap flyers by editing the .announce-card images below;
-                 files live in assets/images/flyers/. -->
-            <div class="hero-announcements" id="heroAnnouncements">
+            <!-- Flyer Slider — one flyer showing at a time. Cards are no
+                 longer hardcoded here; they're fetched from the backend at
+                 the bottom of this page (see the script block near
+                 </body>) and the whole panel hides itself if nothing's
+                 been posted. -->
+            <div class="hero-announcements" id="heroAnnouncements" style="display:none;">
                 <div class="announce-strip">
                     <span class="announce-badge">&#128226; Announcements</span>
                     <a href="announcements.html" style="margin-left:auto;font-size:0.7rem;color:#c9a84c;font-weight:700;text-decoration:none;letter-spacing:0.8px;">View all &#8250;</a>
                     <button type="button" class="announce-close" id="closeHeroAnnouncements" aria-label="Close announcements">&times;</button>
                 </div>
-                <div class="announce-track" id="announceTrack" style="cursor:pointer;" onclick="window.location.href='announcements.html'" title="View all announcements">
-                    <div class="announce-card active">
-                        <img src="assets/images/flyers/tc.png" alt="Transformation Conference flyer">
-                    </div>
-                    <div class="announce-card">
-                        <img src="assets/images/flyers/ts.png" alt="Program flyer">
-                    </div>
-                    <div class="announce-card">
-                        <img src="assets/images/flyers/tpm-waits.png" alt="TPM Waits flyer">
-                    </div>
-                    <div class="announce-card">
-                        <img src="assets/images/flyers/fasting-and-prayers.png" alt="Fasting and Prayers flyer">
-                    </div>
-                </div>
+                <div class="announce-track" id="announceTrack" style="cursor:pointer;" onclick="window.location.href='announcements.html'" title="View all announcements"></div>
                 <div class="announce-nav" id="announceNav"></div>
             </div>
 
