@@ -245,5 +245,46 @@
     <script src="script.js" defer></script>
     <script src="search-data.js" defer></script>
     <script src="search.js" defer></script>
+    <script defer>
+        // Swaps the hero's static placeholder flyers for real ones once
+        // they've loaded — script.js's own DOMContentLoaded handler already
+        // ran initAnnouncementSlider() against the static cards by the time
+        // this fetch resolves, so the hero never sits empty while waiting.
+        //
+        // Local dev only — see backend/.env CORS_ORIGINS; the deployed
+        // backend isn't live yet (Railway deferred, per the app's own notes).
+        (function () {
+            const API_BASE = 'http://localhost:4000';
+            const track = document.getElementById('announceTrack');
+            if (!track) return;
+
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str == null ? '' : String(str);
+                return div.innerHTML;
+            }
+
+            fetch(API_BASE + '/api/announcements')
+                .then(function (res) {
+                    if (!res.ok) throw new Error('Request failed');
+                    return res.json();
+                })
+                .then(function (data) {
+                    const flyered = (data.announcements || []).filter(function (a) { return a.flyer; });
+                    if (flyered.length === 0) return; // Keep the static fallback flyers.
+
+                    track.innerHTML = flyered.map(function (item, i) {
+                        return '<div class="announce-card' + (i === 0 ? ' active' : '') + '">' +
+                            '<img src="' + escapeHtml(item.flyer) + '" alt="' + escapeHtml(item.title) + ' flyer">' +
+                            '</div>';
+                    }).join('');
+
+                    if (typeof initAnnouncementSlider === 'function') initAnnouncementSlider();
+                })
+                .catch(function () {
+                    // Keep the static fallback flyers.
+                });
+        })();
+    </script>
 </body>
 </html>
