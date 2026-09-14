@@ -235,22 +235,38 @@
     <script src="search-data.js" defer></script>
     <script src="search.js" defer></script>
     <script defer>
-        // Swaps the hero's static placeholder flyers for real ones once
-        // they've loaded — script.js's own DOMContentLoaded handler already
-        // ran initAnnouncementSlider() against the static cards by the time
-        // this fetch resolves, so the hero never sits empty while waiting.
-        //
-        // Local dev only — see backend/.env CORS_ORIGINS; the deployed
-        // backend isn't live yet (Railway deferred, per the app's own notes).
+        // Populates the hero flyer slider from the backend once it loads.
+        // The real backend (backend/) isn't hosted publicly yet — it only
+        // runs on a developer's machine — so this fetch always fails for a
+        // real site visitor, and FALLBACK_ANNOUNCEMENTS below is what's
+        // actually current right now. Update it (or delete this fallback
+        // entirely) once the backend has a public URL and API_BASE points
+        // at it — see the identical fallback in announcements.html.
         (function () {
             const API_BASE = 'http://localhost:4000';
             const track = document.getElementById('announceTrack');
             if (!track) return;
 
+            const FALLBACK_ANNOUNCEMENTS = [
+                {
+                    title: 'Fasting & Prayers',
+                    flyer: 'https://lh3.googleusercontent.com/d/14W-1euL-_64VAj-A4ImndzOIOpPTMjKT',
+                },
+            ];
+
             function escapeHtml(str) {
                 const div = document.createElement('div');
                 div.textContent = str == null ? '' : String(str);
                 return div.innerHTML;
+            }
+
+            function populate(items) {
+                track.innerHTML = items.map(function (item, i) {
+                    return '<div class="announce-card' + (i === 0 ? ' active' : '') + '">' +
+                        '<img src="' + escapeHtml(item.flyer) + '" alt="' + escapeHtml(item.title) + ' flyer">' +
+                        '</div>';
+                }).join('');
+                if (typeof initAnnouncementSlider === 'function') initAnnouncementSlider();
             }
 
             fetch(API_BASE + '/api/announcements')
@@ -260,18 +276,10 @@
                 })
                 .then(function (data) {
                     const flyered = (data.announcements || []).filter(function (a) { return a.flyer; });
-                    if (flyered.length === 0) return; // Keep the static fallback flyers.
-
-                    track.innerHTML = flyered.map(function (item, i) {
-                        return '<div class="announce-card' + (i === 0 ? ' active' : '') + '">' +
-                            '<img src="' + escapeHtml(item.flyer) + '" alt="' + escapeHtml(item.title) + ' flyer">' +
-                            '</div>';
-                    }).join('');
-
-                    if (typeof initAnnouncementSlider === 'function') initAnnouncementSlider();
+                    populate(flyered.length > 0 ? flyered : FALLBACK_ANNOUNCEMENTS);
                 })
                 .catch(function () {
-                    // Keep the static fallback flyers.
+                    populate(FALLBACK_ANNOUNCEMENTS);
                 });
         })();
     </script>

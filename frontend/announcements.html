@@ -191,11 +191,24 @@
     <script src="search-data.js" defer></script>
     <script src="search.js" defer></script>
     <script>
-        // Local dev only — see backend/.env CORS_ORIGINS; the deployed
-        // backend isn't live yet (Railway deferred, per the app's own notes).
+        // The real backend (backend/) isn't hosted publicly yet — it only
+        // runs on a developer's machine — so this fetch always fails for a
+        // real site visitor. FALLBACK_ANNOUNCEMENT is what's actually
+        // current right now; update it (or delete this fallback entirely)
+        // once the backend has a public URL and API_BASE points at it.
         (function () {
             const API_BASE = 'http://localhost:4000';
             const grid = document.getElementById('announcementsGrid');
+
+            const FALLBACK_ANNOUNCEMENTS = [
+                {
+                    tag: 'Prayer',
+                    title: 'Fasting & Prayers',
+                    body: '🙏🏽 Fasting & Prayers! 🔥\n\nDon\'t miss any of our powerful prayer sessions as we gather with our highly esteemed Pastor, believing God for Divine Prosperity!🙌🏽✨',
+                    date: 'September 14, 2026',
+                    flyer: 'https://lh3.googleusercontent.com/d/14W-1euL-_64VAj-A4ImndzOIOpPTMjKT',
+                },
+            ];
 
             function escapeHtml(str) {
                 const div = document.createElement('div');
@@ -237,7 +250,10 @@
                     });
                 })
                 .catch(function () {
-                    grid.innerHTML = '<div class="ann-error">Couldn\'t load announcements right now. Please try again later.</div>';
+                    grid.innerHTML = '';
+                    FALLBACK_ANNOUNCEMENTS.forEach(function (item) {
+                        grid.appendChild(renderCard(item));
+                    });
                 });
         })();
     </script>
