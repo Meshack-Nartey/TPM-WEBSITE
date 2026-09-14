@@ -18,7 +18,7 @@ class DataStatesScreen extends StatelessWidget {
       backgroundColor: TpmColors.nightCanvas,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(top: 20, bottom: 30),
+          padding: const EdgeInsets.only(top: 28, bottom: 30),
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -34,11 +34,18 @@ class DataStatesScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Eyebrow('Rigor', color: TpmColors.portalGold, size: 10),
+                        const Eyebrow(
+                          'Rigor',
+                          color: TpmColors.portalGold,
+                          size: 10,
+                        ),
                         const SizedBox(height: 3),
                         Text(
                           'Data States',
-                          style: TpmText.display(24, color: TpmColors.portalInk),
+                          style: TpmText.display(
+                            24,
+                            color: TpmColors.portalInk,
+                          ),
                         ),
                       ],
                     ),
@@ -50,11 +57,17 @@ class DataStatesScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
               child: Text(
                 'Every data screen ships loading, empty, error & sync states.',
-                style: TpmText.body(12.5, color: Colors.white.withValues(alpha: 0.5)),
+                style: TpmText.body(
+                  12.5,
+                  color: Colors.white.withValues(alpha: 0.5),
+                ),
               ),
             ),
             const SizedBox(height: 20),
-            const _SectionLabel(icon: Icons.hourglass_top_rounded, label: 'Loading · skeletons'),
+            const _SectionLabel(
+              icon: Icons.hourglass_top_rounded,
+              label: 'Loading · skeletons',
+            ),
             const SizedBox(height: 10),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -77,7 +90,10 @@ class DataStatesScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: PortalCard(
-                padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 32,
+                  horizontal: 20,
+                ),
                 child: Column(
                   children: [
                     IconTile(
@@ -135,7 +151,10 @@ class DataStatesScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: PortalCard(
                 borderColor: TpmColors.danger.withValues(alpha: 0.25),
-                padding: const EdgeInsets.symmetric(vertical: 26, horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 26,
+                  horizontal: 20,
+                ),
                 child: Column(
                   children: [
                     IconTile(
@@ -188,7 +207,10 @@ class DataStatesScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 22),
-            const _SectionLabel(icon: Icons.cloud_upload_rounded, label: 'Sync badges'),
+            const _SectionLabel(
+              icon: Icons.cloud_upload_rounded,
+              label: 'Sync badges',
+            ),
             const SizedBox(height: 10),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -225,7 +247,9 @@ class _SectionLabel extends StatelessWidget {
         children: [
           Icon(icon, size: 12, color: TpmColors.portalGold),
           const SizedBox(width: 7),
-          Flexible(child: Eyebrow(label, color: TpmColors.portalGold, size: 10)),
+          Flexible(
+            child: Eyebrow(label, color: TpmColors.portalGold, size: 10),
+          ),
         ],
       ),
     );
@@ -264,7 +288,12 @@ class _SkeletonRowState extends State<_SkeletonRow>
       builder: (context, _) {
         return Row(
           children: [
-            _Shimmer(progress: _controller.value, width: 40, height: 40, circle: true),
+            _Shimmer(
+              progress: _controller.value,
+              width: 40,
+              height: 40,
+              circle: true,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -380,7 +409,11 @@ class _LightEmptyState extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             'Nothing saved yet',
-            style: TpmText.body(14.5, color: TpmColors.ink, weight: FontWeight.w700),
+            style: TpmText.body(
+              14.5,
+              color: TpmColors.ink,
+              weight: FontWeight.w700,
+            ),
           ),
           const SizedBox(height: 5),
           ConstrainedBox(

@@ -1,15 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../app/session.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
+import '../../services/auth_api.dart';
+import '../../services/branches_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 
 /// Where to find us. Directions, phone, email and WhatsApp are all one tap from
 /// the branch card — WhatsApp especially, since that is how most branches
 /// actually field questions.
-class BranchesScreen extends StatelessWidget {
+class BranchesScreen extends StatefulWidget {
   const BranchesScreen({super.key});
+
+  @override
+  State<BranchesScreen> createState() => _BranchesScreenState();
+}
+
+class _BranchesScreenState extends State<BranchesScreen> {
+  bool _loaded = false;
+  List<Branch> _branches = MockData.branches;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_loaded) {
+      _loaded = true;
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    final token = AppSession.of(context).token;
+    if (token == null) return; // Guest preview — the sample branches stand in.
+    try {
+      final branches = await BranchesApi(token: token).fetch();
+      if (!mounted || branches.isEmpty) return;
+      setState(() => _branches = branches);
+    } on ApiException {
+      // Keep the fallback list.
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +50,7 @@ class BranchesScreen extends StatelessWidget {
       backgroundColor: TpmColors.canvas,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(top: 20, bottom: 24),
+          padding: const EdgeInsets.only(top: 28, bottom: 24),
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -28,13 +61,8 @@ class BranchesScreen extends StatelessWidget {
                 onBack: () => Navigator.of(context).pop(),
               ),
             ),
-            const SizedBox(height: 14),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 22),
-              child: _MapPreview(),
-            ),
             const SizedBox(height: 16),
-            for (final branch in MockData.branches)
+            for (final branch in _branches)
               Padding(
                 padding: const EdgeInsets.fromLTRB(22, 0, 22, 12),
                 child: _BranchCard(branch: branch),
@@ -46,74 +74,17 @@ class BranchesScreen extends StatelessWidget {
   }
 }
 
-/// A stand-in for the real map. Deliberately styled as a preview rather than a
-/// fake map, so nobody mistakes it for live tiles.
-class _MapPreview extends StatelessWidget {
-  const _MapPreview();
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(18),
-      child: SizedBox(
-        height: 150,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [TpmColors.tintBlue, Color(0xFFEFF6FF)],
-                ),
-              ),
-            ),
-            CustomPaint(painter: _GridPainter()),
-            const Align(
-              alignment: Alignment(-0.3, -0.2),
-              child: Icon(Icons.map_rounded, color: TpmColors.navy, size: 26),
-            ),
-            const Align(
-              alignment: Alignment(0.25, 0.15),
-              child: Icon(Icons.location_on_rounded, color: TpmColors.gold, size: 26),
-            ),
-            Positioned(
-              right: 12,
-              bottom: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.8),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text('Map preview', style: TpmText.body(10.5)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _GridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = TpmColors.navy.withValues(alpha: 0.08)
-      ..strokeWidth = 1;
-    const step = 26.0;
-    for (var x = 0.0; x < size.width; x += step) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-    for (var y = 0.0; y < size.height; y += step) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+/// Searches Google Maps for the branch by name — not just its address —
+/// so the pin that comes up is labelled with the church's name rather than
+/// a bare street location.
+Future<void> _openDirections(Branch branch) async {
+  final query = Uri.encodeComponent(
+    '${MockData.ministryName} ${branch.name}, ${branch.address}',
+  );
+  final uri = Uri.parse(
+    'https://www.google.com/maps/search/?api=1&query=$query',
+  );
+  await launchUrl(uri, mode: LaunchMode.externalApplication);
 }
 
 class _BranchCard extends StatelessWidget {
@@ -129,17 +100,6 @@ class _BranchCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              if (branch.photo != null) ...[
-                ClipOval(
-                  child: Image.asset(
-                    branch.photo!,
-                    width: 36,
-                    height: 36,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(width: 10),
-              ],
               Expanded(child: Text(branch.name, style: TpmText.display(17))),
               const SizedBox(width: 8),
               Pill(
@@ -154,7 +114,11 @@ class _BranchCard extends StatelessWidget {
           const SizedBox(height: 5),
           Row(
             children: [
-              const Icon(Icons.location_on_outlined, size: 13, color: TpmColors.faint),
+              const Icon(
+                Icons.location_on_outlined,
+                size: 13,
+                color: TpmColors.faint,
+              ),
               const SizedBox(width: 4),
               Expanded(child: Text(branch.address, style: TpmText.body(12.2))),
             ],
@@ -168,7 +132,7 @@ class _BranchCard extends StatelessWidget {
                   icon: Icons.directions_rounded,
                   background: TpmColors.navy,
                   foreground: Colors.white,
-                  onTap: () {},
+                  onTap: () => _openDirections(branch),
                 ),
               ),
               const SizedBox(width: 8),
@@ -223,7 +187,11 @@ class _ActionButton extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 label,
-                style: TpmText.body(11.5, color: foreground, weight: FontWeight.w600),
+                style: TpmText.body(
+                  11.5,
+                  color: foreground,
+                  weight: FontWeight.w600,
+                ),
               ),
             ],
           ),

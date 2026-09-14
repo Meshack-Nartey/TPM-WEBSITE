@@ -3,13 +3,20 @@ import 'package:flutter/material.dart';
 import '../../app/navigation.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
+import '../../services/podcast_api.dart';
+import '../../services/youtube_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import 'player_screen.dart';
 
-/// Sermons, teachings and podcasts. The download state is deliberately visible
-/// on every row — patchy data is the norm, so "do I already have this?" is a
-/// first-class question rather than something buried in a detail screen.
+/// Which source a message plays from — the two are different enough in kind
+/// (a ~1,300-episode audio feed vs. the channel's own recent uploads) that a
+/// shared "category" filter chip row undersold both; a tab each fits better.
+enum _MediaTab { podcasts, youtube }
+
+/// Sermons and audio messages. The download state is deliberately visible on
+/// every podcast row — patchy data is the norm, so "do I already have this?"
+/// is a first-class question rather than something buried in a detail screen.
 class MediaScreen extends StatefulWidget {
   const MediaScreen({super.key});
 
@@ -18,53 +25,129 @@ class MediaScreen extends StatefulWidget {
 }
 
 class _MediaScreenState extends State<MediaScreen> {
-  int _filter = 0;
+  _MediaTab _tab = _MediaTab.podcasts;
+  final _search = TextEditingController();
+  String _query = '';
+
+  /// A couple of known videos render immediately; the ~1,300-episode audio
+  /// feed and the channel's own recent uploads (livestreams included, once
+  /// one goes up as a video) are each fetched once and merged in as they
+  /// land, rather than blocking the whole screen behind either call.
+  List<MediaItem> _items = MockData.media;
+  bool _loadingEpisodes = true;
+  bool _loadingVideos = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _search.addListener(
+      () => setState(() => _query = _search.text.trim().toLowerCase()),
+    );
+    _loadEpisodes();
+    _loadVideos();
+  }
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadEpisodes() async {
+    try {
+      final episodes = await const PodcastApi().fetchEpisodes();
+      if (!mounted) return;
+      setState(() {
+        _items = [..._items, ...episodes];
+        _loadingEpisodes = false;
+      });
+    } on PodcastApiException {
+      if (!mounted) return;
+      // The two YouTube items still work; only the fetched episodes are
+      // missing, so this fails quiet rather than blocking the screen.
+      setState(() => _loadingEpisodes = false);
+    }
+  }
+
+  Future<void> _loadVideos() async {
+    try {
+      final videos = await const YoutubeApi().fetchVideos();
+      if (!mounted) return;
+      setState(() {
+        final known = _items.map((m) => m.youtubeId).toSet();
+        _items = [
+          ..._items,
+          ...videos.where((m) => !known.contains(m.youtubeId)),
+        ];
+        _loadingVideos = false;
+      });
+    } on YoutubeApiException {
+      if (!mounted) return;
+      // The two seeded videos still work; only the live channel fetch is
+      // missing, so this fails quiet rather than blocking the screen.
+      setState(() => _loadingVideos = false);
+    }
+  }
 
   List<MediaItem> get _visible {
-    if (_filter == 0) return MockData.media;
-    final wanted = switch (_filter) {
-      1 => MediaKind.sermon,
-      2 => MediaKind.teaching,
-      _ => MediaKind.podcast,
-    };
-    return MockData.media.where((m) => m.kind == wanted).toList();
+    final source = _items.where(
+      (m) => _tab == _MediaTab.podcasts ? m.hasAudio : m.hasVideo,
+    );
+    if (_query.isEmpty) return source.toList();
+    return source.where((m) => m.title.toLowerCase().contains(_query)).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final items = _visible;
+    final onPodcasts = _tab == _MediaTab.podcasts;
 
     return ListView(
-      padding: const EdgeInsets.only(top: 20, bottom: 24),
+      // The shell's tab bar floats over the body (extendBody: true), so the
+      // last card needs real clearance or it ends up sitting behind it.
+      padding: const EdgeInsets.only(top: 28, bottom: 110),
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 22),
           child: ScreenTitle(eyebrow: 'Media Library', title: 'Watch & Listen'),
         ),
         const SizedBox(height: 14),
-        SizedBox(
-          height: 38,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 22),
-            itemCount: MockData.mediaFilters.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 8),
-            itemBuilder: (context, i) => ChoiceChipPill(
-              label: MockData.mediaFilters[i],
-              selected: i == _filter,
-              onTap: () => setState(() => _filter = i),
-            ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 22),
+          child: Row(
+            children: [
+              ChoiceChipPill(
+                label: 'Podcasts',
+                selected: onPodcasts,
+                expand: true,
+                onTap: () => setState(() => _tab = _MediaTab.podcasts),
+              ),
+              const SizedBox(width: 10),
+              ChoiceChipPill(
+                label: 'YouTube',
+                selected: !onPodcasts,
+                expand: true,
+                onTap: () => setState(() => _tab = _MediaTab.youtube),
+              ),
+            ],
           ),
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 22),
+          child: _SearchField(controller: _search, onPodcasts: onPodcasts),
         ),
         const SizedBox(height: 16),
         if (items.isEmpty)
-          const _NoMedia()
+          _NoMedia(searching: _query.isNotEmpty, onPodcasts: onPodcasts)
         else
           for (final item in items)
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 0, 22, 12),
               child: _MediaRow(item: item),
             ),
+        if (onPodcasts ? _loadingEpisodes : _loadingVideos)
+          const _LoadingMoreMessages(),
       ],
     );
   }
@@ -90,10 +173,23 @@ class _MediaRow extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  BrandedPhoto(asset: item.image, scrimOpacity: 0.35),
-                  Center(
-                    child: Icon(item.kind.icon, color: Colors.white, size: 20),
+                  BrandedPhoto(
+                    asset: item.image,
+                    networkUrl: item.thumbnailUrl,
+                    // The podcast feed's own artwork is legible on its own —
+                    // a scrim behind it only muddies the real banner colour.
+                    // Video thumbnails still need one, to keep the play icon
+                    // readable over whatever frame the sermon happens to be.
+                    scrimOpacity: item.kind == MediaKind.podcast ? 0 : 0.35,
                   ),
+                  if (item.kind != MediaKind.podcast)
+                    Center(
+                      child: Icon(
+                        item.kind.icon,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -118,7 +214,9 @@ class _MediaRow extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Icon(
-            item.downloaded ? Icons.check_circle_rounded : Icons.download_rounded,
+            item.downloaded
+                ? Icons.check_circle_rounded
+                : Icons.download_rounded,
             size: 19,
             color: item.downloaded ? TpmColors.green : TpmColors.faint,
           ),
@@ -128,11 +226,38 @@ class _MediaRow extends StatelessWidget {
   }
 }
 
-class _NoMedia extends StatelessWidget {
-  const _NoMedia();
+class _LoadingMoreMessages extends StatelessWidget {
+  const _LoadingMoreMessages();
 
   @override
   Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+          const SizedBox(width: 10),
+          Text('Loading more messages…', style: TpmText.body(12.5)),
+        ],
+      ),
+    );
+  }
+}
+
+class _NoMedia extends StatelessWidget {
+  const _NoMedia({required this.searching, required this.onPodcasts});
+
+  final bool searching;
+  final bool onPodcasts;
+
+  @override
+  Widget build(BuildContext context) {
+    final kind = onPodcasts ? 'podcast episodes' : 'videos';
     return Padding(
       padding: const EdgeInsets.fromLTRB(22, 20, 22, 0),
       child: Container(
@@ -143,8 +268,10 @@ class _NoMedia extends StatelessWidget {
         ),
         child: Column(
           children: [
-            const IconTile(
-              icon: Icons.library_music_rounded,
+            IconTile(
+              icon: searching
+                  ? Icons.search_off_rounded
+                  : Icons.library_music_rounded,
               background: TpmColors.tintBlue,
               foreground: TpmColors.navy,
               size: 54,
@@ -153,17 +280,82 @@ class _NoMedia extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Text(
-              'Nothing in this category yet',
-              style: TpmText.body(14.5, color: TpmColors.ink, weight: FontWeight.w700),
+              searching ? 'No messages match that search' : 'No $kind yet',
+              style: TpmText.body(
+                14.5,
+                color: TpmColors.ink,
+                weight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 5),
             Text(
-              'New messages are added after each service.',
+              searching
+                  ? 'Try a different title or word.'
+                  : 'New messages are added after each service.',
               textAlign: TextAlign.center,
               style: TpmText.body(12.5, height: 1.5),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SearchField extends StatelessWidget {
+  const _SearchField({required this.controller, required this.onPodcasts});
+
+  final TextEditingController controller;
+  final bool onPodcasts;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: TpmColors.surface,
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(color: TpmColors.hairline),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.search_rounded, size: 18, color: TpmColors.faint),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              style: TpmText.body(14.5, color: TpmColors.ink),
+              cursorColor: TpmColors.navy,
+              decoration: InputDecoration(
+                isDense: true,
+                border: InputBorder.none,
+                hintText: onPodcasts
+                    ? 'Search podcast episodes…'
+                    : 'Search videos…',
+                hintStyle: TpmText.body(14.5, color: TpmColors.faint),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 13,
+                ),
+              ),
+            ),
+          ),
+          ValueListenableBuilder<TextEditingValue>(
+            valueListenable: controller,
+            builder: (context, value, _) => value.text.isEmpty
+                ? const SizedBox.shrink()
+                : InkWell(
+                    onTap: controller.clear,
+                    child: const Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.close_rounded,
+                        size: 16,
+                        color: TpmColors.faint,
+                      ),
+                    ),
+                  ),
+          ),
+        ],
       ),
     );
   }

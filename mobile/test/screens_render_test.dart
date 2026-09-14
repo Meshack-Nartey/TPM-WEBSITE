@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tpm_mobile/app/session.dart';
 import 'package:tpm_mobile/data/mock_data.dart';
 import 'package:tpm_mobile/models/models.dart';
+import 'package:tpm_mobile/services/auth_api.dart';
 import 'package:tpm_mobile/screens/admin/access_screen.dart';
 import 'package:tpm_mobile/screens/admin/admin_overview_screen.dart';
 import 'package:tpm_mobile/screens/admin/approvals_screen.dart';
@@ -47,6 +49,27 @@ import 'package:tpm_mobile/theme/tpm_theme.dart';
 void main() {
   setUpAll(() => GoogleFonts.config.allowRuntimeFetching = false);
 
+  /// A leader session with a real (fake) token, for the two behaviour tests
+  /// below that exercise API-backed screens — `signInAs` alone leaves the
+  /// token null, which those screens correctly treat as "no real account."
+  Future<AppSession> leaderSession({AppRole role = AppRole.leader}) async {
+    SharedPreferences.setMockInitialValues({});
+    final session = AppSession();
+    await session.signInWithAuth(
+      'test-token',
+      AppUser(
+        id: 'leader-1',
+        firstName: 'Test',
+        lastName: role == AppRole.admin ? 'Admin' : 'Leader',
+        fullName: role == AppRole.admin ? 'Test Admin' : 'Test Leader',
+        email: 'leader@test.dev',
+        role: role,
+        branch: 'DAYSPRING',
+      ),
+    );
+    return session;
+  }
+
   /// Screens are authored as bodies inside a shell, so most need a Scaffold.
   Future<void> pumpScreen(
     WidgetTester tester,
@@ -54,6 +77,7 @@ void main() {
     AppRole role = AppRole.member,
     bool wrapInScaffold = true,
     Color background = TpmColors.canvas,
+    AppSession? session,
   }) async {
     tester.view
       ..physicalSize = const Size(390 * 3, 844 * 3)
@@ -62,7 +86,7 @@ void main() {
 
     await tester.pumpWidget(
       SessionProvider(
-        session: AppSession()..signInAs(role),
+        session: session ?? (AppSession()..signInAs(role)),
         child: MaterialApp(
           theme: TpmTheme.light(),
           home: wrapInScaffold
@@ -124,9 +148,22 @@ void main() {
     });
 
     testWidgets('player', (t) async {
+      // Not an item from MockData.media: both entries there now carry a
+      // real youtubeId, and the audio episodes are fetched live from the
+      // podcast feed at runtime — neither the embedded YoutubePlayer nor
+      // just_audio have a platform implementation this harness registers,
+      // a gap in the test environment rather than the app. A source-less
+      // item exercises the screen's dispatch logic without either plugin.
       await pumpScreen(
         t,
-        PlayerScreen(item: MockData.media.first),
+        const PlayerScreen(
+          item: MediaItem(
+            kind: MediaKind.sermon,
+            title: 'No source yet',
+            meta: '',
+            image: 'assets/media/sunday-service.png',
+          ),
+        ),
         wrapInScaffold: false,
       );
       expect(t.takeException(), isNull);
@@ -260,7 +297,7 @@ void main() {
     testWidgets('member detail', (t) async {
       await pumpScreen(
         t,
-        MemberDetailScreen(member: MockData.members.first),
+        MemberDetailScreen(member: MockData.sampleMember),
         role: AppRole.leader,
         wrapInScaffold: false,
       );
@@ -328,46 +365,93 @@ void main() {
   });
 
   group('behaviour', () {
-    testWidgets('weekly report queues offline and syncs on reconnect', (
-      t,
-    ) async {
+    testWidgets('weekly report queues offline and syncs on reopen', (t) async {
+      final session = await leaderSession();
+
+      // First open: the server can't be reached, so submitting queues the
+      // report on-device instead of just failing.
       await pumpScreen(
         t,
-        const WeeklyReportScreen(embedded: true),
+        WeeklyReportScreen(
+          embedded: true,
+          submitReport: (token, body) async {
+            throw ApiException("Can't reach the server.", isNetworkError: true);
+          },
+        ),
         role: AppRole.leader,
         background: TpmColors.night,
+        session: session,
       );
 
-      expect(find.text('Online — ready to submit'), findsOneWidget);
+      expect(find.text('Ready to submit'), findsOneWidget);
 
-      // Go offline: the submit button changes to a queue action.
-      await t.tap(find.text('Online'));
+      await t.enterText(find.widgetWithText(TextField, 'e.g. 238'), '120');
+      await t.tap(find.text('Submit report'));
       await t.pump();
-      expect(find.text('Offline — you can still fill this in'), findsOneWidget);
-      expect(find.text('Save & queue report'), findsOneWidget);
 
-      // Submitting offline saves to the device rather than failing.
-      await t.tap(find.text('Save & queue report'));
-      await t.pump();
       expect(find.text('Queued — will sync when back online'), findsOneWidget);
 
-      // Coming back online drains the queue.
-      await t.tap(find.text('Offline'));
-      await t.pump();
-      expect(find.text('Syncing to the office…'), findsOneWidget);
+      // Reopening the screen with a connection drains the queue on its own —
+      // there's no manual "go online" control to tap anymore.
+      await pumpScreen(
+        t,
+        WeeklyReportScreen(
+          key: const ValueKey('reopened'),
+          embedded: true,
+          submitReport: (token, body) async {},
+        ),
+        role: AppRole.leader,
+        background: TpmColors.night,
+        session: session,
+      );
+      await t.pumpAndSettle();
 
-      await t.pump(const Duration(milliseconds: 1500));
       expect(find.text('Synced — report received'), findsOneWidget);
-      expect(find.text('Submitted'), findsOneWidget);
     });
 
     testWidgets('approving a request clears it from the queue', (t) async {
+      const requests = [
+        ApprovalRequest(
+          id: '1',
+          name: 'Abena Osei',
+          branch: '',
+          field: 'Phone',
+          oldValue: '+233 24 111 1111',
+          newValue: '+233 20 222 2222',
+          avatarColor: Color(0xFF1E3A8A),
+        ),
+        ApprovalRequest(
+          id: '2',
+          name: 'Yaw Darko',
+          branch: '',
+          field: 'Branch',
+          oldValue: 'GLORYSPRING',
+          newValue: 'FAITHSPRING',
+          avatarColor: Color(0xFF1E3A8A),
+        ),
+        ApprovalRequest(
+          id: '3',
+          name: 'Efua Mensah',
+          branch: '',
+          field: 'Email',
+          oldValue: 'efua@old.com',
+          newValue: 'efua.m@email.com',
+          avatarColor: Color(0xFF1E3A8A),
+        ),
+      ];
+
       await pumpScreen(
         t,
-        const ApprovalsScreen(embedded: true),
+        ApprovalsScreen(
+          embedded: true,
+          fetchPending: (token) async => requests,
+          decide: (token, id, approve) async {},
+        ),
         role: AppRole.admin,
         background: TpmColors.night,
+        session: await leaderSession(role: AppRole.admin),
       );
+      await t.pump();
 
       expect(find.text('PENDING · 3'), findsOneWidget);
 
@@ -378,17 +462,61 @@ void main() {
     });
 
     testWidgets('registry search narrows the list', (t) async {
+      const kwame = Member(
+        id: '1',
+        firstName: 'Kwame',
+        middleName: '',
+        lastName: 'Asante',
+        fullName: 'Kwame Asante',
+        dob: '',
+        gender: '',
+        phone: '',
+        email: '',
+        address: '',
+        branch: 'DAYSPRING',
+        department: 'Ushering',
+        fellowship: '',
+        dateJoined: '',
+        membershipStatus: 'Worker',
+        emergencyContactName: '',
+        emergencyContactPhone: '',
+      );
+      const abena = Member(
+        id: '2',
+        firstName: 'Abena',
+        middleName: '',
+        lastName: 'Osei',
+        fullName: 'Abena Osei',
+        dob: '',
+        gender: '',
+        phone: '',
+        email: '',
+        address: '',
+        branch: 'DAYSPRING',
+        // "Music" is one of the ministry's fifteen real worker groups.
+        department: 'Music',
+        fellowship: '',
+        dateJoined: '',
+        membershipStatus: 'Regular Member',
+        emergencyContactName: '',
+        emergencyContactPhone: '',
+      );
+
       await pumpScreen(
         t,
-        const RegistryScreen(embedded: true),
+        RegistryScreen(
+          embedded: true,
+          fetchMembers: (token) async => const [kwame, abena],
+        ),
         role: AppRole.leader,
         background: TpmColors.night,
+        session: await leaderSession(),
       );
+      await t.pump();
 
       expect(find.text('Kwame Asante'), findsOneWidget);
       expect(find.text('Abena Osei'), findsOneWidget);
 
-      // "Music" is one of the ministry's fifteen real worker groups.
       await t.enterText(find.byType(TextField), 'music');
       await t.pump();
 

@@ -16,6 +16,11 @@ import statisticsRoutes from './routes/statistics.routes.js';
 import announcementsRoutes from './routes/announcements.routes.js';
 import leadersRoutes from './routes/leaders.routes.js';
 import lookupsRoutes from './routes/lookups.routes.js';
+import branchesRoutes from './routes/branches.routes.js';
+import workerGroupsRoutes from './routes/workerGroups.routes.js';
+import givingChannelsRoutes from './routes/givingChannels.routes.js';
+import booksRoutes from './routes/books.routes.js';
+import eventsRoutes from './routes/events.routes.js';
 
 export function createApp() {
   const app = express();
@@ -57,6 +62,11 @@ export function createApp() {
   app.use('/api/announcements', announcementsRoutes);
   app.use('/api/leaders', leadersRoutes);
   app.use('/api/lookups', lookupsRoutes);
+  app.use('/api/branches', branchesRoutes);
+  app.use('/api/worker-groups', workerGroupsRoutes);
+  app.use('/api/giving-channels', givingChannelsRoutes);
+  app.use('/api/books', booksRoutes);
+  app.use('/api/events', eventsRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

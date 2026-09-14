@@ -20,6 +20,20 @@ dependencies:
   http: ^1.2.2
   # Persists the signed-in session's JWT across app restarts.
   shared_preferences: ^2.3.3
+  # Opens Google Maps (directions), the dialer, mail, and WhatsApp from a tap.
+  url_launcher: ^6.3.1
+  # Embeds YouTube's own player in-app for sermon/podcast videos, so watching
+  # never hands off to the YouTube app or a browser.
+  youtube_player_iframe: ^5.2.0
+  # Parses the podcast RSS feed the ministry's audio messages are published
+  # to (via Anchor/Spotify for Podcasters) into episode title/date/audio URL.
+  xml: ^6.5.0
+  # Real audio playback for those episodes — play/pause/seek/duration.
+  just_audio: ^0.9.42
+  # Where a downloaded episode's mp3 is saved on disk.
+  path_provider: ^2.1.6
+  # The native share sheet, for sharing a message's real audio link.
+  share_plus: ^13.3.0
 
 dev_dependencies:
   flutter_test:

@@ -35,6 +35,16 @@ class AppSession extends ChangeNotifier {
     _token = null;
     _user = null;
     notifyListeners();
+
+    // Without this, a real sign-in's persisted token survives on disk — so
+    // "continue as guest" (or the leader/admin role-preview picker) looks
+    // like it worked for the rest of this app session, but the next cold
+    // start's restore() finds the old credentials still there and silently
+    // signs back in as whoever was last actually authenticated.
+    SharedPreferences.getInstance().then((prefs) {
+      prefs.remove(_tokenKey);
+      prefs.remove(_userKey);
+    });
   }
 
   /// A real sign-in or registration against the API.
@@ -49,6 +59,17 @@ class AppSession extends ChangeNotifier {
     await prefs.setString(_userKey, jsonEncode(user.toJson()));
   }
 
+  /// Replaces the signed-in user's data in place — e.g. after saving a
+  /// profile field the server echoes back — without touching the token.
+  Future<void> updateUser(AppUser user) async {
+    if (_token == null) return;
+    _user = user;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userKey, jsonEncode(user.toJson()));
+  }
+
   /// Loads a previously-persisted session, if there is one. Called once at
   /// app start, before the first frame — see `main.dart`.
   Future<void> restore() async {
@@ -58,7 +79,9 @@ class AppSession extends ChangeNotifier {
     if (token == null || userJson == null) return;
 
     try {
-      final user = AppUser.fromJson(jsonDecode(userJson) as Map<String, dynamic>);
+      final user = AppUser.fromJson(
+        jsonDecode(userJson) as Map<String, dynamic>,
+      );
       _token = token;
       _user = user;
       _role = user.role;
@@ -91,7 +114,11 @@ class AppSession extends ChangeNotifier {
 }
 
 class SessionProvider extends StatelessWidget {
-  const SessionProvider({super.key, required this.session, required this.child});
+  const SessionProvider({
+    super.key,
+    required this.session,
+    required this.child,
+  });
 
   final AppSession session;
   final Widget child;
@@ -100,11 +127,8 @@ class SessionProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: session,
-      builder: (context, _) => _SessionScope(
-        session: session,
-        role: session.role,
-        child: child,
-      ),
+      builder: (context, _) =>
+          _SessionScope(session: session, role: session.role, child: child),
     );
   }
 }

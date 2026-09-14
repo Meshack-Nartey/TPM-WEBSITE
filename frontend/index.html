@@ -83,29 +83,18 @@
              stacked block so they scale as a unit instead of drifting apart
              on short viewports. -->
         <div class="hero-focus">
-            <!-- Flyer Slider — one flyer showing at a time.
-                 Add or swap flyers by editing the .announce-card images below;
-                 files live in assets/images/flyers/. -->
-            <div class="hero-announcements" id="heroAnnouncements">
+            <!-- Flyer Slider — one flyer showing at a time. Cards are no
+                 longer hardcoded here; they're fetched from the backend at
+                 the bottom of this page (see the script block near
+                 </body>) and the whole panel hides itself if nothing's
+                 been posted. -->
+            <div class="hero-announcements" id="heroAnnouncements" style="display:none;">
                 <div class="announce-strip">
                     <span class="announce-badge">&#128226; Announcements</span>
                     <a href="announcements.html" style="margin-left:auto;font-size:0.7rem;color:#c9a84c;font-weight:700;text-decoration:none;letter-spacing:0.8px;">View all &#8250;</a>
                     <button type="button" class="announce-close" id="closeHeroAnnouncements" aria-label="Close announcements">&times;</button>
                 </div>
-                <div class="announce-track" id="announceTrack" style="cursor:pointer;" onclick="window.location.href='announcements.html'" title="View all announcements">
-                    <div class="announce-card active">
-                        <img src="assets/images/flyers/tc.png" alt="Transformation Conference flyer">
-                    </div>
-                    <div class="announce-card">
-                        <img src="assets/images/flyers/ts.png" alt="Program flyer">
-                    </div>
-                    <div class="announce-card">
-                        <img src="assets/images/flyers/tpm-waits.png" alt="TPM Waits flyer">
-                    </div>
-                    <div class="announce-card">
-                        <img src="assets/images/flyers/fasting-and-prayers.png" alt="Fasting and Prayers flyer">
-                    </div>
-                </div>
+                <div class="announce-track" id="announceTrack" style="cursor:pointer;" onclick="window.location.href='announcements.html'" title="View all announcements"></div>
                 <div class="announce-nav" id="announceNav"></div>
             </div>
 
@@ -245,5 +234,54 @@
     <script src="script.js" defer></script>
     <script src="search-data.js" defer></script>
     <script src="search.js" defer></script>
+    <script defer>
+        // Populates the hero flyer slider from the backend once it loads.
+        // The real backend (backend/) isn't hosted publicly yet — it only
+        // runs on a developer's machine — so this fetch always fails for a
+        // real site visitor, and FALLBACK_ANNOUNCEMENTS below is what's
+        // actually current right now. Update it (or delete this fallback
+        // entirely) once the backend has a public URL and API_BASE points
+        // at it — see the identical fallback in announcements.html.
+        (function () {
+            const API_BASE = 'http://localhost:4000';
+            const track = document.getElementById('announceTrack');
+            if (!track) return;
+
+            const FALLBACK_ANNOUNCEMENTS = [
+                {
+                    title: 'Fasting & Prayers',
+                    flyer: 'https://lh3.googleusercontent.com/d/14W-1euL-_64VAj-A4ImndzOIOpPTMjKT',
+                },
+            ];
+
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str == null ? '' : String(str);
+                return div.innerHTML;
+            }
+
+            function populate(items) {
+                track.innerHTML = items.map(function (item, i) {
+                    return '<div class="announce-card' + (i === 0 ? ' active' : '') + '">' +
+                        '<img src="' + escapeHtml(item.flyer) + '" alt="' + escapeHtml(item.title) + ' flyer">' +
+                        '</div>';
+                }).join('');
+                if (typeof initAnnouncementSlider === 'function') initAnnouncementSlider();
+            }
+
+            fetch(API_BASE + '/api/announcements')
+                .then(function (res) {
+                    if (!res.ok) throw new Error('Request failed');
+                    return res.json();
+                })
+                .then(function (data) {
+                    const flyered = (data.announcements || []).filter(function (a) { return a.flyer; });
+                    populate(flyered.length > 0 ? flyered : FALLBACK_ANNOUNCEMENTS);
+                })
+                .catch(function () {
+                    populate(FALLBACK_ANNOUNCEMENTS);
+                });
+        })();
+    </script>
 </body>
 </html>

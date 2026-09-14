@@ -58,7 +58,7 @@ class BookDetailScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(26, 12, 26, 30),
+          padding: const EdgeInsets.fromLTRB(26, 18, 26, 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

@@ -42,6 +42,14 @@ class AppUser {
     required this.email,
     required this.role,
     this.branch,
+    this.phone,
+    this.department,
+    this.fellowship,
+    this.dateJoined,
+    this.active = true,
+    this.notifyServiceReminders = true,
+    this.notifyNewSermons = true,
+    this.notifyEventsAndCamps = false,
   });
 
   final String id;
@@ -52,6 +60,25 @@ class AppUser {
   final AppRole role;
   final String? branch;
 
+  // The registration form doesn't collect these yet, so a real account's
+  // values are the schema defaults ('') until that changes — treated the
+  // same as null wherever they're displayed.
+  final String? phone;
+  final String? department;
+  final String? fellowship;
+  final String? dateJoined;
+
+  /// False for an account the pastor's office has deactivated — still
+  /// exists, just can't sign in. Only meaningful on the admin's Access
+  /// screen; the signed-in user's own session is always active.
+  final bool active;
+
+  final bool notifyServiceReminders;
+  final bool notifyNewSermons;
+  final bool notifyEventsAndCamps;
+
+  String get initials => initialsOf(fullName);
+
   factory AppUser.fromJson(Map<String, dynamic> json) => AppUser(
     id: json['id'] as String,
     firstName: json['firstName'] as String? ?? '',
@@ -60,6 +87,14 @@ class AppUser {
     email: json['email'] as String? ?? '',
     role: roleFromApi(json['role'] as String?),
     branch: json['branch'] as String?,
+    phone: json['phone'] as String?,
+    department: json['department'] as String?,
+    fellowship: json['fellowship'] as String?,
+    dateJoined: json['dateJoined'] as String?,
+    active: json['active'] as bool? ?? true,
+    notifyServiceReminders: json['notifyServiceReminders'] as bool? ?? true,
+    notifyNewSermons: json['notifyNewSermons'] as bool? ?? true,
+    notifyEventsAndCamps: json['notifyEventsAndCamps'] as bool? ?? false,
   );
 
   Map<String, dynamic> toJson() => {
@@ -70,6 +105,14 @@ class AppUser {
     'email': email,
     'role': role.name.toUpperCase(),
     'branch': branch,
+    'phone': phone,
+    'department': department,
+    'fellowship': fellowship,
+    'dateJoined': dateJoined,
+    'active': active,
+    'notifyServiceReminders': notifyServiceReminders,
+    'notifyNewSermons': notifyNewSermons,
+    'notifyEventsAndCamps': notifyEventsAndCamps,
   };
 }
 
@@ -85,6 +128,7 @@ String initialsOf(String fullName) {
 
 class Announcement {
   const Announcement({
+    this.id,
     required this.tag,
     required this.title,
     this.excerpt = '',
@@ -92,6 +136,10 @@ class Announcement {
     this.body = '',
     this.flyer,
   });
+
+  /// Null for the design board's mock entries — set for anything that came
+  /// from the real API.
+  final String? id;
 
   final String tag;
   final String title;
@@ -102,8 +150,31 @@ class Announcement {
   final String body;
 
   /// The event's printed flyer, when one exists — shown in place of the tag
-  /// pill so the announcement reads the same as it does on the website.
+  /// pill so the announcement reads the same as it does on the website, and
+  /// what makes it eligible for the Home screen's carousel (see
+  /// `MockData.carousel`'s real-API equivalent, `AnnouncementsApi.fetch`
+  /// filtered to `flyer != null`).
   final String? flyer;
+
+  /// The real API only stores one block of text (`body`) — the list's
+  /// shorter teaser is derived from it here rather than being a second
+  /// field someone has to fill in separately.
+  factory Announcement.fromJson(Map<String, dynamic> json) {
+    final body = json['body'] as String? ?? '';
+    const excerptLength = 120;
+    final excerpt = body.length > excerptLength
+        ? '${body.substring(0, excerptLength).trimRight()}…'
+        : body;
+    return Announcement(
+      id: json['id'] as String?,
+      tag: json['tag'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      excerpt: excerpt,
+      date: json['date'] as String? ?? '',
+      body: body,
+      flyer: json['flyer'] as String?,
+    );
+  }
 }
 
 enum MediaKind { sermon, teaching, podcast }
@@ -129,6 +200,10 @@ class MediaItem {
     required this.meta,
     required this.image,
     this.downloaded = false,
+    this.youtubeId,
+    this.audioUrl,
+    this.thumbnailUrl,
+    this.duration,
   });
 
   final MediaKind kind;
@@ -138,10 +213,36 @@ class MediaItem {
 
   /// Saved for offline — shows a green check instead of the download arrow.
   final bool downloaded;
+
+  /// The real video's ID on `@TPMLIVE`, when this message has one. Plays in
+  /// an embedded YouTube player rather than handing off to the YouTube app —
+  /// but per YouTube's terms that also means it can never be downloaded, so
+  /// [downloaded] and the download action are meaningless when this is set.
+  final String? youtubeId;
+
+  /// Direct mp3 URL from the ministry's audio-message podcast feed (hosted
+  /// free on Anchor/Spotify's own CDN). Unlike YouTube, this one genuinely
+  /// can be downloaded for offline listening.
+  final String? audioUrl;
+
+  /// The episode's own artwork from the podcast feed (Anchor/Spotify's
+  /// CDN) — the real cover art the show was published with, rather than
+  /// [image]'s generic stand-in photo.
+  final String? thumbnailUrl;
+
+  /// The feed's own `itunes:duration`, when it has one — used in place of
+  /// the audio player's own reading, which some of these episodes' mp3s
+  /// (missing a proper VBR header) leave it under-reporting by up to an
+  /// hour on files over about 40 minutes long.
+  final Duration? duration;
+
+  bool get hasVideo => youtubeId != null;
+  bool get hasAudio => audioUrl != null;
 }
 
 class EventItem {
   const EventItem({
+    this.id,
     this.day,
     this.month,
     required this.tag,
@@ -151,6 +252,10 @@ class EventItem {
     required this.description,
     required this.image,
   });
+
+  /// Null for the design board's sample events — set for anything fetched
+  /// from `GET /api/events`, and required to edit/delete it from Manage.
+  final String? id;
 
   /// Null when the date has not been announced. Several of the ministry's
   /// events are genuinely "Date: TBA", and showing an invented day would be
@@ -166,6 +271,18 @@ class EventItem {
   final String image;
 
   bool get isDated => day != null && month != null;
+
+  factory EventItem.fromJson(Map<String, dynamic> json) => EventItem(
+    id: json['id'] as String?,
+    day: json['day'] as String?,
+    month: json['month'] as String?,
+    tag: json['tag'] as String? ?? '',
+    title: json['title'] as String? ?? '',
+    location: json['location'] as String? ?? '',
+    when: json['when'] as String? ?? '',
+    description: json['description'] as String? ?? '',
+    image: json['image'] as String? ?? '',
+  );
 }
 
 class GiveOption {
@@ -186,25 +303,64 @@ class GiveOption {
 
 class GivingChannel {
   const GivingChannel({
+    this.id,
     required this.name,
     required this.logo,
-    required this.detail,
+    required this.accountName,
+    required this.number,
+    required this.numberLabel,
+    this.isBank = false,
   });
+
+  /// Null for the design board's sample channels — set for anything fetched
+  /// from `GET /api/giving-channels`.
+  final String? id;
 
   final String name;
   final String logo;
-  final String detail;
+
+  /// Whose account it is. Not always the ministry — the Telecel Cash line is
+  /// held in the founder's name, and saying so avoids a giver second-guessing
+  /// the name that comes up on their phone.
+  final String accountName;
+
+  /// Grouped for reading (`055 447 6730`), not for dialling.
+  final String number;
+
+  /// What the number is called on this channel — a MoMo Pay ID, a phone
+  /// number and a bank account number are not interchangeable.
+  final String numberLabel;
+
+  final bool isBank;
+
+  /// Spaces stripped, so what lands on the clipboard can be pasted straight
+  /// into a transfer form.
+  String get copyValue => number.replaceAll(' ', '');
+
+  factory GivingChannel.fromJson(Map<String, dynamic> json) => GivingChannel(
+    id: json['id'] as String?,
+    name: json['name'] as String,
+    logo: json['logo'] as String? ?? '',
+    accountName: json['accountName'] as String? ?? '',
+    number: json['number'] as String? ?? '',
+    numberLabel: json['numberLabel'] as String? ?? '',
+    isBank: json['isBank'] as bool? ?? false,
+  );
 }
 
 class Branch {
   const Branch({
+    this.id,
     required this.name,
     required this.region,
     required this.address,
     this.phone,
     this.email,
-    this.photo,
   });
+
+  /// Null for the design board's sample branches — set for anything fetched
+  /// from `GET /api/branches`.
+  final String? id;
 
   final String name;
   final String region;
@@ -212,22 +368,40 @@ class Branch {
   final String? phone;
   final String? email;
 
-  /// The branch's resident pastor — shown as a small avatar on the card.
-  final String? photo;
+  factory Branch.fromJson(Map<String, dynamic> json) => Branch(
+    id: json['id'] as String?,
+    name: json['name'] as String,
+    region: json['region'] as String? ?? '',
+    address: json['address'] as String? ?? '',
+    phone: json['phone'] as String?,
+    email: json['email'] as String?,
+  );
 }
 
 /// One of the fifteen worker groups members can serve in — the website's
 /// "Get Involved" tabs, ported over with the same photo and copy.
 class WorkerGroup {
   const WorkerGroup({
+    this.id,
     required this.name,
     required this.photo,
     required this.blurb,
   });
 
+  /// Null for the design board's sample groups — set for anything fetched
+  /// from `GET /api/worker-groups`.
+  final String? id;
+
   final String name;
   final String photo;
   final String blurb;
+
+  factory WorkerGroup.fromJson(Map<String, dynamic> json) => WorkerGroup(
+    id: json['id'] as String?,
+    name: json['name'] as String,
+    photo: json['photo'] as String? ?? '',
+    blurb: json['blurb'] as String? ?? '',
+  );
 }
 
 /// One of the ministry's weekly gatherings.
@@ -244,11 +418,27 @@ class ServiceTime {
 }
 
 class Book {
-  const Book({required this.title, required this.author, required this.cover});
+  const Book({
+    this.id,
+    required this.title,
+    required this.author,
+    required this.cover,
+  });
+
+  /// Null for the design board's sample books — set for anything fetched
+  /// from `GET /api/books`.
+  final String? id;
 
   final String title;
   final String author;
   final String cover;
+
+  factory Book.fromJson(Map<String, dynamic> json) => Book(
+    id: json['id'] as String?,
+    title: json['title'] as String,
+    author: json['author'] as String? ?? '',
+    cover: json['cover'] as String? ?? '',
+  );
 }
 
 /// A person in the branch registry. Not necessarily a portal account holder —
@@ -288,10 +478,187 @@ class MemberRecord {
   }
 }
 
+/// A person in the branch registry, as `backend/src/routes/members.routes.js`
+/// returns them — the real record [MemberRecord] stands in for on the design
+/// board.
+class Member {
+  const Member({
+    required this.id,
+    required this.firstName,
+    required this.middleName,
+    required this.lastName,
+    required this.fullName,
+    required this.dob,
+    required this.gender,
+    required this.phone,
+    required this.email,
+    required this.address,
+    required this.branch,
+    required this.department,
+    required this.fellowship,
+    required this.dateJoined,
+    required this.membershipStatus,
+    required this.emergencyContactName,
+    required this.emergencyContactPhone,
+  });
+
+  final String id;
+  final String firstName;
+  final String middleName;
+  final String lastName;
+  final String fullName;
+  final String dob;
+  final String gender;
+  final String phone;
+  final String email;
+  final String address;
+  final String branch;
+  final String department;
+  final String fellowship;
+  final String dateJoined;
+  final String membershipStatus;
+  final String emergencyContactName;
+  final String emergencyContactPhone;
+
+  factory Member.fromJson(Map<String, dynamic> json) => Member(
+    id: json['id'] as String,
+    firstName: json['firstName'] as String? ?? '',
+    middleName: json['middleName'] as String? ?? '',
+    lastName: json['lastName'] as String? ?? '',
+    fullName: json['fullName'] as String? ?? '',
+    dob: json['dob'] as String? ?? '',
+    gender: json['gender'] as String? ?? '',
+    phone: json['phone'] as String? ?? '',
+    email: json['email'] as String? ?? '',
+    address: json['address'] as String? ?? '',
+    branch: json['branch'] as String? ?? '',
+    department: json['department'] as String? ?? '',
+    fellowship: json['fellowship'] as String? ?? '',
+    dateJoined: json['dateJoined'] as String? ?? '',
+    membershipStatus: json['membershipStatus'] as String? ?? '',
+    emergencyContactName: json['emergencyContactName'] as String? ?? '',
+    emergencyContactPhone: json['emergencyContactPhone'] as String? ?? '',
+  );
+
+  String get initials {
+    final parts = fullName
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty);
+    return parts.take(2).map((p) => p[0].toUpperCase()).join();
+  }
+}
+
+/// A meeting/attendance/tithe/souls record a leader submits, as
+/// `backend/src/routes/reports.routes.js` returns it.
+class ReportRecord {
+  const ReportRecord({
+    required this.id,
+    required this.meetingType,
+    required this.branch,
+    required this.date,
+    required this.attMale,
+    required this.attFemale,
+    required this.tithe,
+    required this.soulsMale,
+    required this.soulsFemale,
+    required this.notes,
+  });
+
+  final String id;
+  final String meetingType;
+  final String branch;
+  final String date;
+  final int attMale;
+  final int attFemale;
+  final double tithe;
+  final int soulsMale;
+  final int soulsFemale;
+  final String notes;
+
+  int get attendance => attMale + attFemale;
+  int get souls => soulsMale + soulsFemale;
+
+  factory ReportRecord.fromJson(Map<String, dynamic> json) => ReportRecord(
+    id: json['id'] as String? ?? '',
+    meetingType: json['meetingType'] as String? ?? '',
+    branch: json['branch'] as String? ?? '',
+    date: json['date'] as String? ?? '',
+    attMale: (json['attMale'] as num?)?.toInt() ?? 0,
+    attFemale: (json['attFemale'] as num?)?.toInt() ?? 0,
+    tithe: (json['tithe'] as num?)?.toDouble() ?? 0,
+    soulsMale: (json['soulsMale'] as num?)?.toInt() ?? 0,
+    soulsFemale: (json['soulsFemale'] as num?)?.toInt() ?? 0,
+    notes: json['notes'] as String? ?? '',
+  );
+}
+
+/// The leader/admin dashboard's real aggregates, from
+/// `backend/src/routes/statistics.routes.js` — scoped to the caller's own
+/// branch for a leader, church-wide for an admin.
+class DashboardStatistics {
+  const DashboardStatistics({
+    required this.totalMembers,
+    required this.attendanceThisWeek,
+    required this.titheThisMonth,
+    required this.soulsWon,
+    required this.attendanceTrend,
+    this.branchRanks = const [],
+  });
+
+  final int totalMembers;
+  final int attendanceThisWeek;
+  final double titheThisMonth;
+  final int soulsWon;
+
+  /// Headcount for each of the most recent distinct report dates — not
+  /// necessarily calendar weeks, just however often reports actually land.
+  final List<int> attendanceTrend;
+
+  /// Attendance by branch, strongest first — empty for a leader (their own
+  /// scoped query only ever has one branch to compare), populated for an
+  /// admin, whose query spans every branch.
+  final List<BranchRank> branchRanks;
+
+  factory DashboardStatistics.fromJson(Map<String, dynamic> json) {
+    final stats = json['statistics'] as Map<String, dynamic>? ?? const {};
+    final trend = json['attendanceTrends'] as Map<String, dynamic>? ?? const {};
+    final data = trend['data'] as List? ?? const [];
+    final comparisons =
+        json['branchComparisons'] as Map<String, dynamic>? ?? const {};
+    final labels = (comparisons['labels'] as List? ?? const [])
+        .map((l) => l as String)
+        .toList();
+    final attendance = (comparisons['attendance'] as List? ?? const [])
+        .map((v) => (v as num?)?.toInt() ?? 0)
+        .toList();
+    final maxAttendance = attendance.isEmpty
+        ? 1
+        : attendance.reduce((a, b) => a > b ? a : b);
+    final branchRanks = [
+      for (var i = 0; i < labels.length && i < attendance.length; i++)
+        BranchRank(
+          name: labels[i],
+          value: attendance[i],
+          fraction: maxAttendance <= 0 ? 0 : attendance[i] / maxAttendance,
+        ),
+    ];
+    return DashboardStatistics(
+      totalMembers: (stats['totalMembers'] as num?)?.toInt() ?? 0,
+      attendanceThisWeek: (stats['attendanceThisWeek'] as num?)?.toInt() ?? 0,
+      titheThisMonth: (stats['titheThisMonth'] as num?)?.toDouble() ?? 0,
+      soulsWon: (stats['soulsWon'] as num?)?.toInt() ?? 0,
+      attendanceTrend: data.map((v) => (v as num?)?.toInt() ?? 0).toList(),
+      branchRanks: branchRanks,
+    );
+  }
+}
+
 /// A member-initiated change to their own details, waiting on the pastor's
 /// office to approve or reject it.
 class ApprovalRequest {
   const ApprovalRequest({
+    required this.id,
     required this.name,
     required this.branch,
     required this.field,
@@ -300,6 +667,7 @@ class ApprovalRequest {
     required this.avatarColor,
   });
 
+  final String id;
   final String name;
   final String branch;
   final String field;
@@ -311,6 +679,21 @@ class ApprovalRequest {
     final parts = name.trim().split(RegExp(r'\s+'));
     return parts.map((w) => w[0]).take(2).join();
   }
+
+  /// `branch` has no equivalent on `ProfileRequest` — it only ever records
+  /// who asked and what changed, not where they're based.
+  factory ApprovalRequest.fromJson(
+    Map<String, dynamic> json,
+    Color avatarColor,
+  ) => ApprovalRequest(
+    id: json['id'] as String,
+    name: json['memberName'] as String? ?? '',
+    branch: '',
+    field: json['field'] as String? ?? '',
+    oldValue: json['oldValue'] as String? ?? '—',
+    newValue: json['newValue'] as String? ?? '',
+    avatarColor: avatarColor,
+  );
 }
 
 class AccessUser {
@@ -337,14 +720,17 @@ class StatTile {
     required this.label,
     required this.value,
     required this.icon,
-    required this.trend,
+    this.trend,
     this.up = true,
   });
 
   final String label;
   final String value;
   final IconData icon;
-  final String trend;
+
+  /// A "vs last period" change, e.g. "+9%" — null when there's nothing to
+  /// compare against (a real figure with no prior-period aggregate yet).
+  final String? trend;
   final bool up;
 }
 
@@ -402,4 +788,80 @@ class ManageListEntry {
   final String label;
   final String count;
   final IconData icon;
+}
+
+/// One row from `backend/src/routes/lookups.routes.js` — a reference value
+/// (a branch, department, fellowship or basenia name) that appears in
+/// dropdowns elsewhere in the app.
+class LookupEntry {
+  const LookupEntry({
+    required this.id,
+    required this.category,
+    required this.value,
+    this.sortOrder = 0,
+  });
+
+  final String id;
+  final String category;
+  final String value;
+  final int sortOrder;
+
+  factory LookupEntry.fromJson(Map<String, dynamic> json) => LookupEntry(
+    id: json['id'] as String,
+    category: json['category'] as String,
+    value: json['value'] as String,
+    sortOrder: json['sortOrder'] as int? ?? 0,
+  );
+}
+
+/// One entry in the church leadership directory (`backend`'s `Leader`
+/// model) — pastors and branch leaders featured on the public site and
+/// manageable from here.
+class ChurchLeader {
+  const ChurchLeader({
+    required this.id,
+    required this.name,
+    this.title = '',
+    this.branch = '',
+    this.fellowship = '',
+    this.quote = '',
+    this.bio = '',
+    this.highlights = const [],
+    this.photo = '',
+    this.email = '',
+    this.phone = '',
+    this.sortOrder = 0,
+  });
+
+  final String id;
+  final String name;
+  final String title;
+  final String branch;
+  final String fellowship;
+  final String quote;
+  final String bio;
+  final List<String> highlights;
+  final String photo;
+  final String email;
+  final String phone;
+  final int sortOrder;
+
+  String get initials => initialsOf(name);
+
+  factory ChurchLeader.fromJson(Map<String, dynamic> json) => ChurchLeader(
+    id: json['id'] as String,
+    name: json['name'] as String,
+    title: json['title'] as String? ?? '',
+    branch: json['branch'] as String? ?? '',
+    fellowship: json['fellowship'] as String? ?? '',
+    quote: json['quote'] as String? ?? '',
+    bio: json['bio'] as String? ?? '',
+    highlights:
+        (json['highlights'] as List?)?.map((e) => e as String).toList() ??
+        const [],
+    photo: json['photo'] as String? ?? '',
+    email: json['email'] as String? ?? '',
+    phone: json['phone'] as String? ?? '',
+    sortOrder: json['sortOrder'] as int? ?? 0,
+  );
 }

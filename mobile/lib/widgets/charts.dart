@@ -30,7 +30,11 @@ class AttendanceLineChart extends StatelessWidget {
         painter: _LinePainter(
           values: values.map((v) => v.toDouble()).toList(),
           label: values.isEmpty ? '' : '${values.last}',
-          labelStyle: TpmText.body(11, color: TpmColors.portalGold, weight: FontWeight.w700),
+          labelStyle: TpmText.body(
+            11,
+            color: TpmColors.portalGold,
+            weight: FontWeight.w700,
+          ),
         ),
       ),
     );
@@ -38,7 +42,11 @@ class AttendanceLineChart extends StatelessWidget {
 }
 
 class _LinePainter extends CustomPainter {
-  _LinePainter({required this.values, required this.label, required this.labelStyle});
+  _LinePainter({
+    required this.values,
+    required this.label,
+    required this.labelStyle,
+  });
 
   final List<double> values;
   final String label;
@@ -46,12 +54,28 @@ class _LinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (values.length < 2) return;
+    if (values.isEmpty) return;
 
     // Leave room on the right for the trailing value label.
     const labelGutter = 34.0;
     const topPad = 10.0;
     final plotWidth = size.width - labelGutter;
+
+    // A single report gives a single point — there's no line to draw, but
+    // showing just the dot and its value still beats an unexplained blank
+    // card (which is what this used to render for anyone with one report).
+    if (values.length == 1) {
+      final y = size.height / 2;
+      final point = Offset(plotWidth / 2, y);
+      canvas.drawCircle(point, 6, Paint()..color = TpmColors.nightSurface);
+      canvas.drawCircle(point, 4, Paint()..color = TpmColors.portalGold);
+      final tp = TextPainter(
+        text: TextSpan(text: label, style: labelStyle),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      tp.paint(canvas, Offset(point.dx + 9, point.dy - tp.height / 2));
+      return;
+    }
     final plotHeight = size.height - topPad;
 
     // Pad the range so the line never touches the top or bottom edge.
@@ -185,9 +209,14 @@ class TitheBarChart extends StatelessWidget {
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            colors: [TpmColors.portalGold, TpmColors.portalGoldDeep],
+                            colors: [
+                              TpmColors.portalGold,
+                              TpmColors.portalGoldDeep,
+                            ],
                           ),
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(4),
+                          ),
                         ),
                       ),
                     ),
@@ -195,7 +224,10 @@ class TitheBarChart extends StatelessWidget {
                   const SizedBox(height: 7),
                   Text(
                     labels[i],
-                    style: TpmText.body(9.5, color: Colors.white.withValues(alpha: 0.4)),
+                    style: TpmText.body(
+                      9.5,
+                      color: Colors.white.withValues(alpha: 0.4),
+                    ),
                   ),
                 ],
               ),
@@ -227,7 +259,11 @@ class BranchRankBar extends StatelessWidget {
         Expanded(
           child: Text(
             name,
-            style: TpmText.body(14, color: TpmColors.portalInk, weight: FontWeight.w600),
+            style: TpmText.body(
+              14,
+              color: TpmColors.portalInk,
+              weight: FontWeight.w600,
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -248,7 +284,11 @@ class BranchRankBar extends StatelessWidget {
           child: Text(
             '$value',
             textAlign: TextAlign.right,
-            style: TpmText.body(13, color: TpmColors.portalGold, weight: FontWeight.w700),
+            style: TpmText.body(
+              13,
+              color: TpmColors.portalGold,
+              weight: FontWeight.w700,
+            ),
           ),
         ),
       ],
@@ -293,9 +333,12 @@ class AttendanceStrip extends StatelessWidget {
                                   ],
                                 )
                               : null,
-                          color: weeks[i] ? null : Colors.white.withValues(alpha: 0.1),
-                          borderRadius:
-                              const BorderRadius.vertical(top: Radius.circular(4)),
+                          color: weeks[i]
+                              ? null
+                              : Colors.white.withValues(alpha: 0.1),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(4),
+                          ),
                         ),
                       ),
                     ),

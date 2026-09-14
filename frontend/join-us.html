@@ -129,8 +129,8 @@
             }
 
             .basenia-pastor-photo {
-                width: min(300px, 78vw);
-                height: min(300px, 78vw);
+                width: min(220px, 52vw);
+                height: min(220px, 52vw);
                 margin: 32px auto 0;
             }
 
@@ -410,6 +410,13 @@
                 <button class="worker-tab" data-target="br-salvation">SALVATIONSPRING</button>
             </div>
 
+            <!-- Mobile: one branch name at a time instead of the full button grid -->
+            <div class="worker-tab-pager" id="branchTabPager">
+                <button class="worker-tab-pager-btn" type="button" data-dir="-1" aria-label="Previous branch">&#8249;</button>
+                <span class="worker-tab-pager-label" id="branchTabPagerLabel">DAYSPRING</span>
+                <button class="worker-tab-pager-btn" type="button" data-dir="1" aria-label="Next branch">&#8250;</button>
+            </div>
+
             <div class="worker-tab-content">
 
                 <div class="worker-tab-panel active" id="br-dayspring">
@@ -593,40 +600,41 @@
     <script src="search-data.js" defer></script>
     <script src="search.js" defer></script>
     <script>
-        (function() {
-            var workerTabs = Array.from(document.querySelectorAll('#workerTabNav .worker-tab'));
-            var pagerLabel = document.getElementById('workerTabPagerLabel');
+        // Wires up a tab-button nav plus its mobile "one at a time" pager, so
+        // both stay in sync no matter which one the visitor uses.
+        function initTabNav(navId, pagerId) {
+            var nav = document.getElementById(navId);
+            if (!nav) return;
+            var tabs = Array.from(nav.querySelectorAll('.worker-tab'));
+            var pagerLabel = document.getElementById(pagerId + 'Label');
 
-            function activateWorkerTab(tab) {
-                workerTabs.forEach(t => t.classList.remove('active'));
+            function activateTab(tab) {
+                tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                document.querySelectorAll('#workerTabNav ~ .worker-tab-content .worker-tab-panel').forEach(p => p.classList.remove('active'));
+                document.querySelectorAll('#' + navId + ' ~ .worker-tab-content .worker-tab-panel').forEach(p => p.classList.remove('active'));
                 document.getElementById(tab.dataset.target).classList.add('active');
                 if (pagerLabel) pagerLabel.textContent = tab.textContent;
             }
 
-            workerTabs.forEach(function(tab) {
-                tab.addEventListener('click', function() { activateWorkerTab(this); });
+            tabs.forEach(function(tab) {
+                tab.addEventListener('click', function() { activateTab(this); });
             });
 
-            document.querySelectorAll('#workerTabPager .worker-tab-pager-btn').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    var currentIndex = workerTabs.findIndex(t => t.classList.contains('active'));
-                    var dir = parseInt(this.dataset.dir, 10);
-                    var nextIndex = (currentIndex + dir + workerTabs.length) % workerTabs.length;
-                    activateWorkerTab(workerTabs[nextIndex]);
+            var pager = document.getElementById(pagerId);
+            if (pager) {
+                pager.querySelectorAll('.worker-tab-pager-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var currentIndex = tabs.findIndex(t => t.classList.contains('active'));
+                        var dir = parseInt(this.dataset.dir, 10);
+                        var nextIndex = (currentIndex + dir + tabs.length) % tabs.length;
+                        activateTab(tabs[nextIndex]);
+                    });
                 });
-            });
-        })();
+            }
+        }
 
-        document.querySelectorAll('#branchTabNav .worker-tab').forEach(function(tab) {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('#branchTabNav .worker-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                document.querySelectorAll('#branchTabNav ~ .worker-tab-content .worker-tab-panel').forEach(p => p.classList.remove('active'));
-                document.getElementById(this.dataset.target).classList.add('active');
-            });
-        });
+        initTabNav('workerTabNav', 'workerTabPager');
+        initTabNav('branchTabNav', 'branchTabPager');
     </script>
 </body>
 </html>

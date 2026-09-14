@@ -656,14 +656,28 @@ function initQuoteLightbox() {
 // ===================================
 // Hero Announcement Slider
 // ===================================
+// Callable more than once — e.g. index.html re-runs this after swapping in
+// real flyers fetched from the backend, replacing the static placeholder
+// cards. Each call tears down the previous call's dots and timer first, so
+// two intervals never end up racing each other.
 function initAnnouncementSlider() {
     const track = document.getElementById('announceTrack');
     const navContainer = document.getElementById('announceNav');
 
     if (!track || !navContainer) return;
 
+    if (track._announceTimer) clearInterval(track._announceTimer);
+    navContainer.innerHTML = '';
+
     const cards = Array.from(track.querySelectorAll('.announce-card'));
-    if (cards.length === 0) return;
+    const panel = document.getElementById('heroAnnouncements');
+    if (cards.length === 0) {
+        // Nothing to show (no flyers posted) — hide the whole panel rather
+        // than leaving an empty badge/frame with no content in it.
+        if (panel) panel.style.display = 'none';
+        return;
+    }
+    if (panel) panel.style.display = '';
 
     let current = 0;
     let timer;
@@ -712,17 +726,20 @@ function initAnnouncementSlider() {
     function resetTimer() {
         clearInterval(timer);
         timer = setInterval(next, INTERVAL);
+        track._announceTimer = timer;
     }
 
     resetTimer();
 
-    // Let the user dismiss the flyer panel entirely
+    // Let the user dismiss the flyer panel entirely. Guarded so re-running
+    // this function (see the comment above) doesn't stack a second listener
+    // on the same button.
     const closeBtn = document.getElementById('closeHeroAnnouncements');
-    const panel = document.getElementById('heroAnnouncements');
-    if (closeBtn && panel) {
+    if (closeBtn && panel && !closeBtn._announceCloseBound) {
+        closeBtn._announceCloseBound = true;
         closeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            clearInterval(timer);
+            clearInterval(track._announceTimer);
             panel.style.display = 'none';
         });
     }

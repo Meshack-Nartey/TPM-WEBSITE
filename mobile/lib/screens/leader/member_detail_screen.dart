@@ -3,27 +3,33 @@ import 'package:flutter/material.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
 import '../../theme/tpm_theme.dart';
-import '../../widgets/charts.dart';
 import '../../widgets/common.dart';
 
-/// One person's record. Attendance over the last six weeks sits right under
-/// their contact details, because the reason a leader opens this screen is
-/// usually to work out whether to call them.
+/// One person's record — contact details and status, the two things a
+/// leader usually opens this screen to check or act on.
 class MemberDetailScreen extends StatelessWidget {
   const MemberDetailScreen({super.key, required this.member});
 
-  final MemberRecord member;
+  final Member member;
 
   @override
   Widget build(BuildContext context) {
-    final (statusFg, statusBg) = MockData.statusColor(member.status);
+    final status = member.membershipStatus.isEmpty
+        ? 'Regular Member'
+        : member.membershipStatus;
+    final (statusFg, statusBg) = MockData.statusColor(status);
 
     return Scaffold(
       backgroundColor: TpmColors.night,
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
-          _Header(member: member, statusFg: statusFg, statusBg: statusBg),
+          _Header(
+            member: member,
+            status: status,
+            statusFg: statusFg,
+            statusBg: statusBg,
+          ),
           const SizedBox(height: 16),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
@@ -34,23 +40,7 @@ class MemberDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: _ContactCard(member: member),
           ),
-          const SizedBox(height: 16),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Eyebrow(
-              'Attendance · last 6 weeks',
-              color: TpmColors.portalGold,
-              size: 10,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: PortalCard(
-              child: AttendanceStrip(weeks: member.attendance),
-            ),
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 30),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
             child: Row(
@@ -80,20 +70,25 @@ class MemberDetailScreen extends StatelessWidget {
 class _Header extends StatelessWidget {
   const _Header({
     required this.member,
+    required this.status,
     required this.statusFg,
     required this.statusBg,
   });
 
-  final MemberRecord member;
+  final Member member;
+  final String status;
   final Color statusFg;
   final Color statusBg;
 
   @override
   Widget build(BuildContext context) {
     final topInset = MediaQuery.of(context).padding.top;
+    final group = member.department.isNotEmpty
+        ? member.department
+        : (member.fellowship.isNotEmpty ? member.fellowship : 'Member');
 
     return Container(
-      padding: EdgeInsets.fromLTRB(20, topInset + 12, 20, 22),
+      padding: EdgeInsets.fromLTRB(20, topInset + 18, 20, 22),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topCenter,
@@ -101,7 +96,9 @@ class _Header extends StatelessWidget {
           colors: [TpmColors.nightRaised, Color(0xFF0B0B0B)],
         ),
         border: Border(
-          bottom: BorderSide(color: TpmColors.portalGold.withValues(alpha: 0.12)),
+          bottom: BorderSide(
+            color: TpmColors.portalGold.withValues(alpha: 0.12),
+          ),
         ),
       ),
       child: Column(
@@ -117,7 +114,7 @@ class _Header extends StatelessWidget {
             children: [
               InitialsAvatar(
                 initials: member.initials,
-                color: member.avatarColor,
+                color: TpmColors.portalGold,
                 size: 64,
               ),
               const SizedBox(width: 15),
@@ -126,12 +123,14 @@ class _Header extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      member.name,
+                      member.fullName,
                       style: TpmText.display(22, color: TpmColors.portalInk),
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${member.group} · ${member.branch}',
+                      member.branch.isEmpty
+                          ? group
+                          : '$group · ${member.branch}',
                       style: TpmText.body(
                         12.2,
                         color: Colors.white.withValues(alpha: 0.5),
@@ -146,22 +145,30 @@ class _Header extends StatelessWidget {
           Row(
             children: [
               Pill(
-                member.status,
+                status,
                 foreground: statusFg,
                 background: statusBg,
                 uppercase: false,
                 fontSize: 10,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
               ),
-              const SizedBox(width: 8),
-              Pill(
-                'Since ${member.since}',
-                foreground: TpmColors.portalGold,
-                background: TpmColors.portalGold.withValues(alpha: 0.12),
-                uppercase: false,
-                fontSize: 10,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              ),
+              if (member.dateJoined.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                Pill(
+                  'Since ${member.dateJoined}',
+                  foreground: TpmColors.portalGold,
+                  background: TpmColors.portalGold.withValues(alpha: 0.12),
+                  uppercase: false,
+                  fontSize: 10,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 5,
+                  ),
+                ),
+              ],
             ],
           ),
         ],
@@ -173,14 +180,16 @@ class _Header extends StatelessWidget {
 class _ContactCard extends StatelessWidget {
   const _ContactCard({required this.member});
 
-  final MemberRecord member;
+  final Member member;
 
   @override
   Widget build(BuildContext context) {
+    String orNotSet(String value) => value.isEmpty ? 'Not set' : value;
+
     final rows = <(IconData, String, String)>[
-      (Icons.phone_rounded, 'Phone', member.phone),
-      (Icons.email_rounded, 'Email', member.email),
-      (Icons.calendar_month_rounded, 'Joined', member.joined),
+      (Icons.phone_rounded, 'Phone', orNotSet(member.phone)),
+      (Icons.email_rounded, 'Email', orNotSet(member.email)),
+      (Icons.calendar_month_rounded, 'Joined', orNotSet(member.dateJoined)),
     ];
 
     return Container(
@@ -199,14 +208,20 @@ class _ContactCard extends StatelessWidget {
                 border: i == 0
                     ? null
                     : Border(
-                        top: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+                        top: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.06),
+                        ),
                       ),
               ),
               child: Row(
                 children: [
                   SizedBox(
                     width: 18,
-                    child: Icon(rows[i].$1, size: 15, color: TpmColors.portalGold),
+                    child: Icon(
+                      rows[i].$1,
+                      size: 15,
+                      color: TpmColors.portalGold,
+                    ),
                   ),
                   const SizedBox(width: 13),
                   Expanded(

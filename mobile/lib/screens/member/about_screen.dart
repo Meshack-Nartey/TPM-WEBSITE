@@ -2,9 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../app/session.dart';
 import '../../data/about_content.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
+import '../../services/auth_api.dart';
+import '../../services/worker_groups_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 
@@ -33,7 +36,11 @@ class AboutScreen extends StatelessWidget {
                 children: [
                   Text(
                     AboutContent.intro,
-                    style: TpmText.body(14.5, color: TpmColors.muted, height: 1.7),
+                    style: TpmText.body(
+                      14.5,
+                      color: TpmColors.muted,
+                      height: 1.7,
+                    ),
                   ),
                   const SizedBox(height: 20),
                   const _PullQuote(AboutContent.pullQuote),
@@ -59,11 +66,18 @@ class AboutScreen extends StatelessWidget {
                   ],
                   const Eyebrow('Get involved'),
                   const SizedBox(height: 6),
-                  Text('Where you can serve', style: TpmText.display(21, height: 1.2)),
+                  Text(
+                    'Where you can serve',
+                    style: TpmText.display(21, height: 1.2),
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     'Fifteen worker groups keep TPM running — every believer has a place.',
-                    style: TpmText.body(13.5, color: TpmColors.muted, height: 1.6),
+                    style: TpmText.body(
+                      13.5,
+                      color: TpmColors.muted,
+                      height: 1.6,
+                    ),
                   ),
                 ],
               ),
@@ -81,7 +95,11 @@ class AboutScreen extends StatelessWidget {
                   const SizedBox(height: 10),
                   Text(
                     AboutContent.welcome,
-                    style: TpmText.body(14.5, color: TpmColors.muted, height: 1.7),
+                    style: TpmText.body(
+                      14.5,
+                      color: TpmColors.muted,
+                      height: 1.7,
+                    ),
                   ),
                   const SizedBox(height: 18),
                   _ContactRow(
@@ -89,9 +107,15 @@ class AboutScreen extends StatelessWidget {
                     label: MockData.officeAddress,
                   ),
                   const SizedBox(height: 10),
-                  _ContactRow(icon: Icons.phone_rounded, label: MockData.officePhone),
+                  _ContactRow(
+                    icon: Icons.phone_rounded,
+                    label: MockData.officePhone,
+                  ),
                   const SizedBox(height: 10),
-                  _ContactRow(icon: Icons.email_rounded, label: MockData.officeEmail),
+                  _ContactRow(
+                    icon: Icons.email_rounded,
+                    label: MockData.officeEmail,
+                  ),
                 ],
               ),
             ),
@@ -112,7 +136,10 @@ class _Hero extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          const BrandedPhoto(asset: 'assets/photos/congregation.jpg', scrimOpacity: 0.6),
+          const BrandedPhoto(
+            asset: 'assets/photos/congregation.jpg',
+            scrimOpacity: 0.6,
+          ),
           Positioned(
             top: topInset + 12,
             left: 20,
@@ -141,7 +168,11 @@ class _Hero extends StatelessWidget {
                 const SizedBox(height: 12),
                 Text(
                   'WHO WE ARE',
-                  style: TpmText.eyebrow(color: TpmColors.gold, size: 10.5, tracking: 2.4),
+                  style: TpmText.eyebrow(
+                    color: TpmColors.gold,
+                    size: 10.5,
+                    tracking: 2.4,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -230,7 +261,13 @@ class _StatementCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              IconTile(icon: icon, background: tintBg, foreground: tintFg, size: 34, iconSize: 17),
+              IconTile(
+                icon: icon,
+                background: tintBg,
+                foreground: tintFg,
+                size: 34,
+                iconSize: 17,
+              ),
               const SizedBox(width: 10),
               Eyebrow(eyebrow, size: 10),
             ],
@@ -238,7 +275,12 @@ class _StatementCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             body,
-            style: TpmText.body(14, color: TpmColors.ink, height: 1.6, weight: FontWeight.w500),
+            style: TpmText.body(
+              14,
+              color: TpmColors.ink,
+              height: 1.6,
+              weight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -298,7 +340,11 @@ class _BulletCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     items[i],
-                    style: TpmText.body(13.5, color: TpmColors.inkSoft, height: 1.5),
+                    style: TpmText.body(
+                      13.5,
+                      color: TpmColors.inkSoft,
+                      height: 1.5,
+                    ),
                   ),
                 ),
               ],
@@ -368,8 +414,40 @@ class _Section extends StatelessWidget {
 
 /// Horizontal shelf of worker-group cards — the website's "Get Involved" tabs,
 /// photo and blurb, ported to a swipeable strip rather than a tab bar.
-class _WorkerGroups extends StatelessWidget {
+///
+/// Fetches its own data (rather than `AboutScreen` fetching for it) since the
+/// rest of the page is genuinely static copy with no backend equivalent.
+class _WorkerGroups extends StatefulWidget {
   const _WorkerGroups();
+
+  @override
+  State<_WorkerGroups> createState() => _WorkerGroupsState();
+}
+
+class _WorkerGroupsState extends State<_WorkerGroups> {
+  bool _loaded = false;
+  List<WorkerGroup> _groups = MockData.workerGroups;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_loaded) {
+      _loaded = true;
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    final token = AppSession.of(context).token;
+    if (token == null) return; // Guest preview — the sample groups stand in.
+    try {
+      final groups = await WorkerGroupsApi(token: token).fetch();
+      if (!mounted || groups.isEmpty) return;
+      setState(() => _groups = groups);
+    } on ApiException {
+      // Keep the fallback list.
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -378,9 +456,9 @@ class _WorkerGroups extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 22),
-        itemCount: MockData.workerGroups.length,
+        itemCount: _groups.length,
         separatorBuilder: (context, i) => const SizedBox(width: 12),
-        itemBuilder: (context, i) => _WorkerGroupCard(group: MockData.workerGroups[i]),
+        itemBuilder: (context, i) => _WorkerGroupCard(group: _groups[i]),
       ),
     );
   }
@@ -454,7 +532,9 @@ class _FounderPhotoState extends State<_FounderPhoto> {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (!mounted) return;
-      setState(() => _index = (_index + 1) % AboutContent.founderGallery.length);
+      setState(
+        () => _index = (_index + 1) % AboutContent.founderGallery.length,
+      );
     });
   }
 
@@ -522,7 +602,11 @@ class _Founder extends StatelessWidget {
                   children: [
                     Text(
                       AboutContent.founderName,
-                      style: TpmText.display(20, color: TpmColors.portalInk, height: 1.2),
+                      style: TpmText.display(
+                        20,
+                        color: TpmColors.portalInk,
+                        height: 1.2,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -557,7 +641,12 @@ class _Founder extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Eyebrow(fact.label, color: TpmColors.portalGold, size: 9.5, tracking: 1.4),
+                    Eyebrow(
+                      fact.label,
+                      color: TpmColors.portalGold,
+                      size: 9.5,
+                      tracking: 1.4,
+                    ),
                     const SizedBox(height: 7),
                     Text(
                       fact.body,
@@ -600,7 +689,11 @@ class _ContactRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: TpmText.body(13.5, color: TpmColors.ink, weight: FontWeight.w600),
+            style: TpmText.body(
+              13.5,
+              color: TpmColors.ink,
+              weight: FontWeight.w600,
+            ),
           ),
         ),
       ],

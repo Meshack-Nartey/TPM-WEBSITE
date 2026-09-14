@@ -163,41 +163,26 @@ class MockData {
     title: 'Surround Yourself With Good People',
     meta: founder,
     image: 'assets/media/sunday-service.png',
-    downloaded: true,
+    youtubeId: 'lHagiZ9h09Y',
   );
 
-  static const List<String> mediaFilters = [
-    'All',
-    'Sermons',
-    'Teachings',
-    'Podcasts',
-  ];
-
+  // The rest of the audio-message library — sermons and teachings the
+  // pastor's office publishes as a podcast — comes live from PodcastApi
+  // rather than being invented here; see MediaScreen.
   static const List<MediaItem> media = [
     MediaItem(
       kind: MediaKind.sermon,
       title: 'Surround Yourself With Good People',
       meta: founder,
       image: 'assets/media/sunday-service.png',
-      downloaded: true,
+      youtubeId: 'lHagiZ9h09Y',
     ),
     MediaItem(
       kind: MediaKind.sermon,
       title: 'Work As Though Unto The Lord',
       meta: founder,
       image: 'assets/media/pure-word.jpg',
-    ),
-    MediaItem(
-      kind: MediaKind.teaching,
-      title: 'Pure Word',
-      meta: 'Teaching series',
-      image: 'assets/media/music.jpg',
-    ),
-    MediaItem(
-      kind: MediaKind.podcast,
-      title: 'TPM Live',
-      meta: 'Streamed on YouTube · @TPMLIVE',
-      image: 'assets/media/podcast.jpg',
+      youtubeId: '-iFztkwOLnc',
     ),
   ];
 
@@ -302,83 +287,63 @@ class MockData {
     ),
   ];
 
-  /// The real giving channels advertised on the website.
+  /// The real giving accounts, exactly as `frontend/give.html` publishes them.
+  /// Anyone changing a number here must change it there too.
   static const List<GivingChannel> givingChannels = [
+    GivingChannel(
+      name: 'MTN Momo Pay ID',
+      logo: 'assets/give/mtn-momo.png',
+      accountName: ministryName,
+      number: '074 329',
+      numberLabel: 'Pay ID',
+    ),
     GivingChannel(
       name: 'MTN Mobile Money',
       logo: 'assets/give/mtn-momo.png',
-      detail: 'Merchant details on the giving page',
+      accountName: ministryName,
+      number: '055 447 6730',
+      numberLabel: 'Number',
     ),
     GivingChannel(
       name: 'Telecel Cash',
       logo: 'assets/give/telecel-cash.png',
-      detail: 'Merchant details on the giving page',
+      accountName: 'Ofori Andrews',
+      number: '050 091 0191',
+      numberLabel: 'Number',
     ),
     GivingChannel(
-      name: 'Stanbic Bank',
+      name: 'Stanbic Bank Ghana',
       logo: 'assets/give/stanbic-bank.png',
-      detail: 'Account details on the giving page',
+      accountName: ministryName,
+      number: '904 000 970 3211',
+      numberLabel: 'Account Number',
+      isBank: true,
     ),
   ];
+
+  /// Shown under the accounts. The ministry has no automatic reconciliation,
+  /// so a giver telling them is the only way a gift gets acknowledged.
+  static const String givingNote =
+      'After sending, please let us know through the contact page so we can '
+      'acknowledge your gift and keep accurate records. God bless you!';
 
   // ---- Branches: the nine SPRING congregations ----
   static const List<Branch> branches = [
     Branch(
       name: 'DAYSPRING',
-      region: 'Head office',
+      region: 'Branch',
       address: officeAddress,
       phone: officePhone,
       email: officeEmail,
-      photo: 'assets/branches/dayspring.jpg',
     ),
-    Branch(
-      name: 'GLORYSPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/gloryspring.webp',
-    ),
-    Branch(
-      name: 'GOODNEWSSPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/goodnewsspring.webp',
-    ),
-    Branch(
-      name: 'FAITHSPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/faithspring.webp',
-    ),
-    Branch(
-      name: 'LOYALTYSPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/loyaltyspring.jpg',
-    ),
-    Branch(
-      name: 'GRACESPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/gracespring.webp',
-    ),
-    Branch(
-      name: 'UNITYSPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/unityspring.webp',
-    ),
-    Branch(
-      name: 'PEACESPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/peacespring.webp',
-    ),
-    Branch(
-      name: 'SALVATIONSPRING',
-      region: 'Branch',
-      address: 'Kumasi',
-      photo: 'assets/branches/salvationspring.webp',
-    ),
+    Branch(name: 'GLORYSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'GOODNEWSSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'FAITHSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'LOYALTYSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'GRACESPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'UNITYSPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'PEACESPRING', region: 'Branch', address: 'Kumasi'),
+    Branch(name: 'SALVATIONSPRING', region: 'Branch', address: 'Kumasi'),
   ];
 
   static List<String> get branchNames => branches.map((b) => b.name).toList();
@@ -696,6 +661,28 @@ class MockData {
   // ---- Registry (invented people; the real system seeds none) ----
   static const String registrySubtitle = 'DAYSPRING · 486 members';
 
+  /// For the design-board preview and screen-render tests only — the real
+  /// Member Registry (leader portal) fetches actual members from the API.
+  static const Member sampleMember = Member(
+    id: 'preview',
+    firstName: 'Kwame',
+    middleName: '',
+    lastName: 'Asante',
+    fullName: 'Kwame Asante',
+    dob: '',
+    gender: '',
+    phone: '+233 24 000 0000',
+    email: 'kwame@email.com',
+    address: '',
+    branch: 'DAYSPRING',
+    department: 'Ushering',
+    fellowship: '',
+    dateJoined: 'March 2021',
+    membershipStatus: 'Worker',
+    emergencyContactName: '',
+    emergencyContactPhone: '',
+  );
+
   static final List<MemberRecord> members = [
     MemberRecord(
       name: 'Kwame Asante',
@@ -785,33 +772,6 @@ class MockData {
     BranchRank(name: 'GLORYSPRING', value: 412, fraction: 0.85),
     BranchRank(name: 'FAITHSPRING', value: 305, fraction: 0.63),
     BranchRank(name: 'GRACESPRING', value: 268, fraction: 0.55),
-  ];
-
-  static final List<ApprovalRequest> approvals = [
-    ApprovalRequest(
-      name: 'Abena Osei',
-      branch: 'DAYSPRING',
-      field: 'Phone',
-      oldValue: '+233 24 111 1111',
-      newValue: '+233 20 222 2222',
-      avatarColor: avatarFor(1),
-    ),
-    ApprovalRequest(
-      name: 'Yaw Darko',
-      branch: 'GLORYSPRING',
-      field: 'Branch',
-      oldValue: 'GLORYSPRING',
-      newValue: 'FAITHSPRING',
-      avatarColor: avatarFor(2),
-    ),
-    ApprovalRequest(
-      name: 'Efua Mensah',
-      branch: 'PEACESPRING',
-      field: 'Email',
-      oldValue: 'efua@old.com',
-      newValue: 'efua.m@email.com',
-      avatarColor: avatarFor(3),
-    ),
   ];
 
   static const List<String> accessTabs = ['Members', 'Leaders', 'Admins'];

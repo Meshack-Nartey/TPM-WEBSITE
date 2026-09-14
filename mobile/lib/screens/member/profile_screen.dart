@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/session.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
+import '../../services/auth_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 
@@ -19,9 +20,56 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late final List<bool> _notifications = MockData.notificationSettings
-      .map((n) => n.enabled)
-      .toList();
+  /// Keys line up 1:1 with `MockData.notificationSettings`'s labels, and
+  /// with `AppUser`'s three `notify*` fields.
+  static const _keys = [
+    'notifyServiceReminders',
+    'notifyNewSermons',
+    'notifyEventsAndCamps',
+  ];
+
+  late final List<bool> _notifications = _fromUser(AppSession.of(context).user);
+  bool _saving = false;
+
+  static List<bool> _fromUser(AppUser? user) {
+    if (user == null) {
+      return MockData.notificationSettings.map((n) => n.enabled).toList();
+    }
+    return [
+      user.notifyServiceReminders,
+      user.notifyNewSermons,
+      user.notifyEventsAndCamps,
+    ];
+  }
+
+  Future<void> _toggle(int i, bool value) async {
+    final session = AppSession.of(context);
+    final token = session.token;
+    final previous = _notifications[i];
+    setState(() => _notifications[i] = value);
+
+    if (token == null) return; // Guest/preview — nothing to persist.
+
+    setState(() => _saving = true);
+    try {
+      final user = await const AuthApi().updateNotifications(
+        token: token,
+        prefs: {_keys[i]: value},
+      );
+      if (!mounted) return;
+      await session.updateUser(user);
+      setState(() => _saving = false);
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _notifications[i] = previous;
+        _saving = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: TpmColors.canvas,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(top: 20, bottom: 24),
+          padding: const EdgeInsets.only(top: 28, bottom: 24),
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22),
@@ -44,11 +92,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 16),
             const _IdentityCard(),
             const SizedBox(height: 14),
-            _DetailsCard(onRequest: _showRequestSheet),
+            _DetailsCard(
+              user: AppSession.of(context).user,
+              onRequest: _showRequestSheet,
+            ),
             const SizedBox(height: 14),
             _NotificationsCard(
               values: _notifications,
-              onChanged: (i, v) => setState(() => _notifications[i] = v),
+              enabled: !_saving,
+              onChanged: _toggle,
             ),
             const SizedBox(height: 14),
             const _SavedCard(),
@@ -177,9 +229,31 @@ class _IdentityCard extends StatelessWidget {
 }
 
 class _DetailsCard extends StatelessWidget {
-  const _DetailsCard({required this.onRequest});
+  const _DetailsCard({required this.user, required this.onRequest});
 
+  final AppUser? user;
   final VoidCallback onRequest;
+
+  /// The signed-in account's own fields when there is one — the guest and
+  /// role-preview paths (no real account) fall back to the design board's
+  /// sample member, same as [_IdentityCard]. Optional fields the
+  /// registration form doesn't collect yet (phone, fellowship, ...) show as
+  /// "Not set" for a real account rather than a fabricated example value.
+  List<ProfileField> get _fields {
+    final u = user;
+    if (u == null) return MockData.profileFields;
+
+    String orNotSet(String? value) =>
+        value?.trim().isNotEmpty == true ? value! : 'Not set';
+
+    return [
+      ProfileField(label: 'Full name', value: orNotSet(u.fullName)),
+      ProfileField(label: 'Email', value: orNotSet(u.email)),
+      ProfileField(label: 'Phone', value: orNotSet(u.phone)),
+      ProfileField(label: 'Branch', value: orNotSet(u.branch)),
+      ProfileField(label: 'Fellowship', value: orNotSet(u.fellowship)),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +273,7 @@ class _DetailsCard extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(16, 12, 16, 6),
               child: Eyebrow('Personal details', size: 10),
             ),
-            for (final field in MockData.profileFields)
+            for (final field in _fields)
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -271,9 +345,14 @@ class _DetailsCard extends StatelessWidget {
 }
 
 class _NotificationsCard extends StatelessWidget {
-  const _NotificationsCard({required this.values, required this.onChanged});
+  const _NotificationsCard({
+    required this.values,
+    required this.onChanged,
+    this.enabled = true,
+  });
 
   final List<bool> values;
+  final bool enabled;
   final void Function(int index, bool value) onChanged;
 
   @override
@@ -315,7 +394,7 @@ class _NotificationsCard extends StatelessWidget {
                       value: values[i],
                       activeThumbColor: Colors.white,
                       activeTrackColor: TpmColors.navy,
-                      onChanged: (v) => onChanged(i, v),
+                      onChanged: enabled ? (v) => onChanged(i, v) : null,
                     ),
                   ],
                 ),

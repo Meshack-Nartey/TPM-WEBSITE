@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../app/navigation.dart';
+import '../../app/session.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
+import '../../services/auth_api.dart';
+import '../../services/books_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import 'book_detail_screen.dart';
@@ -10,8 +13,37 @@ import 'book_detail_screen.dart';
 /// Study guides and resources. These are the ministry's real covers, so the
 /// artwork carries the title — the caption underneath stays quiet and only
 /// repeats the title for accessibility and search.
-class BooksScreen extends StatelessWidget {
+class BooksScreen extends StatefulWidget {
   const BooksScreen({super.key});
+
+  @override
+  State<BooksScreen> createState() => _BooksScreenState();
+}
+
+class _BooksScreenState extends State<BooksScreen> {
+  bool _loaded = false;
+  List<Book> _books = MockData.books;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_loaded) {
+      _loaded = true;
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    final token = AppSession.of(context).token;
+    if (token == null) return; // Guest preview — the sample shelf stands in.
+    try {
+      final books = await BooksApi(token: token).fetch();
+      if (!mounted || books.isEmpty) return;
+      setState(() => _books = books);
+    } on ApiException {
+      // Keep the fallback list.
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +54,7 @@ class BooksScreen extends StatelessWidget {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(22, 12, 22, 0),
+                padding: const EdgeInsets.fromLTRB(22, 18, 22, 0),
                 child: ScreenTitle(
                   eyebrow: 'Grow deeper',
                   title: 'Books & Resources',
@@ -41,8 +73,8 @@ class BooksScreen extends StatelessWidget {
                   childAspectRatio: 0.6,
                 ),
                 delegate: SliverChildBuilderDelegate(
-                  childCount: MockData.books.length,
-                  (context, i) => _BookTile(book: MockData.books[i]),
+                  childCount: _books.length,
+                  (context, i) => _BookTile(book: _books[i]),
                 ),
               ),
             ),
@@ -93,7 +125,11 @@ class _BookTile extends StatelessWidget {
             book.title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TpmText.body(13, color: TpmColors.ink, weight: FontWeight.w700),
+            style: TpmText.body(
+              13,
+              color: TpmColors.ink,
+              weight: FontWeight.w700,
+            ),
           ),
           Text(
             book.author,

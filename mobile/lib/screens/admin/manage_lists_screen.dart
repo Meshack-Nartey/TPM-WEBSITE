@@ -1,31 +1,113 @@
 import 'package:flutter/material.dart';
 
 import '../../app/navigation.dart';
-import '../../data/mock_data.dart';
+import '../../app/session.dart';
+import '../../models/models.dart';
+import '../../services/auth_api.dart';
+import '../../services/books_api.dart';
+import '../../services/branches_api.dart';
+import '../../services/events_api.dart';
+import '../../services/giving_channels_api.dart';
+import '../../services/leaders_api.dart';
+import '../../services/lookups_api.dart';
+import '../../services/worker_groups_api.dart';
 import '../../theme/tpm_theme.dart';
 import '../../widgets/common.dart';
 import 'compose_screen.dart';
+import 'leaders_directory_screen.dart';
+import 'lookup_list_screen.dart';
+import 'manage_content_screens.dart';
 
 /// The office's admin drawer. Publishing sits at the top as a full-width gold
 /// card rather than a list row, because it is the action people come here for.
-class ManageListsScreen extends StatelessWidget {
+/// The rows below open the reference lists that back dropdowns elsewhere in
+/// the app (`backend`'s `Lookup` table) and the leadership directory.
+class ManageListsScreen extends StatefulWidget {
   const ManageListsScreen({super.key, this.embedded = false});
 
   final bool embedded;
 
   @override
+  State<ManageListsScreen> createState() => _ManageListsScreenState();
+}
+
+class _ManageListsScreenState extends State<ManageListsScreen> {
+  bool _loaded = false;
+  int? _leaderCount;
+  int? _branchCount;
+  int? _departmentCount;
+  int? _fellowshipBaseniaCount;
+  int? _branchDirectoryCount;
+  int? _workerGroupDetailCount;
+  int? _givingChannelCount;
+  int? _bookCount;
+  int? _eventCount;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_loaded) {
+      _loaded = true;
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    final token = AppSession.of(context).token;
+    if (token == null) return;
+    try {
+      final results = await Future.wait([
+        LeadersApi(token: token).fetch(),
+        LookupsApi(token: token).fetch(),
+        BranchesApi(token: token).fetch(),
+        WorkerGroupsApi(token: token).fetch(),
+        GivingChannelsApi(token: token).fetch(),
+        BooksApi(token: token).fetch(),
+        EventsApi(token: token).fetch(),
+      ]);
+      if (!mounted) return;
+      final leaders = results[0] as List<ChurchLeader>;
+      final lookups = results[1] as List<LookupEntry>;
+      setState(() {
+        _leaderCount = leaders.length;
+        _branchCount = lookups.where((l) => l.category == 'branch').length;
+        _departmentCount = lookups
+            .where((l) => l.category == 'department')
+            .length;
+        _fellowshipBaseniaCount = lookups
+            .where((l) => l.category == 'fellowship' || l.category == 'basenia')
+            .length;
+        _branchDirectoryCount = (results[2] as List<Branch>).length;
+        _workerGroupDetailCount = (results[3] as List<WorkerGroup>).length;
+        _givingChannelCount = (results[4] as List<GivingChannel>).length;
+        _bookCount = (results[5] as List<Book>).length;
+        _eventCount = (results[6] as List<EventItem>).length;
+      });
+    } on ApiException {
+      // Counts stay as "—" — the destination screens surface the real error.
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final body = ListView(
-      padding: const EdgeInsets.only(top: 20, bottom: 24),
+      padding: const EdgeInsets.only(top: 28, bottom: 110),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Eyebrow("Pastor's Office", color: TpmColors.portalGold, size: 10),
+              const Eyebrow(
+                "Pastor's Office",
+                color: TpmColors.portalGold,
+                size: 10,
+              ),
               const SizedBox(height: 3),
-              Text('Manage', style: TpmText.display(24, color: TpmColors.portalInk)),
+              Text(
+                'Manage',
+                style: TpmText.display(24, color: TpmColors.portalInk),
+              ),
             ],
           ),
         ),
@@ -37,58 +119,201 @@ class ManageListsScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 14),
-        for (final entry in MockData.manageLists)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 11),
-            child: PortalCard(
-              radius: 14,
-              padding: const EdgeInsets.all(14),
-              onTap: () {},
-              child: Row(
+        _row(
+          label: 'Leaders directory',
+          count: _leaderCount == null
+              ? 'Pastors & branch leaders'
+              : '$_leaderCount leader${_leaderCount == 1 ? '' : 's'}',
+          icon: Icons.badge_rounded,
+          onTap: () async {
+            await pushScreen(context, const LeadersDirectoryScreen());
+            _load();
+          },
+        ),
+        _row(
+          label: 'Branch names',
+          count: _branchCount == null ? '—' : '$_branchCount branches',
+          icon: Icons.location_on_rounded,
+          onTap: () async {
+            await pushScreen(
+              context,
+              const LookupListScreen(
+                title: 'Branches',
+                eyebrow: "Pastor's Office",
+                sections: [
+                  LookupSection(category: 'branch', label: 'Branches'),
+                ],
+              ),
+            );
+            _load();
+          },
+        ),
+        _row(
+          label: 'Worker group names',
+          count: _departmentCount == null
+              ? '—'
+              : '$_departmentCount departments',
+          icon: Icons.diversity_3_rounded,
+          onTap: () async {
+            await pushScreen(
+              context,
+              const LookupListScreen(
+                title: 'Worker groups',
+                eyebrow: "Pastor's Office",
+                sections: [
+                  LookupSection(category: 'department', label: 'Worker groups'),
+                ],
+              ),
+            );
+            _load();
+          },
+        ),
+        _row(
+          label: 'Fellowships & Basenias',
+          count: _fellowshipBaseniaCount == null
+              ? '—'
+              : '$_fellowshipBaseniaCount total',
+          icon: Icons.groups_2_rounded,
+          onTap: () async {
+            await pushScreen(
+              context,
+              const LookupListScreen(
+                title: 'Fellowships & Basenias',
+                eyebrow: "Pastor's Office",
+                sections: [
+                  LookupSection(category: 'fellowship', label: 'Fellowships'),
+                  LookupSection(category: 'basenia', label: 'Basenias'),
+                ],
+              ),
+            );
+            _load();
+          },
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Eyebrow(
+            'App content',
+            color: Colors.white.withValues(alpha: 0.5),
+            size: 10,
+          ),
+        ),
+        const SizedBox(height: 10),
+        _row(
+          label: 'Branch directory',
+          count: _branchDirectoryCount == null
+              ? 'Address & contact per branch'
+              : '$_branchDirectoryCount branches',
+          icon: Icons.map_rounded,
+          onTap: () async {
+            await pushScreen(context, branchDirectoryScreen());
+            _load();
+          },
+        ),
+        _row(
+          label: 'Worker group details',
+          count: _workerGroupDetailCount == null
+              ? 'Photo & description per group'
+              : '$_workerGroupDetailCount groups',
+          icon: Icons.groups_3_rounded,
+          onTap: () async {
+            await pushScreen(context, workerGroupDirectoryScreen());
+            _load();
+          },
+        ),
+        _row(
+          label: 'Giving channels',
+          count: _givingChannelCount == null
+              ? 'MoMo & bank accounts'
+              : '$_givingChannelCount channels',
+          icon: Icons.payments_rounded,
+          onTap: () async {
+            await pushScreen(context, givingChannelsScreen());
+            _load();
+          },
+        ),
+        _row(
+          label: 'Books & Resources',
+          count: _bookCount == null ? 'The books shelf' : '$_bookCount books',
+          icon: Icons.menu_book_rounded,
+          onTap: () async {
+            await pushScreen(context, booksManageScreen());
+            _load();
+          },
+        ),
+        _row(
+          label: 'Events',
+          count: _eventCount == null
+              ? 'The events carousel'
+              : '$_eventCount events',
+          icon: Icons.event_rounded,
+          onTap: () async {
+            await pushScreen(context, eventsManageScreen());
+            _load();
+          },
+        ),
+      ],
+    );
+
+    if (widget.embedded) return body;
+    return Scaffold(
+      backgroundColor: TpmColors.night,
+      body: SafeArea(child: body),
+    );
+  }
+
+  Widget _row({
+    required String label,
+    required String count,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 11),
+      child: PortalCard(
+        radius: 14,
+        padding: const EdgeInsets.all(14),
+        onTap: onTap,
+        child: Row(
+          children: [
+            IconTile(
+              icon: icon,
+              background: TpmColors.portalGold.withValues(alpha: 0.12),
+              foreground: TpmColors.portalGold,
+              size: 40,
+              iconSize: 18,
+            ),
+            const SizedBox(width: 13),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  IconTile(
-                    icon: entry.icon,
-                    background: TpmColors.portalGold.withValues(alpha: 0.12),
-                    foreground: TpmColors.portalGold,
-                    size: 40,
-                    iconSize: 18,
-                  ),
-                  const SizedBox(width: 13),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          entry.label,
-                          style: TpmText.body(
-                            14.5,
-                            color: TpmColors.portalInk,
-                            weight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          entry.count,
-                          style: TpmText.body(
-                            11.5,
-                            color: Colors.white.withValues(alpha: 0.45),
-                          ),
-                        ),
-                      ],
+                  Text(
+                    label,
+                    style: TpmText.body(
+                      14.5,
+                      color: TpmColors.portalInk,
+                      weight: FontWeight.w600,
                     ),
                   ),
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    color: Colors.white.withValues(alpha: 0.3),
+                  Text(
+                    count,
+                    style: TpmText.body(
+                      11.5,
+                      color: Colors.white.withValues(alpha: 0.45),
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-      ],
+            Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.white.withValues(alpha: 0.3),
+            ),
+          ],
+        ),
+      ),
     );
-
-    if (embedded) return body;
-    return Scaffold(backgroundColor: TpmColors.night, body: SafeArea(child: body));
   }
 }
 
@@ -120,7 +345,11 @@ class _PublishCard extends StatelessWidget {
                   color: TpmColors.night.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(11),
                 ),
-                child: const Icon(Icons.edit_note_rounded, color: TpmColors.night, size: 20),
+                child: const Icon(
+                  Icons.edit_note_rounded,
+                  color: TpmColors.night,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(

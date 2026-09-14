@@ -38,6 +38,12 @@ model User {
   fellowship   String?
   dateJoined   String?
   active       Boolean  @default(true)
+
+  // Push-notification preferences, set from the Profile screen.
+  notifyServiceReminders Boolean @default(true)
+  notifyNewSermons       Boolean @default(true)
+  notifyEventsAndCamps   Boolean @default(false)
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -122,6 +128,10 @@ model Announcement {
   title     String
   body      String
   date      String?
+  // A flyer image URL — when set, the Home carousel and detail screen show
+  // this instead of the tag pill, matching how flyer-backed posts already
+  // read on the website. Optional: most announcements are text-only.
+  flyer     String?
   active    Boolean  @default(true)
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
@@ -144,6 +154,77 @@ model Leader {
   sortOrder  Int      @default(0)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+// Public-facing branch directory (address/contact) — richer than the
+// `Lookup` "branch" category, which is just the name used in dropdowns.
+model BranchInfo {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  region    String
+  address   String
+  phone     String?
+  email     String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// "Get Involved" worker-group descriptions shown on About — richer than the
+// `Lookup` "department" category, which is just the name.
+model WorkerGroupInfo {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  photo     String
+  blurb     String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Real MoMo/bank accounts shown on the Give screen — the office's actual
+// giving channels, editable without a code deploy.
+model GivingChannel {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  logo        String
+  accountName String
+  number      String
+  numberLabel String
+  isBank      Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// A book/resource shown on the Books & Resources screen.
+model Book {
+  id        String   @id @default(cuid())
+  title     String
+  author    String
+  cover     String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// An upcoming (or past) church event shown on the Events screen.
+model Event {
+  id          String   @id @default(cuid())
+  tag         String
+  title       String
+  location    String
+  // Free text, e.g. "Fri 26 – Sun 28 Aug, 6:00 AM – 6:00 PM" — several of
+  // the ministry's events are genuinely "Date: TBA", which a real DateTime
+  // column can't represent honestly.
+  when        String
+  day         String?
+  month       String?
+  description String
+  image       String
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // Reference lists: branches, departments, fellowships, basenias,
