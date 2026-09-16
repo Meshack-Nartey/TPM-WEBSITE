@@ -204,12 +204,18 @@ class MediaItem {
     this.audioUrl,
     this.thumbnailUrl,
     this.duration,
+    this.description,
   });
 
   final MediaKind kind;
   final String title;
   final String meta;
   final String image;
+
+  /// The episode's own show notes from the podcast feed (Anchor/Spotify's
+  /// `<description>`) — null for the YouTube-only sermon items, which have
+  /// no equivalent field.
+  final String? description;
 
   /// Saved for offline — shows a green check instead of the download arrow.
   final bool downloaded;
@@ -415,6 +421,27 @@ class ServiceTime {
   final String name;
   final String day;
   final String time;
+}
+
+/// One weekly recurring service time the Home screen's countdown can point
+/// at — structured (weekday + hour) rather than [ServiceTime]'s free-text
+/// display strings, so "which one is soonest from right now" can actually
+/// be computed instead of always assuming Sunday.
+class NextServiceCandidate {
+  const NextServiceCandidate({
+    required this.weekday,
+    required this.hour,
+    required this.minute,
+    required this.label,
+  });
+
+  /// `DateTime.friday`, `DateTime.sunday`, etc.
+  final int weekday;
+  final int hour;
+  final int minute;
+
+  /// e.g. "Fri · 6:00 PM" — shown next to "Next Service" on Home.
+  final String label;
 }
 
 class Book {

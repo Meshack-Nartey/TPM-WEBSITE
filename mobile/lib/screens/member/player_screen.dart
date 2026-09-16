@@ -172,6 +172,61 @@ class _AudioPlayerState extends State<_AudioPlayer> {
     }
   }
 
+  /// Full show notes from the feed, same as any podcast app would show —
+  /// in a sheet rather than inline, since the rest of this screen is a
+  /// fixed layout built to fit without scrolling.
+  void _showDescription() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: TpmColors.navy,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => Padding(
+          padding: const EdgeInsets.fromLTRB(22, 20, 22, 22),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 36,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text(
+                widget.item.title,
+                style: TpmText.display(18, color: Colors.white),
+              ),
+              const SizedBox(height: 14),
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Text(
+                    widget.item.description ?? '',
+                    style: TpmText.body(
+                      13.5,
+                      color: Colors.white.withValues(alpha: 0.75),
+                      height: 1.6,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _share() {
     return SharePlus.instance.share(
       ShareParams(
@@ -234,7 +289,21 @@ class _AudioPlayerState extends State<_AudioPlayer> {
                         tracking: 1.6,
                       ),
                     ),
-                    _GlassButton(icon: Icons.ios_share_rounded, onTap: _share),
+                    Row(
+                      children: [
+                        if (widget.item.description != null) ...[
+                          _GlassButton(
+                            icon: Icons.info_outline_rounded,
+                            onTap: _showDescription,
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        _GlassButton(
+                          icon: Icons.ios_share_rounded,
+                          onTap: _share,
+                        ),
+                      ],
+                    ),
                   ],
                 ),
                 const Spacer(flex: 2),
@@ -252,18 +321,23 @@ class _AudioPlayerState extends State<_AudioPlayer> {
                           scrimOpacity: 0,
                           goldOpacity: 0,
                         ),
+                        // Only an idle-state indicator (there's no onTap
+                        // here — the real transport controls are below) —
+                        // so it disappears once playback starts rather than
+                        // sitting on the artwork as a redundant pause icon.
                         StreamBuilder<bool>(
                           stream: _player.playingStream,
                           initialData: false,
-                          builder: (context, snapshot) => Center(
-                            child: Icon(
+                          builder: (context, snapshot) =>
                               (snapshot.data ?? false)
-                                  ? Icons.pause_rounded
-                                  : widget.item.kind.icon,
-                              size: 54,
-                              color: Colors.white.withValues(alpha: 0.85),
-                            ),
-                          ),
+                              ? const SizedBox.shrink()
+                              : Center(
+                                  child: Icon(
+                                    widget.item.kind.icon,
+                                    size: 54,
+                                    color: Colors.white.withValues(alpha: 0.85),
+                                  ),
+                                ),
                         ),
                       ],
                     ),

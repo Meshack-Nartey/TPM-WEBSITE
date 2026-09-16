@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/session.dart';
 import '../../data/about_content.dart';
@@ -105,16 +106,22 @@ class AboutScreen extends StatelessWidget {
                   _ContactRow(
                     icon: Icons.location_on_rounded,
                     label: MockData.officeAddress,
+                    onTap: () => _openMap(MockData.officeAddress),
                   ),
                   const SizedBox(height: 10),
                   _ContactRow(
                     icon: Icons.phone_rounded,
                     label: MockData.officePhone,
+                    onTap: () =>
+                        _launch(Uri(scheme: 'tel', path: MockData.officePhone)),
                   ),
                   const SizedBox(height: 10),
                   _ContactRow(
                     icon: Icons.email_rounded,
                     label: MockData.officeEmail,
+                    onTap: () => _launch(
+                      Uri(scheme: 'mailto', path: MockData.officeEmail),
+                    ),
                   ),
                 ],
               ),
@@ -667,36 +674,57 @@ class _Founder extends StatelessWidget {
   }
 }
 
+/// Opens Google Maps' search for an address — matches the pattern the
+/// Branches screen uses (`_openDirections` there), so the office address
+/// behaves the same way everywhere it's tappable.
+Future<void> _openMap(String address) async {
+  final query = Uri.encodeComponent('${MockData.ministryName} $address');
+  await _launch(
+    Uri.parse('https://www.google.com/maps/search/?api=1&query=$query'),
+  );
+}
+
+Future<void> _launch(Uri uri) async {
+  await launchUrl(uri, mode: LaunchMode.externalApplication);
+}
+
 class _ContactRow extends StatelessWidget {
-  const _ContactRow({required this.icon, required this.label});
+  const _ContactRow({required this.icon, required this.label, this.onTap});
 
   final IconData icon;
   final String label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        IconTile(
-          icon: icon,
-          background: TpmColors.tintBlue,
-          foreground: TpmColors.navy,
-          size: 34,
-          radius: 10,
-          iconSize: 16,
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            label,
-            style: TpmText.body(
-              13.5,
-              color: TpmColors.ink,
-              weight: FontWeight.w600,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Row(
+        children: [
+          IconTile(
+            icon: icon,
+            background: TpmColors.tintBlue,
+            foreground: TpmColors.navy,
+            size: 34,
+            radius: 10,
+            iconSize: 16,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              style: TpmText.body(
+                13.5,
+                color: onTap != null ? TpmColors.navy : TpmColors.ink,
+                weight: FontWeight.w600,
+              ),
             ),
           ),
-        ),
-      ],
+          if (onTap != null)
+            Icon(Icons.chevron_right_rounded, size: 18, color: TpmColors.faint),
+        ],
+      ),
     );
   }
 }

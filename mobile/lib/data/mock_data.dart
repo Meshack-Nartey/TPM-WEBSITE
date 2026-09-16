@@ -79,9 +79,23 @@ class MockData {
     ServiceTime(name: 'Love Therapy', day: 'Fridays', time: '6:00 PM'),
   ];
 
-  /// The countdown on the home screen tracks the first Sunday service.
-  static const String nextServiceLabel = 'Sun · 8:00 AM';
-  static const int nextServiceHour = 8;
+  /// The Home screen countdown picks whichever of these is soonest from
+  /// right now, rather than always assuming Sunday — the ministry meets
+  /// Friday evenings too.
+  static const List<NextServiceCandidate> nextServiceCandidates = [
+    NextServiceCandidate(
+      weekday: DateTime.friday,
+      hour: 18,
+      minute: 0,
+      label: 'Fri · 6:00 PM',
+    ),
+    NextServiceCandidate(
+      weekday: DateTime.sunday,
+      hour: 8,
+      minute: 0,
+      label: 'Sun · 8:00 AM',
+    ),
+  ];
   static const String serviceSummary = 'Sun 8:00 AM & 10:30 AM · Fri 6:00 PM';
 
   // ---- Announcements (from announcements.html) ----

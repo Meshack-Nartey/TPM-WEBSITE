@@ -24,11 +24,16 @@ class MissionsScreen extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  const BrandedPhoto(asset: 'assets/missions/mission-1.jpg', scrimOpacity: 0.55),
+                  const BrandedPhoto(
+                    asset: 'assets/missions/mission-1.jpg',
+                    scrimOpacity: 0.55,
+                  ),
                   Positioned(
                     top: topInset + 12,
                     left: 20,
-                    child: CircleBackButton(onTap: () => Navigator.of(context).pop()),
+                    child: CircleBackButton(
+                      onTap: () => Navigator.of(context).pop(),
+                    ),
                   ),
                   Positioned(
                     left: 22,
@@ -39,12 +44,20 @@ class MissionsScreen extends StatelessWidget {
                       children: [
                         Text(
                           'MISSIONS',
-                          style: TpmText.eyebrow(color: TpmColors.gold, size: 10.5, tracking: 2.4),
+                          style: TpmText.eyebrow(
+                            color: TpmColors.gold,
+                            size: 10.5,
+                            tracking: 2.4,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           'Our Missions',
-                          style: TpmText.display(25, color: Colors.white, height: 1.15),
+                          style: TpmText.display(
+                            25,
+                            color: Colors.white,
+                            height: 1.15,
+                          ),
                         ),
                       ],
                     ),
@@ -61,7 +74,11 @@ class MissionsScreen extends StatelessWidget {
                 children: [
                   Text(
                     MissionsContent.intro,
-                    style: TpmText.body(14.5, color: TpmColors.muted, height: 1.7),
+                    style: TpmText.body(
+                      14.5,
+                      color: TpmColors.muted,
+                      height: 1.7,
+                    ),
                   ),
                   const SizedBox(height: 22),
                   const Eyebrow('Mission moments'),
@@ -70,14 +87,25 @@ class MissionsScreen extends StatelessWidget {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: MissionsContent.moments.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                    ),
-                    itemBuilder: (context, i) => ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(MissionsContent.moments[i], fit: BoxFit.cover),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                        ),
+                    itemBuilder: (context, i) => GestureDetector(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => _MissionGallery(initialIndex: i),
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          MissionsContent.moments[i],
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 26),
@@ -90,7 +118,11 @@ class MissionsScreen extends StatelessWidget {
                         const SizedBox(height: 12),
                         Text(
                           MissionsContent.partnering,
-                          style: TpmText.body(14, color: TpmColors.ink, height: 1.65),
+                          style: TpmText.body(
+                            14,
+                            color: TpmColors.ink,
+                            height: 1.65,
+                          ),
                         ),
                       ],
                     ),
@@ -100,6 +132,79 @@ class MissionsScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Full-screen, swipeable viewer for the mission moments grid — pinch to
+/// zoom, swipe between photos, starting on whichever one was tapped.
+class _MissionGallery extends StatefulWidget {
+  const _MissionGallery({required this.initialIndex});
+
+  final int initialIndex;
+
+  @override
+  State<_MissionGallery> createState() => _MissionGalleryState();
+}
+
+class _MissionGalleryState extends State<_MissionGallery> {
+  late final PageController _controller = PageController(
+    initialPage: widget.initialIndex,
+  );
+  late int _index = widget.initialIndex;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            PageView.builder(
+              controller: _controller,
+              itemCount: MissionsContent.moments.length,
+              onPageChanged: (i) => setState(() => _index = i),
+              itemBuilder: (context, i) => InteractiveViewer(
+                minScale: 1,
+                maxScale: 4,
+                child: Center(
+                  child: Image.asset(
+                    MissionsContent.moments[i],
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 12,
+              left: 12,
+              child: CircleBackButton(
+                dark: true,
+                icon: Icons.close_rounded,
+                onTap: () => Navigator.of(context).pop(),
+              ),
+            ),
+            Positioned(
+              top: 20,
+              right: 20,
+              child: Text(
+                '${_index + 1} / ${MissionsContent.moments.length}',
+                style: TpmText.body(
+                  12.5,
+                  color: Colors.white.withValues(alpha: 0.8),
+                  weight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -22,7 +22,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Timer? _ticker;
-  late DateTime _nextService = _computeNextService();
+  late (DateTime, String) _nextService = _computeNextService();
 
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
       setState(() {
-        if (DateTime.now().isAfter(_nextService)) {
+        if (DateTime.now().isAfter(_nextService.$1)) {
           _nextService = _computeNextService();
         }
       });
@@ -43,19 +43,27 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  /// The coming Sunday at 9:00. If that has already passed today, roll forward
-  /// a week rather than counting down to a service that has started.
-  static DateTime _computeNextService() {
+  /// Whichever of [MockData.nextServiceCandidates] comes up soonest from
+  /// right now — Friday evening if that's closer than Sunday morning, and
+  /// rolled forward a week for a candidate whose day has already passed.
+  static (DateTime, String) _computeNextService() {
     final now = DateTime.now();
-    final daysUntilSunday = (DateTime.sunday - now.weekday) % 7;
-    var target = DateTime(
-      now.year,
-      now.month,
-      now.day + daysUntilSunday,
-      MockData.nextServiceHour,
-    );
-    if (!target.isAfter(now)) target = target.add(const Duration(days: 7));
-    return target;
+    (DateTime, String)? soonest;
+    for (final candidate in MockData.nextServiceCandidates) {
+      final daysUntil = (candidate.weekday - now.weekday) % 7;
+      var target = DateTime(
+        now.year,
+        now.month,
+        now.day + daysUntil,
+        candidate.hour,
+        candidate.minute,
+      );
+      if (!target.isAfter(now)) target = target.add(const Duration(days: 7));
+      if (soonest == null || target.isBefore(soonest.$1)) {
+        soonest = (target, candidate.label);
+      }
+    }
+    return soonest!;
   }
 
   @override
@@ -357,11 +365,11 @@ class _AnnouncementTickerState extends State<_AnnouncementTicker> {
 class _CountdownCard extends StatelessWidget {
   const _CountdownCard({required this.target});
 
-  final DateTime target;
+  final (DateTime, String) target;
 
   @override
   Widget build(BuildContext context) {
-    final remaining = target.difference(DateTime.now());
+    final remaining = target.$1.difference(DateTime.now());
     final safe = remaining.isNegative ? Duration.zero : remaining;
     final units = [
       (safe.inDays, 'Days'),
@@ -404,7 +412,7 @@ class _CountdownCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  MockData.nextServiceLabel,
+                  target.$2,
                   style: TpmText.body(
                     12.5,
                     color: TpmColors.portalInk,

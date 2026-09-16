@@ -69,6 +69,9 @@ class PodcastApi {
           audioUrl: audioUrl,
           thumbnailUrl: _child(item, 'image')?.getAttribute('href'),
           duration: _parseDuration(_child(item, 'duration')?.innerText),
+          description: _cleanDescription(
+            _child(item, 'description')?.innerText,
+          ),
         ),
       );
     }
@@ -127,6 +130,23 @@ class PodcastApi {
       'December',
     ];
     return '${monthNames[month]} $day, $year';
+  }
+
+  /// Anchor/Spotify's `<description>` is written for the podcast apps that
+  /// render it as HTML — `<p>`, `<br>`, the odd link. Strips markup down to
+  /// plain text for display here, same as any other podcast client would.
+  String? _cleanDescription(String? raw) {
+    if (raw == null) return null;
+    final withoutTags = raw
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+        .replaceAll(RegExp(r'</p>', caseSensitive: false), '\n\n')
+        .replaceAll(RegExp(r'<[^>]*>'), '')
+        .replaceAll('&amp;', '&')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&#39;', "'")
+        .replaceAll('&quot;', '"')
+        .trim();
+    return withoutTags.isEmpty ? null : withoutTags;
   }
 
   /// `itunes:duration` is either `HH:MM:SS`/`MM:SS`, or a bare seconds count
